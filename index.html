@@ -488,7 +488,12 @@ function drawTitle() {
   drawText(t('controls_hint'), W / 2, 572, 11, '#666');
 
   // Dev stage select buttons
-  const devNames = ['궁', '궁', '커피', '균형', '보스', '리듬', '해치'];
+  const devNamesMap = {
+    ko: ['궁', '궁', '커피', '균형', '보스', '리듬', '해치'],
+    jp: ['宮', '弓', 'コーヒー', 'バランス', 'ボス', 'リズム', '獬豸'],
+    en: ['Run', 'Arrow', 'Coffee', 'Bal', 'Boss', 'Beat', 'Haechi']
+  };
+  const devNames = devNamesMap[lang] || devNamesMap.ko;
   drawText(t('dev'), 55, 590, 10, '#555');
   for (let i = 0; i < 7; i++) {
     const dbx = 75 + i * 100, dby = 580, dbw = 90, dbh = 18;
