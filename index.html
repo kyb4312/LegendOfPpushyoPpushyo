@@ -1022,11 +1022,6 @@ function drawStage1() {
   // Obstacles
   s1.obstacles.forEach(o => {
     drawEmoji(o.emoji, o.x, o.y, 32);
-    // Shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.beginPath();
-    ctx.ellipse(o.x, o.y + 18, 12, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
   });
 
   // Spices
