@@ -170,7 +170,8 @@ const ENDINGS = [
   { id: 'rhythm', titleKey: 'e_rhythm_title', descKey: 'e_rhythm_desc', emoji: '🎵' },
   { id: 'balance', titleKey: 'e_balance_title', descKey: 'e_balance_desc', emoji: '📦' },
   { id: 'jump', titleKey: 'e_jump_title', descKey: 'e_jump_desc', emoji: '🕳️' },
-  { id: 'whack', titleKey: 'e_whack_title', descKey: 'e_whack_desc', emoji: '🔨' }
+  { id: 'whack', titleKey: 'e_whack_title', descKey: 'e_whack_desc', emoji: '🔨' },
+  { id: 'chopstick', titleKey: 'e_chop_title', descKey: 'e_chop_desc', emoji: '🥢' }
 ];
 
 // --- INPUT ---
@@ -628,7 +629,7 @@ function triggerEnding(type) {
     else if (deathStage === 3) endingIndex = 8; // balance
     else if (deathStage === 4) endingIndex = 9; // jump
     else if (deathStage === 5) endingIndex = 10; // whack
-    else if (deathStage === 6) endingIndex = 0; // default to archer for boss
+    else if (deathStage === 6) endingIndex = 11; // chopstick boss
     else if (deathStage === 7) endingIndex = 7; // rhythm
     else if (deathStage === 8) endingIndex = 4; // haechi
   } else if (type === 'victory') {
@@ -1118,7 +1119,7 @@ function drawEndingsView() {
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
   ctx.beginPath(); ctx.roundRect(40, 90, W - 80, 440, 12); ctx.fill();
 
-  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance','e_cond_jump','e_cond_whack'];
+  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance','e_cond_jump','e_cond_whack','e_cond_chop'];
 
   for (let i = 0; i < ENDINGS.length; i++) {
     const ey = 105 + i * 38;
@@ -1556,7 +1557,7 @@ function initStage3() {
     moving: false,
     invincible: 0,
     won: false,
-    timeLimit: 1260, // 21 seconds
+    timeLimit: 1320, // 22 seconds
     elapsed: 0,
     chant: '무궁화꽃이피었습니다',
     litChars: 0,
@@ -2302,28 +2303,27 @@ function updateBalance() {
     const roll = Math.random();
     const dir = Math.random() > 0.5 ? 1 : -1;
     if (roll < 0.4) {
-      // Wind gust (reduced)
-      bal.windForce = dir * (0.003 + Math.random() * 0.004);
+      // Wind gust — one-time impulse
+      bal.tiltSpeed += dir * (0.008 + Math.random() * 0.007);
       bal.windLabel = '💨';
       bal.windLabelTimer = 60;
     } else if (roll < 0.7) {
-      // Truck passes
-      bal.windForce = dir * (0.005 + Math.random() * 0.005);
+      // Truck — one-time impulse
+      bal.tiltSpeed += dir * (0.012 + Math.random() * 0.008);
       bal.windLabel = '🚛';
       bal.windLabelTimer = 60;
       bal.shakeTimer = 8;
     } else {
-      // Bird bump
-      bal.windForce = dir * (0.002 + Math.random() * 0.003);
+      // Bird — one-time impulse
+      bal.tiltSpeed += dir * (0.005 + Math.random() * 0.005);
       bal.windLabel = '🕊️';
       bal.windLabelTimer = 40;
     }
   }
 
-  // Physics: gravity + wind
+  // Physics: gravity only (wind is now impulse-based)
   const gravityMult = 1 + bal.stack.length * 0.15;
   bal.tiltSpeed += bal.tilt * 0.003 * gravityMult;
-  bal.tiltSpeed += bal.windForce;
 
   // Friction / damping
   bal.tiltSpeed *= 0.95;

@@ -305,9 +305,9 @@
     "en": "🏆 Endings"
   },
   "help_endings1": {
-    "ko": "총 11개의 엔딩 (배드 9 + 굿 1 + 히든 1)",
-    "jp": "全11エンディング（バッド9+グッド1+隠し1）",
-    "en": "11 total endings (9 bad + 1 good + 1 hidden)"
+    "ko": "총 12개의 엔딩 (배드 10 + 굿 1 + 히든 1)",
+    "jp": "全12エンディング（バッド10+グッド1+隠し1）",
+    "en": "12 total endings (10 bad + 1 good + 1 hidden)"
   },
   "help_endings2": {
     "ko": "사망 원인에 따라 다른 엔딩이 표시됩니다",
@@ -1058,6 +1058,21 @@
     "ko": "S6에서 잘못된 타격으로 사망",
     "jp": "S6で誤った一撃で死亡",
     "en": "Died from wrong hits in S6"
+  },
+  "e_chop_title": {
+    "ko": "젓가락의 먹잇감",
+    "jp": "箸の獲物",
+    "en": "Chopstick Prey"
+  },
+  "e_chop_desc": {
+    "ko": "거대한 젓가락에 집힌 뿌셔뿌셔는 누군가의 야식이 되었습니다...",
+    "jp": "巨大な箸に掴まれたプシェプシェは誰かの夜食になりました...",
+    "en": "Grabbed by giant chopsticks, PPushyo became someone's midnight snack..."
+  },
+  "e_cond_chop": {
+    "ko": "S7에서 젓가락 보스에게 사망",
+    "jp": "S7で箸ボスに死亡",
+    "en": "Died to Chopstick Boss in S7"
   },
   "help_wam_title": {
     "ko": "S6. 두더지 잡기",
