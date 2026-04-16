@@ -130,9 +130,9 @@
     "en": "SEONGSU"
   },
   "s1_name": {
-    "ko": "경복궁 러너",
-    "jp": "景福宮[キョンボックン]ランナー",
-    "en": "Palace Runner"
+    "ko": "광화문에서 살아남기",
+    "jp": "光化門で生き残れ",
+    "en": "Survive Gwanghwamun"
   },
   "s1_sub": {
     "ko": "관광객을 피해 달려라!",
@@ -140,9 +140,9 @@
     "en": "Dodge the tourists!"
   },
   "s2_name": {
-    "ko": "양궁장 베기",
-    "jp": "アーチェリー場斬り",
-    "en": "Archery Slicer"
+    "ko": "활터에서 살아남기",
+    "jp": "弓場で生き残れ",
+    "en": "Survive the Archery Range"
   },
   "s2_sub": {
     "ko": "날아오는 화살을 베어라!",
@@ -150,9 +150,9 @@
     "en": "Slice the arrows!"
   },
   "s3_name": {
-    "ko": "성수 커피 디펜스",
-    "jp": "聖水[ソンス]コーヒーディフェンス",
-    "en": "Coffee Defense"
+    "ko": "다방에서 살아남기",
+    "jp": "茶房で生き残れ",
+    "en": "Survive the Teahouse"
   },
   "s3_sub": {
     "ko": "커피를 막아라!",
@@ -160,9 +160,9 @@
     "en": "Block the coffee!"
   },
   "s4_name": {
-    "ko": "거대한 젓가락 보스",
-    "jp": "巨大な箸のボス",
-    "en": "Chopstick Boss"
+    "ko": "수라간에서 살아남기",
+    "jp": "水刺間で生き残れ",
+    "en": "Survive the Royal Kitchen"
   },
   "s4_sub": {
     "ko": "최종 보스를 물리쳐라!",
@@ -170,9 +170,9 @@
     "en": "Defeat the boss!"
   },
   "s5_name": {
-    "ko": "해치상 경비대",
-    "jp": "獬豸[カイチ]像の警備隊",
-    "en": "Haechi Guard"
+    "ko": "해치에게서 살아남기",
+    "jp": "獬豸から生き残れ",
+    "en": "Survive the Haechi"
   },
   "s5_sub": {
     "ko": "무궁화 꽃이 피었습니다!",
@@ -780,9 +780,9 @@
     "en": "Press SPACE to start!"
   },
   "s6_name": {
-    "ko": "뿌셔뿌셔 리듬 카라테",
-    "jp": "プシェプシェリズム空手",
-    "en": "PPushyo Rhythm Karate"
+    "ko": "훈련장에서 살아남기",
+    "jp": "訓練場で生き残れ",
+    "en": "Survive the Training Ground"
   },
   "s6_sub": {
     "ko": "리듬에 맞춰 펀치!",
@@ -880,9 +880,9 @@
     "en": "Clear when beat map ends!"
   },
   "s_bal_name": {
-    "ko": "균형 잡기",
-    "jp": "バランスゲーム",
-    "en": "Balance Game"
+    "ko": "시장통에서 살아남기",
+    "jp": "市場で生き残れ",
+    "en": "Survive the Market"
   },
   "s_bal_sub": {
     "ko": "떨어뜨리지 마!",
@@ -955,9 +955,9 @@
     "en": "Survive 15 seconds to clear!"
   },
   "s_jmp_name": {
-    "ko": "점프 점프",
-    "jp": "ジャンプジャンプ",
-    "en": "Jump Jump"
+    "ko": "담벼락에서 살아남기",
+    "jp": "塀で生き残れ",
+    "en": "Survive the Wall"
   },
   "s_jmp_sub": {
     "ko": "정확하게 뛰어!",
