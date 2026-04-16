@@ -188,10 +188,6 @@ function handleClick(e) {
       helpPage = 0;
       gameState = STATE.HELP;
     }
-    // Bonus button (quick access to rhythm stage)
-    if (cx > 300 && cx < 500 && cy > 460 && cy < 500) {
-      startAtStage(4);
-    }
     // Dev stage select buttons
     for (let i = 0; i < 6; i++) {
       const bx = 100 + i * 55, by = 580, bw = 45, bh = 18;
@@ -417,26 +413,14 @@ function drawTitle() {
   ctx.stroke();
   drawText(t('help'), W / 2, 430, 16, '#fff');
 
-  // Bonus button
-  const bbx = 300, bby = 460, bbw = 200, bbh = 40;
-  const bHover = mouseX > bbx && mouseX < bbx + bbw && mouseY > bby && mouseY < bby + bbh;
-  ctx.fillStyle = bHover ? '#e65100' : '#bf360c';
-  ctx.beginPath();
-  ctx.roundRect(bbx, bby, bbw, bbh, 10);
-  ctx.fill();
-  ctx.strokeStyle = '#ff9800';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  drawText(t('bonus'), W / 2, 480, 16, '#fff');
-
   // Ending collection
   const found = Object.keys(endingsFound).length;
-  drawText(`${found} / 8 ${t('ending_collect')}`, W / 2, 520, 14, '#9e9e9e');
+  drawText(`${found} / 8 ${t('ending_collect')}`, W / 2, 490, 14, '#9e9e9e');
 
   // Ending icons
   for (let i = 0; i < 8; i++) {
     const ex = W / 2 - 122.5 + i * 35;
-    const ey = 545;
+    const ey = 515;
     if (endingsFound[ENDINGS[i].id]) {
       drawEmoji(ENDINGS[i].emoji, ex, ey, 22);
     } else {
