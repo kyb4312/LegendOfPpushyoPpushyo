@@ -3744,13 +3744,9 @@ function drawBonus() {
     ctx.fillRect(0, 0, W, H);
   }
 
-  // Floor (semi-transparent over bg image)
-  ctx.fillStyle = 'rgba(26,26,46,0.5)';
-  ctx.fillRect(0, 420, W, 180);
-  ctx.fillStyle = 'rgba(50,50,50,0.3)';
-  for (let x = 0; x < W; x += 60) {
-    ctx.fillRect(x, 420, 30, 3);
-  }
+  // Slight dim for object visibility
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.fillRect(0, 0, W, H);
 
   // Beat line at player position
   ctx.strokeStyle = `rgba(255,255,255,${0.1 + bonus.bgPulse * 0.15})`;
