@@ -505,7 +505,7 @@ function drawTitle() {
   if (titleLogoImg.complete && titleLogoImg.naturalWidth > 0) {
     ctx.save();
     const ratio = titleLogoImg.naturalWidth / titleLogoImg.naturalHeight;
-    const imgH = 200, imgW = imgH * ratio;
+    const imgH = 260, imgW = imgH * ratio;
     ctx.translate(W / 2, 190);
     ctx.scale(titlePulse, titlePulse);
     ctx.drawImage(titleLogoImg, -imgW / 2, -imgH / 2, imgW, imgH);
