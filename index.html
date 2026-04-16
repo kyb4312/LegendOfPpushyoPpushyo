@@ -65,11 +65,19 @@ const STATE = {
   BONUS_RESULT: 'bonus_result'
 };
 let helpPage = 0;
-const HELP_PAGES = 7;
+const HELP_PAGES = 8;
 
 let gameState = STATE.TITLE;
 let currentStage = 0;
 let score = 0;
+let highScores = JSON.parse(localStorage.getItem('ppushyo_highscores') || '[]');
+
+function saveHighScore(s) {
+  highScores.push(s);
+  highScores.sort((a, b) => b - a);
+  highScores = highScores.slice(0, 3);
+  localStorage.setItem('ppushyo_highscores', JSON.stringify(highScores));
+}
 let hp = 3;
 let stageTimer = 0;
 let introTimer = 0;
@@ -91,6 +99,7 @@ const STAGES = [
   { nameKey: 's2_name', subKey: 's2_sub' },
   { nameKey: 's3_name', subKey: 's3_sub' },
   { nameKey: 's4_name', subKey: 's4_sub' },
+  { nameKey: 's6_name', subKey: 's6_sub' },
   { nameKey: 's5_name', subKey: 's5_sub' }
 ];
 
@@ -101,7 +110,8 @@ const ENDINGS = [
   { id: 'pigeon', titleKey: 'e_pigeon_title', descKey: 'e_pigeon_desc', emoji: '🕊️' },
   { id: 'haechi', titleKey: 'e_haechi_title', descKey: 'e_haechi_desc', emoji: '🦁' },
   { id: 'legend', titleKey: 'e_legend_title', descKey: 'e_legend_desc', emoji: '🏆' },
-  { id: 'japan', titleKey: 'e_japan_title', descKey: 'e_japan_desc', emoji: '🇯🇵' }
+  { id: 'japan', titleKey: 'e_japan_title', descKey: 'e_japan_desc', emoji: '🇯🇵' },
+  { id: 'rhythm', titleKey: 'e_rhythm_title', descKey: 'e_rhythm_desc', emoji: '🎵' }
 ];
 
 // --- INPUT ---
@@ -172,12 +182,12 @@ function handleClick(e) {
       helpPage = 0;
       gameState = STATE.HELP;
     }
-    // Bonus button
+    // Bonus button (quick access to rhythm stage)
     if (cx > 300 && cx < 500 && cy > 460 && cy < 500) {
-      initBonusGame();
+      startAtStage(4);
     }
     // Dev stage select buttons
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const bx = 100 + i * 55, by = 580, bw = 45, bh = 18;
       if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
         startAtStage(i);
@@ -198,12 +208,7 @@ function handleClick(e) {
     }
   } else if (gameState === STATE.ENDING) {
     // Restart button
-    if (cx > 250 && cx < 550 && cy > 480 && cy < 540) {
-      gameState = STATE.TITLE;
-    }
-  } else if (gameState === STATE.BONUS_RESULT) {
-    // Back to title button
-    if (cx > 250 && cx < 550 && cy > 480 && cy < 540) {
+    if (cx > 250 && cx < 550 && cy > 510 && cy < 560) {
       gameState = STATE.TITLE;
     }
   }
@@ -420,11 +425,11 @@ function drawTitle() {
 
   // Ending collection
   const found = Object.keys(endingsFound).length;
-  drawText(`${found} / 7 ${t('ending_collect')}`, W / 2, 520, 14, '#9e9e9e');
+  drawText(`${found} / 8 ${t('ending_collect')}`, W / 2, 520, 14, '#9e9e9e');
 
   // Ending icons
-  for (let i = 0; i < 7; i++) {
-    const ex = W / 2 - 105 + i * 35;
+  for (let i = 0; i < 8; i++) {
+    const ex = W / 2 - 122.5 + i * 35;
     const ey = 545;
     if (endingsFound[ENDINGS[i].id]) {
       drawEmoji(ENDINGS[i].emoji, ex, ey, 22);
@@ -438,7 +443,7 @@ function drawTitle() {
 
   // Dev stage select buttons
   drawText(t('dev'), 70, 590, 10, '#555');
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 6; i++) {
     const dbx = 100 + i * 55, dby = 580, dbw = 45, dbh = 18;
     const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
     ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
@@ -502,7 +507,7 @@ function startAtStage(n) {
 
 function advanceStage() {
   currentStage++;
-  if (currentStage >= 5) {
+  if (currentStage >= 6) {
     // Victory!
     triggerEnding('victory');
     return;
@@ -528,7 +533,8 @@ function triggerEnding(type) {
     else if (deathStage === 1) endingIndex = 0; // archer
     else if (deathStage === 2) endingIndex = 2; // dessert (coffee stage)
     else if (deathStage === 3) endingIndex = 0; // default to archer for boss
-    else if (deathStage === 4) endingIndex = 4; // haechi
+    else if (deathStage === 4) endingIndex = 7; // rhythm
+    else if (deathStage === 5) endingIndex = 4; // haechi
   } else if (type === 'victory') {
     if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
     else endingIndex = 5; // legend
@@ -536,6 +542,7 @@ function triggerEnding(type) {
   currentEnding = ENDINGS[endingIndex];
   endingsFound[currentEnding.id] = true;
   localStorage.setItem('ppushyo_endings', JSON.stringify(endingsFound));
+  saveHighScore(score);
   gameState = STATE.ENDING;
 }
 
@@ -576,16 +583,27 @@ function drawEnding() {
   wrapText(t(e.descKey), W / 2, 330, 16, '#e0e0e0', 600);
 
   // Score
-  drawText(`${t('score')}: ${score}`, W / 2, 420, 20, '#ffeb3b');
+  drawText(`${t('score')}: ${score}`, W / 2, 390, 20, '#ffeb3b');
+
+  // High scores TOP 3
+  drawText('🏅 TOP 3', W / 2, 420, 14, '#9e9e9e');
+  const medals = ['🥇', '🥈', '🥉'];
+  for (let i = 0; i < 3; i++) {
+    const hs = highScores[i];
+    const isNew = hs === score && i === highScores.indexOf(score);
+    const color = isNew ? '#ffd54f' : '#bdbdbd';
+    const label = hs !== undefined ? `${medals[i]} ${hs}` : `${medals[i]} ---`;
+    drawText(label, W / 2, 442 + i * 20, 14, color);
+  }
 
   // Restart button
-  const bx = 250, by = 480, bw = 300, bh = 60;
+  const bx = 250, by = 510, bw = 300, bh = 50;
   const hover = mouseX > bx && mouseX < bx + bw && mouseY > by && mouseY < by + bh;
   ctx.fillStyle = hover ? '#7b1fa2' : '#4a148c';
   ctx.beginPath();
   ctx.roundRect(bx, by, bw, bh, 10);
   ctx.fill();
-  drawText(t('restart'), W / 2, by + 30, 20, '#fff');
+  drawText(t('restart'), W / 2, by + 25, 18, '#fff');
 }
 
 function wrapText(text, x, y, size, color, maxW) {
@@ -796,8 +814,33 @@ function drawHelp() {
       drawText(t('help_s4_win'), W / 2, 515, 16, '#4caf50');
       break;
 
-    case 5: // S5
-      drawText(t('help_s5_title'), W / 2, 40, 28, '#9c27b0');
+    case 5: // S5 Rhythm Karate
+      drawText(t('help_s6_title'), W / 2, 40, 28, '#ff9800');
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
+
+      drawText(t('help_s6_controls'), W / 2, 100, 16, '#ffb74d');
+      drawText(t('help_s6_desc'), W / 2, 130, 14, '#bdbdbd');
+
+      drawText(t('help_s6_normal'), W / 2, 180, 16, '#ffeb3b');
+      drawText(t('help_s6_normal1'), 160, 210, 14, '#e0e0e0', 'left');
+      drawText(t('help_s6_normal2'), 160, 235, 14, '#e0e0e0', 'left');
+
+      drawText(t('help_s6_combo'), W / 2, 280, 16, '#ff9800');
+      drawText(t('help_s6_combo1'), 160, 310, 14, '#e0e0e0', 'left');
+      drawText(t('help_s6_combo2'), 160, 335, 14, '#e0e0e0', 'left');
+
+      drawText(t('help_s6_judge'), W / 2, 380, 16, '#ffd54f');
+      drawText(t('help_s6_perfect'), 160, 405, 14, '#ffeb3b', 'left');
+      drawText(t('help_s6_ok'), 160, 430, 14, '#4caf50', 'left');
+      drawText(t('help_s6_miss'), 160, 455, 14, '#f44336', 'left');
+
+      drawText(t('help_s6_penalty'), W / 2, 495, 14, '#ef5350');
+      drawText(t('help_s6_clear'), W / 2, 520, 16, '#ff9800');
+      break;
+
+    case 6: // S6 Haechi
+      drawText(t('help_s5_title_s6'), W / 2, 40, 28, '#9c27b0');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
 
@@ -836,22 +879,22 @@ function drawHelp() {
       drawText(t('help_s5_progress'), W / 2, 520, 12, '#9e9e9e');
       break;
 
-    case 6: // Ending list
+    case 7: // Ending list
       drawText(t('help_endlist_title'), W / 2, 40, 28, '#ffd54f');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
 
       drawText(t('help_endlist_desc'), W / 2, 100, 16, '#ffab91');
 
-      const endingCondKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan'];
+      const endingCondKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm'];
 
       for (let i = 0; i < ENDINGS.length; i++) {
-        const ey = 140 + i * 55;
+        const ey = 130 + i * 50;
         const found = endingsFound[ENDINGS[i].id];
 
-        drawEmoji(ENDINGS[i].emoji, 100, ey, 24);
-        drawText(found ? t(ENDINGS[i].titleKey) : '???', 140, ey - 8, 16, found ? '#ffd54f' : '#616161', 'left');
-        drawText(found ? t(endingCondKeys[i]) : '???', 140, ey + 14, 13, found ? '#bdbdbd' : '#424242', 'left');
+        drawEmoji(ENDINGS[i].emoji, 100, ey, 22);
+        drawText(found ? t(ENDINGS[i].titleKey) : '???', 140, ey - 7, 15, found ? '#ffd54f' : '#616161', 'left');
+        drawText(found ? t(endingCondKeys[i]) : '???', 140, ey + 13, 12, found ? '#bdbdbd' : '#424242', 'left');
 
         if (found) {
           drawText('✓', 700, ey, 18, '#4caf50');
@@ -880,7 +923,7 @@ function initStage1() {
     spawnTimer: 0,
     scrollY: 0,
     timer: 0,
-    duration: 1800, // 30 seconds at 60fps
+    duration: 1200, // 20 seconds at 60fps
     invincible: 0,
     bgElements: []
   };
@@ -912,7 +955,7 @@ function updateStage1() {
 
   // Spawn obstacles
   s1.spawnTimer++;
-  if (s1.spawnTimer > 30) {
+  if (s1.spawnTimer > 20) {
     s1.spawnTimer = 0;
     const types = ['tourist', 'pigeon', 'camera'];
     const emojis = ['👣', '🕊️', '📷'];
@@ -922,7 +965,7 @@ function updateStage1() {
       y: -30,
       type: types[ti],
       emoji: emojis[ti],
-      speed: 2 + Math.random() * 3
+      speed: 3 + Math.random() * 4
     });
   }
 
@@ -999,11 +1042,6 @@ function drawStage1() {
   // Obstacles
   s1.obstacles.forEach(o => {
     drawEmoji(o.emoji, o.x, o.y, 32);
-    // Shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.beginPath();
-    ctx.ellipse(o.x, o.y + 18, 12, 4, 0, 0, Math.PI * 2);
-    ctx.fill();
   });
 
   // Spices
@@ -1037,12 +1075,14 @@ function initStage2() {
     arrows: [],
     spawnTimer: 0,
     timer: 0,
-    duration: 1800,
+    duration: 1200,
     sliceTrail: [],
     combo: 0,
     comboTimer: 0,
     comboText: '',
-    invincible: 0
+    invincible: 0,
+    energy: 100,
+    maxEnergy: 100
   };
 }
 
@@ -1053,19 +1093,34 @@ function updateStage2() {
 
   // Spawn arrows
   s2.spawnTimer++;
-  const spawnRate = Math.max(20, 50 - Math.floor(s2.timer / 120));
+  const spawnRate = Math.max(6, 22 - Math.floor(s2.timer / 120) * 2);
   if (s2.spawnTimer >= spawnRate) {
     s2.spawnTimer = 0;
     const fromLeft = Math.random() > 0.5;
+    const isBomb = Math.random() < 0.15;
+    const ax = fromLeft ? -20 : W + 20;
+    const ay = 100 + Math.random() * 350;
+    const spd = 4 + Math.random() * 4;
+    let avx, avy, aAngle;
+    if (Math.random() < 0.65) {
+      // Aimed at player (with spread)
+      const tx = W / 2 + (Math.random() - 0.5) * 80;
+      const ty = H - 60 + (Math.random() - 0.5) * 60;
+      const dx = tx - ax, dy = ty - ay;
+      const dist = Math.hypot(dx, dy);
+      avx = (dx / dist) * spd;
+      avy = (dy / dist) * spd;
+      aAngle = Math.atan2(dy, dx);
+    } else {
+      // Random direction
+      avx = (fromLeft ? 1 : -1) * spd;
+      avy = Math.random() * 2 - 1;
+      aAngle = fromLeft ? 0 : Math.PI;
+    }
     s2.arrows.push({
-      x: fromLeft ? -20 : W + 20,
-      y: 100 + Math.random() * 350,
-      vx: (fromLeft ? 1 : -1) * (3 + Math.random() * 3),
-      vy: Math.random() * 2 - 1,
-      alive: true,
-      sliced: false,
-      sliceAnim: 0,
-      angle: fromLeft ? 0 : Math.PI
+      x: ax, y: ay, vx: avx, vy: avy,
+      alive: true, sliced: false, sliceAnim: 0,
+      angle: aAngle, bomb: isBomb
     });
   }
 
@@ -1090,10 +1145,17 @@ function updateStage2() {
     return a.x > -50 && a.x < W + 50 && a.y < H + 50;
   });
 
-  // Slice detection
-  if (mouseDown && mousePath.length > 2) {
+  // Energy system: drain while slicing, recharge while idle
+  if (mouseDown && s2.energy > 0) {
+    s2.energy = Math.max(0, s2.energy - 1.2);
+  } else if (!mouseDown) {
+    s2.energy = Math.min(s2.maxEnergy, s2.energy + 0.6);
+  }
+
+  // Slice detection (only when energy > 0)
+  if (mouseDown && mousePath.length > 2 && s2.energy > 0) {
     const now = Date.now();
-    const recentPath = mousePath.filter(p => now - p.t < 200);
+    const recentPath = mousePath.filter(p => now - p.t < 100);
     if (recentPath.length >= 2) {
       let slicedThisFrame = 0;
       s2.arrows.forEach(a => {
@@ -1105,8 +1167,14 @@ function updateStage2() {
           if (dist < 30) {
             a.sliced = true;
             a.sliceAnim = 0;
-            slicedThisFrame++;
-            score += 50;
+            if (a.bomb) {
+              score -= 200;
+              takeDamage('arrow');
+              s2.invincible = 60;
+            } else {
+              slicedThisFrame++;
+              score += 50;
+            }
             break;
           }
         }
@@ -1125,7 +1193,7 @@ function updateStage2() {
   }
 
   // Slice trail fade
-  s2.sliceTrail = mousePath.filter(p => Date.now() - p.t < 300);
+  s2.sliceTrail = s2.energy > 0 ? mousePath.filter(p => Date.now() - p.t < 100) : [];
 
   if (s2.timer >= s2.duration && hp > 0) advanceStage();
 }
@@ -1168,10 +1236,10 @@ function drawStage2() {
     if (a.sliced) {
       ctx.globalAlpha = 1 - a.sliceAnim / 30;
       ctx.rotate(a.sliceAnim * 0.1);
-      drawEmoji('💥', 0, 0, 30);
+      drawEmoji(a.bomb ? '💥' : '💥', 0, 0, 30);
     } else {
-      ctx.rotate(a.angle);
-      drawEmoji('🏹', 0, 0, 32);
+      ctx.rotate(a.bomb ? 0 : a.angle);
+      drawEmoji(a.bomb ? '💣' : '🏹', 0, 0, 32);
     }
     ctx.restore();
   });
@@ -1202,6 +1270,18 @@ function drawStage2() {
     drawText(t('slice_arrows'), W / 2, H / 2, 18, 'rgba(255,255,255,0.7)');
   }
 
+  // Energy bar (right side)
+  const ePct = s2.energy / s2.maxEnergy;
+  const eBarX = W - 40, eBarY = 100, eBarH = 300;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(eBarX - 8, eBarY, 16, eBarH);
+  ctx.fillStyle = ePct > 0.3 ? '#42a5f5' : ePct > 0.1 ? '#ff9800' : '#f44336';
+  ctx.fillRect(eBarX - 6, eBarY + eBarH * (1 - ePct), 12, eBarH * ePct);
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(eBarX - 8, eBarY, 16, eBarH);
+  drawText('⚡', eBarX, eBarY - 15, 14, ePct > 0.1 ? '#42a5f5' : '#f44336');
+
   // Progress bar
   const prog = s2.timer / s2.duration;
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -1215,26 +1295,42 @@ function drawStage2() {
 // ============================================================
 let s3 = {};
 function initStage3() {
+  const rowLen = W - 160; // 640px per row
   s3 = {
-    playerX: 50,
-    targetX: W - 80,
-    speed: 0,
+    distance: 0,
+    rowLen: rowLen,
+    totalDist: rowLen * 3, // 3 rows = 1920px
+    rows: [
+      { y: 290, dir: 1 },   // left to right
+      { y: 380, dir: -1 },  // right to left
+      { y: 470, dir: 1 },   // left to right
+    ],
+    pathStartX: 80,
+    pathEndX: W - 80,
     looking: false,
     lookTimer: 0,
-    lookDuration: 120,
-    greenDuration: 180,
-    phase: 'green', // green, transition, or red
+    lookDuration: 80,
+    phase: 'transition', // transition (move + letters) or red (stop)
     phaseTimer: 0,
     haechiAngle: 0,
     moving: false,
-    caught: false,
-    caughtAnim: 0,
     invincible: 0,
     won: false,
     chant: '무궁화꽃이피었습니다',
     litChars: 0,
-    transitionDuration: 90
+    transitionDuration: 120
   };
+}
+
+function getS3Pos(dist) {
+  const d = Math.max(0, Math.min(dist, s3.totalDist));
+  const row = Math.min(2, Math.floor(d / s3.rowLen));
+  const rowDist = d - row * s3.rowLen;
+  const rowData = s3.rows[row];
+  const x = rowData.dir === 1
+    ? s3.pathStartX + rowDist
+    : s3.pathEndX - rowDist;
+  return { x, y: rowData.y, row };
 }
 
 function updateStage3() {
@@ -1246,57 +1342,62 @@ function updateStage3() {
   }
   if (s3.invincible > 0) s3.invincible--;
 
-  // Phase cycling
+  // Progress: 0 (start) to 1 (end)
+  const progress = Math.min(1, s3.distance / s3.totalDist);
+
+  // Phase cycling: transition (움직여! + 글자 점등) ↔ red (멈춰!)
   s3.phaseTimer++;
-  if (s3.phase === 'green') {
-    s3.looking = false;
-    s3.litChars = 0;
-    if (s3.phaseTimer >= s3.greenDuration) {
-      s3.phase = 'transition';
-      s3.phaseTimer = 0;
-      s3.transitionDuration = 60 + Math.random() * 60;
-    }
-  } else if (s3.phase === 'transition') {
+  if (s3.phase === 'transition') {
+    // Can move, letters lighting up
     s3.looking = false;
     s3.litChars = Math.min(s3.chant.length, Math.floor((s3.phaseTimer / s3.transitionDuration) * s3.chant.length));
     if (s3.phaseTimer >= s3.transitionDuration) {
       s3.phase = 'red';
       s3.phaseTimer = 0;
-      s3.lookDuration = 60 + Math.random() * 120;
-      s3.greenDuration = 90 + Math.random() * 150;
+      // 빨간불도 랜덤: 0.3~2초
+      s3.lookDuration = 20 + Math.random() * 100;
       s3.litChars = s3.chant.length;
     }
   } else {
-    // Red phase - turning animation
-    if (s3.phaseTimer < 20) {
-      s3.haechiAngle = lerp(0, Math.PI, s3.phaseTimer / 20);
+    // Red phase - must stop
+    if (s3.phaseTimer < 15) {
+      s3.haechiAngle = lerp(0, Math.PI, s3.phaseTimer / 15);
     } else {
       s3.looking = true;
     }
     if (s3.phaseTimer >= s3.lookDuration) {
-      s3.phase = 'green';
+      s3.phase = 'transition';
       s3.phaseTimer = 0;
       s3.haechiAngle = 0;
       s3.looking = false;
       s3.litChars = 0;
+      // Highly random transition: 0.5~3초, 예측 불가
+      const roll = Math.random();
+      if (roll < 0.25) {
+        s3.transitionDuration = 30 + Math.random() * 25;   // 급속 (0.5~0.9초)
+      } else if (roll < 0.45) {
+        s3.transitionDuration = 130 + Math.random() * 50;  // 느림 (2.2~3초)
+      } else {
+        s3.transitionDuration = 55 + Math.random() * 75;   // 중간 (0.9~2.2초)
+      }
     }
   }
 
   // Player movement (hold space)
   s3.moving = keys['Space'];
   if (s3.moving) {
-    s3.playerX += 2;
+    s3.distance += 3;
   }
 
-  // Caught detection
+  // Caught detection — knocked back by distance
   if (s3.looking && s3.moving && s3.invincible <= 0) {
     takeDamage('haechi');
     s3.invincible = 90;
-    s3.playerX = Math.max(50, s3.playerX - 100); // knocked back
+    s3.distance = Math.max(0, s3.distance - 150);
   }
 
   // Win condition
-  if (s3.playerX >= s3.targetX) {
+  if (s3.distance >= s3.totalDist) {
     s3.won = true;
     s3.winTimer = 0;
     score += 500;
@@ -1312,47 +1413,35 @@ function drawStage3() {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // Path
-  ctx.fillStyle = '#a1887f';
-  ctx.fillRect(0, H / 2 - 40, W, 80);
-  ctx.fillStyle = '#8d6e63';
-  for (let x = 0; x < W; x += 40) {
-    ctx.fillRect(x, H / 2 - 40, 2, 80);
-  }
-
-  // Palace walls
-  drawPalaceRoof(W / 2, 40, 400);
+  // Palace decoration at top
+  drawPalaceRoof(W / 2, 30, 400);
   ctx.fillStyle = '#795548';
-  ctx.fillRect(50, 80, W - 100, 120);
+  ctx.fillRect(50, 65, W - 100, 80);
   ctx.fillStyle = '#5d4037';
   for (let x = 80; x < W - 80; x += 80) {
-    ctx.fillRect(x, 100, 40, 60);
+    ctx.fillRect(x, 75, 40, 45);
     ctx.fillStyle = '#4e342e';
-    ctx.fillRect(x + 5, 110, 30, 40);
+    ctx.fillRect(x + 5, 80, 30, 30);
     ctx.fillStyle = '#5d4037';
   }
 
   // 무궁화꽃이피었습니다 chant display
-  const chantY = 230;
+  const chantY = 170;
   const chant = s3.chant;
-  const totalW = chant.length * 28;
-  const startX = (W - totalW) / 2;
-
-  // Background bar
+  const totalCW = chant.length * 28;
+  const chantStartX = (W - totalCW) / 2;
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.beginPath();
-  ctx.roundRect(startX - 10, chantY - 18, totalW + 20, 40, 8);
+  ctx.roundRect(chantStartX - 10, chantY - 18, totalCW + 20, 40, 8);
   ctx.fill();
-
   for (let i = 0; i < chant.length; i++) {
-    const cx = startX + i * 28 + 14;
+    const cx = chantStartX + i * 28 + 14;
     const lit = i < s3.litChars;
     ctx.font = `bold 20px 'Noto Sans KR', sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     if (lit) {
       ctx.fillStyle = '#ff5252';
-      // Glow effect on lit characters
       ctx.shadowColor = '#ff5252';
       ctx.shadowBlur = 10;
     } else {
@@ -1363,28 +1452,58 @@ function drawStage3() {
   }
   ctx.shadowBlur = 0;
 
-  // Haechi statue at the end
-  ctx.save();
-  ctx.translate(s3.targetX + 20, H / 2);
-  ctx.scale(s3.looking ? -1 : 1, 1);
-  drawEmoji('🦁', 0, 0, 50);
-  ctx.restore();
-
   // Status text
-  if (s3.phase === 'green') {
-    drawText(t('move'), W / 2, H / 2 - 80, 24, '#4caf50');
-  } else if (s3.phase === 'transition') {
-    drawText(t('ready'), W / 2, H / 2 - 80, 24, '#ff9800');
+  if (s3.phase === 'transition') {
+    drawText(t('move'), W / 2, 215, 22, '#4caf50');
   } else if (s3.looking) {
-    drawText(t('stop_cmd'), W / 2, H / 2 - 80, 24, '#f44336');
+    drawText(t('stop_cmd'), W / 2, 215, 22, '#f44336');
   }
 
-  // Player
-  const blink = s3.invincible > 0 && Math.floor(s3.invincible / 4) % 2;
-  if (!blink) drawPlayer(s3.playerX, H / 2, 36);
+  // Draw 3-row winding path
+  const sx = s3.pathStartX, ex = s3.pathEndX;
+  const pathH = 40;
+  for (let r = 0; r < 3; r++) {
+    const ry = s3.rows[r].y;
+    // Path strip
+    ctx.fillStyle = '#a1887f';
+    ctx.fillRect(sx, ry - pathH / 2, ex - sx, pathH);
+    // Tile lines
+    ctx.fillStyle = '#8d6e63';
+    for (let x = sx; x < ex; x += 40) {
+      ctx.fillRect(x, ry - pathH / 2, 2, pathH);
+    }
+    // Direction arrows
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const arrow = s3.rows[r].dir === 1 ? '→' : '←';
+    for (let ax = sx + 40; ax < ex - 20; ax += 80) {
+      ctx.fillText(arrow, ax, ry);
+    }
+  }
+  // Vertical connectors between rows
+  ctx.fillStyle = '#a1887f';
+  // Row 1→2 connector (right side)
+  ctx.fillRect(ex - pathH, s3.rows[0].y - pathH / 2, pathH, s3.rows[1].y - s3.rows[0].y + pathH);
+  // Row 2→3 connector (left side)
+  ctx.fillRect(sx, s3.rows[1].y - pathH / 2, pathH, s3.rows[2].y - s3.rows[1].y + pathH);
 
-  // Progress indicator
-  const prog = (s3.playerX - 50) / (s3.targetX - 50);
+  // Haechi statue at the end of row 3
+  const haechiPos = getS3Pos(s3.totalDist);
+  ctx.save();
+  ctx.translate(haechiPos.x + 25, haechiPos.y);
+  ctx.scale(s3.looking ? -1 : 1, 1);
+  drawEmoji('🦁', 0, 0, 40);
+  ctx.restore();
+
+  // Player
+  const pos = getS3Pos(s3.distance);
+  const blink = s3.invincible > 0 && Math.floor(s3.invincible / 4) % 2;
+  if (!blink) drawPlayer(pos.x, pos.y, 32);
+
+  // Progress bar
+  const prog = s3.distance / s3.totalDist;
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
   ctx.fillRect(50, H - 20, W - 100, 10);
   ctx.fillStyle = '#9c27b0';
@@ -1392,11 +1511,13 @@ function drawStage3() {
 
   // Hint
   if (frameCount % 120 < 60) {
-    drawText(t('space_to_move'), W / 2, H - 50, 14, 'rgba(0,0,0,0.5)');
+    drawText(t('space_to_move'), W / 2, H - 40, 13, 'rgba(0,0,0,0.5)');
   }
 
   // Win message
   if (s3.won) {
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(0, 0, W, H);
     drawText(t('clear'), W / 2, H / 2, 48, '#ffd54f');
   }
 }
@@ -1415,7 +1536,7 @@ function initStage4() {
     ],
     hitZoneY: H - 100,
     timer: 0,
-    duration: 1800,
+    duration: 1200,
     spawnTimer: 0,
     hitEffects: [],
     invincible: 0,
@@ -1429,14 +1550,14 @@ function updateStage4() {
 
   // Spawn cups
   s4.spawnTimer++;
-  const rate = Math.max(15, 40 - Math.floor(s4.timer / 120) * 2);
+  const rate = Math.max(8, 30 - Math.floor(s4.timer / 120) * 2);
   if (s4.spawnTimer >= rate) {
     s4.spawnTimer = 0;
     const laneIdx = Math.floor(Math.random() * 4);
     const types = [
-      { emoji: '🧋', speed: 2, name: 'latte' },
-      { emoji: '☕', speed: 3.5, name: 'americano' },
-      { emoji: '🧊', speed: 5, name: 'iced' }
+      { emoji: '🧋', speed: 3, name: 'latte' },
+      { emoji: '☕', speed: 5, name: 'americano' },
+      { emoji: '🧊', speed: 7, name: 'iced' }
     ];
     const t = types[Math.floor(Math.random() * types.length)];
     s4.lanes[laneIdx].cups.push({
@@ -1490,6 +1611,10 @@ function updateStage4() {
         const bonus = closestDist < 20 ? 100 : closestDist < 40 ? 50 : 25;
         score += bonus;
         s4.hitEffects.push({ x: lane.x, y: s4.hitZoneY, timer: 0, text: bonus >= 100 ? 'PERFECT!' : bonus >= 50 ? 'GREAT!' : 'OK' });
+      } else {
+        // Miss penalty: no cup nearby
+        score -= 30;
+        s4.hitEffects.push({ x: lane.x, y: s4.hitZoneY, timer: 0, text: 'MISS!' });
       }
     }
   });
@@ -1595,20 +1720,26 @@ function initStage5() {
   s5 = {
     playerX: W / 2,
     playerY: H - 80,
-    bossHP: 3,
-    bossMaxHP: 3,
+    bossHP: 5,
+    bossMaxHP: 5,
     chopsticks: [],
     attackTimer: 0,
     phase: 'idle', // idle, telegraph, strike, stuck
     stuckTimer: 0,
     stuckX: 0,
     shadowX: 0,
+    shadowX2: 0,        // second chopstick (rage mode)
     shadowAlpha: 0,
     invincible: 0,
     hits: 0,
     shakeTimer: 0,
     won: false,
-    winTimer: 0
+    winTimer: 0,
+    rage: false,          // rage mode after 2 hits
+    kickCount: 0,         // kicks landed on stuck chopstick
+    kicksNeeded: 2,       // need multiple kicks
+    stuckX2: 0,           // second stuck chopstick
+    doubleAttack: false    // whether current attack is double
   };
 }
 
@@ -1627,20 +1758,33 @@ function updateStage5() {
   s5.playerX = Math.max(40, Math.min(W - 40, s5.playerX));
 
   s5.attackTimer++;
+  // Rage mode after 2 hits: faster attacks, double chopstick
+  if (s5.hits >= 2 && !s5.rage) {
+    s5.rage = true;
+    s5.kicksNeeded = 3;
+  }
+  const idleTime = s5.rage ? 35 : 60;
+  const telegraphTime = s5.rage ? 25 : 40;
+  const stuckTime = s5.rage ? 45 : 60;
 
   switch (s5.phase) {
     case 'idle':
-      if (s5.attackTimer > 90) {
+      if (s5.attackTimer > idleTime) {
         s5.phase = 'telegraph';
         s5.attackTimer = 0;
-        s5.shadowX = s5.playerX + (Math.random() - 0.5) * 100; // predict near player
+        s5.shadowX = s5.playerX + (Math.random() - 0.5) * 100;
+        s5.doubleAttack = s5.rage && Math.random() < 0.5;
+        if (s5.doubleAttack) {
+          s5.shadowX2 = s5.playerX + (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 100);
+          s5.shadowX2 = Math.max(60, Math.min(W - 60, s5.shadowX2));
+        }
         s5.shadowAlpha = 0;
       }
       break;
 
     case 'telegraph':
-      s5.shadowAlpha = Math.min(0.8, s5.shadowAlpha + 0.02);
-      if (s5.attackTimer > 60) {
+      s5.shadowAlpha = Math.min(0.8, s5.shadowAlpha + (s5.rage ? 0.05 : 0.03));
+      if (s5.attackTimer > telegraphTime) {
         s5.phase = 'strike';
         s5.attackTimer = 0;
       }
@@ -1648,7 +1792,6 @@ function updateStage5() {
 
     case 'strike':
       if (s5.attackTimer >= 10) {
-        // Check if player is hit
         const pRect = { x: s5.playerX - 18, y: s5.playerY - 18, w: 36, h: 36 };
         const sRect = { x: s5.shadowX - 25, y: H - 120, w: 50, h: 80 };
         if (rectCollision(pRect, sRect) && s5.invincible <= 0) {
@@ -1656,30 +1799,45 @@ function updateStage5() {
           s5.invincible = 60;
           s5.shakeTimer = 15;
         }
+        if (s5.doubleAttack) {
+          const sRect2 = { x: s5.shadowX2 - 25, y: H - 120, w: 50, h: 80 };
+          if (rectCollision(pRect, sRect2) && s5.invincible <= 0) {
+            takeDamage('chopstick');
+            s5.invincible = 60;
+            s5.shakeTimer = 15;
+          }
+        }
         s5.phase = 'stuck';
         s5.stuckX = s5.shadowX;
+        s5.stuckX2 = s5.doubleAttack ? s5.shadowX2 : 0;
         s5.stuckTimer = 0;
+        s5.kickCount = 0;
         s5.attackTimer = 0;
       }
       break;
 
     case 'stuck':
       s5.stuckTimer++;
-      // Player can kick
+      // Player kicks — need multiple kicks
       if (keysJustPressed['Space'] && Math.abs(s5.playerX - s5.stuckX) < 60) {
-        s5.bossHP--;
-        s5.hits++;
-        score += 200;
-        s5.shakeTimer = 20;
-        if (s5.bossHP <= 0) {
-          s5.won = true;
-          s5.winTimer = 0;
-          score += 1000;
+        s5.kickCount++;
+        s5.shakeTimer = 8;
+        score += 50;
+        if (s5.kickCount >= s5.kicksNeeded) {
+          s5.bossHP--;
+          s5.hits++;
+          score += 200;
+          s5.shakeTimer = 20;
+          if (s5.bossHP <= 0) {
+            s5.won = true;
+            s5.winTimer = 0;
+            score += 1000;
+          }
+          s5.phase = 'idle';
+          s5.attackTimer = 0;
         }
-        s5.phase = 'idle';
-        s5.attackTimer = 0;
       }
-      if (s5.stuckTimer > 90) {
+      if (s5.stuckTimer > stuckTime) {
         s5.phase = 'idle';
         s5.attackTimer = 0;
       }
@@ -1734,14 +1892,26 @@ function drawStage5() {
   drawEmoji('🥢', W / 2 - 30, 30, 40);
   drawEmoji('🥢', W / 2 + 30, 30, 40);
 
+  // Rage mode indicator
+  if (s5.rage) {
+    drawText('🔥 RAGE', W / 2, 95, 12, '#ff5722');
+  }
+
   // Shadow / telegraph
   if (s5.phase === 'telegraph') {
     ctx.fillStyle = `rgba(255,0,0,${s5.shadowAlpha * 0.3})`;
     ctx.beginPath();
     ctx.ellipse(s5.shadowX, H - 50, 30, 10, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Warning markers
     drawText('⚠️', s5.shadowX, H - 80, 24, `rgba(255,0,0,${s5.shadowAlpha})`);
+    // Double attack telegraph
+    if (s5.doubleAttack) {
+      ctx.fillStyle = `rgba(255,0,0,${s5.shadowAlpha * 0.3})`;
+      ctx.beginPath();
+      ctx.ellipse(s5.shadowX2, H - 50, 30, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+      drawText('⚠️', s5.shadowX2, H - 80, 24, `rgba(255,0,0,${s5.shadowAlpha})`);
+    }
   }
 
   // Chopstick strike animation
@@ -1750,19 +1920,28 @@ function drawStage5() {
     const chopY = lerp(-50, H - 80, progress);
     drawEmoji('🥢', s5.shadowX - 10, chopY, 50);
     drawEmoji('🥢', s5.shadowX + 10, chopY, 50);
+    if (s5.doubleAttack) {
+      drawEmoji('🥢', s5.shadowX2 - 10, chopY, 50);
+      drawEmoji('🥢', s5.shadowX2 + 10, chopY, 50);
+    }
   }
 
   // Stuck chopsticks
   if (s5.phase === 'stuck') {
     drawEmoji('🥢', s5.stuckX - 10, H - 80, 50);
     drawEmoji('🥢', s5.stuckX + 10, H - 80, 50);
-    // "Kick me" hint
+    if (s5.doubleAttack) {
+      drawEmoji('🥢', s5.stuckX2 - 10, H - 80, 50);
+      drawEmoji('🥢', s5.stuckX2 + 10, H - 80, 50);
+    }
+    // Kick hint with counter
     if (Math.abs(s5.playerX - s5.stuckX) < 60) {
       const alpha = Math.sin(frameCount * 0.1) * 0.3 + 0.7;
-      drawText(t('space_attack'), s5.stuckX, H - 130, 16, `rgba(255,235,59,${alpha})`);
+      drawText(`SPACE x${s5.kicksNeeded - s5.kickCount}`, s5.stuckX, H - 130, 16, `rgba(255,235,59,${alpha})`);
     }
     // Stuck timer bar
-    const stPct = 1 - s5.stuckTimer / 90;
+    const stuckTime = s5.rage ? 45 : 60;
+    const stPct = 1 - s5.stuckTimer / stuckTime;
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.fillRect(s5.stuckX - 30, H - 60, 60, 5);
     ctx.fillStyle = '#ffeb3b';
@@ -1794,7 +1973,8 @@ function initStage(n) {
     case 1: initStage2(); break;
     case 2: initStage4(); break;
     case 3: initStage5(); break;
-    case 4: initStage3(); break;
+    case 4: initBonusGame(); break;
+    case 5: initStage3(); break;
   }
 }
 
@@ -1967,10 +2147,18 @@ function initBonusGame() {
     finished: false,
     beatCount: 0,
     started: false,
-    introTimer: 0
+    introTimer: 0,
+    spamMisses: 0,
+    lastMissTime: 0
   };
   bonusKickScheduled = [];
-  gameState = STATE.BONUS_INTRO;
+  // When called as a stage, use STAGE_INTRO flow; only use BONUS_INTRO for standalone
+  if (gameState === STATE.PLAYING || gameState === STATE.STAGE_INTRO) {
+    // Called from stage init - go straight to bonus intro to wait for space
+    gameState = STATE.BONUS_INTRO;
+  } else {
+    gameState = STATE.BONUS_INTRO;
+  }
 }
 
 function startBonusPlay() {
@@ -2058,6 +2246,8 @@ function updateBonus() {
       bonus.playerAnimTimer = 20;
       bonus.flashTimer = 10;
       bonus.flashColor = 'rgba(255,0,0,0.2)';
+      takeDamage('rhythm');
+      if (hp <= 0) return;
     }
   });
 
@@ -2078,18 +2268,46 @@ function updateBonus() {
         if (diff < 0.08) {
           bonus.perfects++;
           bonus.score += 100;
+          score += 100;
           bonus.feedbacks.push({ text: 'PERFECT!', x: target.targetX, y: target.y - 40, timer: 0, color: '#ffeb3b' });
         } else {
           bonus.oks++;
           bonus.score += 50;
+          score += 50;
           bonus.feedbacks.push({ text: 'OK!', x: target.targetX, y: target.y - 40, timer: 0, color: '#4caf50' });
         }
         bonus.streak++;
         bonus.maxStreak = Math.max(bonus.maxStreak, bonus.streak);
+        bonus.spamMisses = 0; // reset spam counter on hit
         bonus.explosions.push({ x: target.targetX, y: target.y, timer: 0, big: false });
         playPunchHit();
         bonus.playerAnim = 'punch';
         bonus.playerAnimTimer = 15;
+      } else {
+        // MISS PENALTY: pressed Space with no valid target
+        bonus.score -= 50;
+        score -= 50;
+        bonus.misses++;
+        bonus.streak = 0;
+        bonus.feedbacks.push({ text: 'MISS!', x: 150, y: 280, timer: 0, color: '#f44336' });
+        playMissSound();
+        bonus.playerAnim = 'flinch';
+        bonus.playerAnimTimer = 15;
+        bonus.flashTimer = 8;
+        bonus.flashColor = 'rgba(255,0,0,0.2)';
+        // Spam detection: 3 consecutive misses within 1 second = lose 1 HP
+        const now = bonus.elapsed;
+        if (now - bonus.lastMissTime < 1.0) {
+          bonus.spamMisses++;
+        } else {
+          bonus.spamMisses = 1;
+        }
+        bonus.lastMissTime = now;
+        if (bonus.spamMisses >= 3) {
+          takeDamage('rhythm');
+          bonus.spamMisses = 0;
+          if (hp <= 0) return; // death handled by takeDamage
+        }
       }
     }
   }
@@ -2143,10 +2361,12 @@ function updateBonus() {
   // Update flash
   if (bonus.flashTimer > 0) bonus.flashTimer--;
 
-  // Check if game is over
+  // Check if beat map is complete
   if (bonus.elapsed > 42) {
     bonus.finished = true;
-    gameState = STATE.BONUS_RESULT;
+    if (hp > 0) {
+      advanceStage();
+    }
   }
 }
 
@@ -2258,7 +2478,11 @@ function drawBonus() {
   // HUD
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.fillRect(0, 0, W, 45);
-  drawText(`${t('score')}: ${bonus.score}`, 120, 22, 18, '#ffeb3b', 'left');
+  // HP hearts
+  for (let i = 0; i < 3; i++) {
+    drawEmoji(i < hp ? '❤️' : '🖤', 30 + i * 35, 22, 22);
+  }
+  drawText(`${t('score')}: ${score}`, 150, 22, 18, '#ffeb3b', 'left');
   drawText(`${t('bonus_streak')}: ${bonus.streak}`, W - 120, 22, 16, '#ff9800', 'right');
 
   // Beat progress bar
@@ -2330,7 +2554,8 @@ function update() {
         case 1: updateStage2(); break;
         case 2: updateStage4(); break;
         case 3: updateStage5(); break;
-        case 4: updateStage3(); break;
+        case 4: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 5: updateStage3(); break;
       }
       break;
     case STATE.BONUS_INTRO:
@@ -2358,7 +2583,8 @@ function draw() {
         case 1: drawStage2(); break;
         case 2: drawStage4(); break;
         case 3: drawStage5(); break;
-        case 4: drawStage3(); break;
+        case 4: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 5: drawStage3(); break;
       }
       drawHUD();
       break;
@@ -2373,9 +2599,6 @@ function draw() {
       break;
     case STATE.BONUS:
       drawBonus();
-      break;
-    case STATE.BONUS_RESULT:
-      drawBonusResult();
       break;
   }
 }
