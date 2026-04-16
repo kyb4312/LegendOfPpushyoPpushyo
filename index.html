@@ -88,7 +88,7 @@ const STATE = {
   PAUSED: 'paused'
 };
 let helpPage = 0;
-const HELP_PAGES = 8;
+const HELP_PAGES = 9;
 
 let gameState = STATE.TITLE;
 let currentStage = 0;
@@ -150,6 +150,7 @@ const STAGES = [
   { nameKey: 's1_name', subKey: 's1_sub' },
   { nameKey: 's2_name', subKey: 's2_sub' },
   { nameKey: 's3_name', subKey: 's3_sub' },
+  { nameKey: 's_bal_name', subKey: 's_bal_sub' },
   { nameKey: 's4_name', subKey: 's4_sub' },
   { nameKey: 's6_name', subKey: 's6_sub' },
   { nameKey: 's5_name', subKey: 's5_sub' }
@@ -163,7 +164,8 @@ const ENDINGS = [
   { id: 'haechi', titleKey: 'e_haechi_title', descKey: 'e_haechi_desc', emoji: '🦁' },
   { id: 'legend', titleKey: 'e_legend_title', descKey: 'e_legend_desc', emoji: '🏆' },
   { id: 'japan', titleKey: 'e_japan_title', descKey: 'e_japan_desc', emoji: '🇯🇵' },
-  { id: 'rhythm', titleKey: 'e_rhythm_title', descKey: 'e_rhythm_desc', emoji: '🎵' }
+  { id: 'rhythm', titleKey: 'e_rhythm_title', descKey: 'e_rhythm_desc', emoji: '🎵' },
+  { id: 'balance', titleKey: 'e_balance_title', descKey: 'e_balance_desc', emoji: '📦' }
 ];
 
 // --- INPUT ---
@@ -235,7 +237,7 @@ function handleClick(e) {
       gameState = STATE.HELP;
     }
     // Dev stage select buttons
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 7; i++) {
       const bx = 100 + i * 55, by = 580, bw = 45, bh = 18;
       if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
         startAtStage(i);
@@ -461,11 +463,11 @@ function drawTitle() {
 
   // Ending collection
   const found = Object.keys(endingsFound).length;
-  drawText(`${found} / 8 ${t('ending_collect')}`, W / 2, 490, 14, '#9e9e9e');
+  drawText(`${found} / 9 ${t('ending_collect')}`, W / 2, 490, 14, '#9e9e9e');
 
   // Ending icons
-  for (let i = 0; i < 8; i++) {
-    const ex = W / 2 - 122.5 + i * 35;
+  for (let i = 0; i < 9; i++) {
+    const ex = W / 2 - 140 + i * 35;
     const ey = 515;
     if (endingsFound[ENDINGS[i].id]) {
       drawEmoji(ENDINGS[i].emoji, ex, ey, 22);
@@ -479,7 +481,7 @@ function drawTitle() {
 
   // Dev stage select buttons
   drawText(t('dev'), 70, 590, 10, '#555');
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 7; i++) {
     const dbx = 100 + i * 55, dby = 580, dbw = 45, dbh = 18;
     const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
     ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
@@ -497,6 +499,7 @@ const STAGE_CONTROLS = [
   { icon: '⌨️', text: '← → ↑ ↓ / WASD' },
   { icon: '🖱️', text: 'Mouse Drag (⚡Energy)' },
   { icon: '⌨️', text: 'A  S  D  F' },
+  { icon: '⌨️', text: '← →  Balance' },
   { icon: '⌨️', text: '← →  +  Space ×2~3' },
   { icon: '⌨️', text: 'Space (Timing)  /  Hold+Release' },
   { icon: '⌨️', text: 'Hold Space = Move  /  Release = Stop' },
@@ -574,7 +577,7 @@ function startAtStage(n) {
 
 function advanceStage() {
   currentStage++;
-  if (currentStage >= 6) {
+  if (currentStage >= 7) {
     // Victory!
     triggerEnding('victory');
     return;
@@ -599,9 +602,10 @@ function triggerEnding(type) {
     else if (deathStage === 0 && deathCause === 'pigeon') endingIndex = 3; // pigeon
     else if (deathStage === 1) endingIndex = 0; // archer
     else if (deathStage === 2) endingIndex = 2; // dessert (coffee stage)
-    else if (deathStage === 3) endingIndex = 0; // default to archer for boss
-    else if (deathStage === 4) endingIndex = 7; // rhythm
-    else if (deathStage === 5) endingIndex = 4; // haechi
+    else if (deathStage === 3) endingIndex = 8; // balance
+    else if (deathStage === 4) endingIndex = 0; // default to archer for boss
+    else if (deathStage === 5) endingIndex = 7; // rhythm
+    else if (deathStage === 6) endingIndex = 4; // haechi
   } else if (type === 'victory') {
     if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
     else endingIndex = 5; // legend
@@ -850,7 +854,50 @@ function drawHelp() {
       drawText(t('help_s3_clear'), W / 2, 490, 16, '#8d6e63');
       break;
 
-    case 4: // S4
+    case 4: // S4 Balance Game
+      drawText(t('help_bal_title'), W / 2, 40, 28, '#9c27b0');
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
+
+      drawText(t('help_bal_controls'), W / 2, 100, 16, '#ce93d8');
+      drawText(t('help_bal_desc'), W / 2, 130, 14, '#bdbdbd');
+
+      drawText(t('help_bal_stack'), W / 2, 180, 16, '#ffeb3b');
+      drawText(t('help_bal_stack1'), W / 2, 210, 14, '#bdbdbd');
+      drawText(t('help_bal_stack2'), W / 2, 235, 14, '#bdbdbd');
+
+      // Stack illustration
+      drawEmoji('🌶️', W / 2, 280, 24);
+      drawEmoji('☕', W / 2 - 5, 255, 24);
+      drawEmoji('📷', W / 2 + 3, 230, 24);
+      drawEmoji('🕊️', W / 2 - 2, 205, 24);
+      drawPlayer(W / 2, 305, 32);
+
+      drawText(t('help_bal_tilt'), W / 2, 350, 16, '#ff9800');
+      drawText(t('help_bal_tilt1'), W / 2, 380, 14, '#bdbdbd');
+      drawText(t('help_bal_tilt2'), W / 2, 405, 14, '#ef5350');
+
+      // Tilt meter illustration
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(200, 440, 400, 12);
+      ctx.fillStyle = '#4caf50';
+      ctx.fillRect(370, 440, 60, 12);
+      ctx.fillStyle = '#ff9800';
+      ctx.fillRect(300, 440, 70, 12);
+      ctx.fillRect(430, 440, 70, 12);
+      ctx.fillStyle = '#f44336';
+      ctx.fillRect(200, 440, 100, 12);
+      ctx.fillRect(500, 440, 100, 12);
+      // Indicator dot
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(400, 446, 6, 0, Math.PI * 2); ctx.fill();
+
+      drawText(t('help_bal_clear'), W / 2, 490, 16, '#9c27b0');
+      ctx.fillStyle = 'rgba(156,39,176,0.5)';
+      ctx.fillRect(200, 510, 400, 8);
+      break;
+
+    case 5: // S5
       drawText(t('help_s4_title'), W / 2, 40, 28, '#f44336');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -881,7 +928,7 @@ function drawHelp() {
       drawText(t('help_s4_win'), W / 2, 515, 16, '#4caf50');
       break;
 
-    case 5: // S5 Rhythm Karate
+    case 6: // S6 Rhythm Karate
       drawText(t('help_s6_title'), W / 2, 40, 28, '#ff9800');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -906,7 +953,7 @@ function drawHelp() {
       drawText(t('help_s6_clear'), W / 2, 520, 16, '#ff9800');
       break;
 
-    case 6: // S6 Haechi
+    case 7: // S7 Haechi
       drawText(t('help_s5_title_s6'), W / 2, 40, 28, '#9c27b0');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -946,14 +993,14 @@ function drawHelp() {
       drawText(t('help_s5_progress'), W / 2, 520, 12, '#9e9e9e');
       break;
 
-    case 7: // Ending list
+    case 8: // Ending list
       drawText(t('help_endlist_title'), W / 2, 40, 28, '#ffd54f');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
 
       drawText(t('help_endlist_desc'), W / 2, 100, 16, '#ffab91');
 
-      const endingCondKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm'];
+      const endingCondKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance'];
 
       for (let i = 0; i < ENDINGS.length; i++) {
         const ey = 130 + i * 50;
@@ -2067,6 +2114,267 @@ function drawStage5() {
 }
 
 // ============================================================
+// BALANCE STACKING GAME
+// ============================================================
+let bal = {};
+function initBalance() {
+  bal = {
+    tilt: 0,
+    tiltSpeed: 0,
+    stack: [],
+    timer: 0,
+    duration: 900, // 15 seconds at 60fps
+    spawnTimer: 0,
+    invincible: 0,
+    dropAnim: [],
+    nextItem: null,
+    dropWarning: 0,
+    shakeTimer: 0
+  };
+}
+
+function updateBalance() {
+  bal.timer++;
+  if (bal.invincible > 0) bal.invincible--;
+  if (bal.shakeTimer > 0) bal.shakeTimer--;
+
+  // Controls
+  if (keys['ArrowLeft'] || keys['KeyA']) {
+    bal.tiltSpeed -= 0.04;
+  }
+  if (keys['ArrowRight'] || keys['KeyD']) {
+    bal.tiltSpeed += 0.04;
+  }
+
+  // Physics: gravity pulls toward lean direction
+  const gravityMult = 1 + bal.stack.length * 0.15;
+  bal.tiltSpeed += bal.tilt * 0.003 * gravityMult;
+
+  // Friction / damping
+  bal.tiltSpeed *= 0.95;
+
+  // Apply velocity
+  bal.tilt += bal.tiltSpeed;
+
+  // Clamp tilt
+  bal.tilt = Math.max(-1.5, Math.min(1.5, bal.tilt));
+
+  // Item spawning: every 2 seconds (120 frames)
+  bal.spawnTimer++;
+  if (bal.nextItem === null && bal.spawnTimer >= 90) {
+    // Prepare warning
+    const itemEmojis = ['🌶️', '☕', '📷', '🕊️', '🎯'];
+    bal.nextItem = itemEmojis[Math.floor(Math.random() * itemEmojis.length)];
+    bal.dropWarning = 30;
+  }
+
+  if (bal.nextItem !== null) {
+    bal.dropWarning--;
+    if (bal.dropWarning <= 0) {
+      // Drop item onto stack
+      bal.stack.push({ emoji: bal.nextItem, wobble: 0 });
+      bal.nextItem = null;
+      bal.spawnTimer = 0;
+      score += 25;
+    }
+  }
+
+  // Items falling off when tilt is too extreme
+  if (Math.abs(bal.tilt) > 0.8 && bal.stack.length > 0) {
+    // Higher chance the more tilted
+    const fallChance = (Math.abs(bal.tilt) - 0.8) * 0.08;
+    if (Math.random() < fallChance) {
+      const fallenItem = bal.stack.pop();
+      bal.dropAnim.push({
+        emoji: fallenItem.emoji,
+        x: W / 2 + bal.tilt * 80 * (1 + bal.stack.length * 0.3),
+        y: H - 100 - (bal.stack.length + 1) * 35,
+        vx: bal.tilt * 5,
+        vy: -2,
+        timer: 0
+      });
+      score -= 50;
+      bal.shakeTimer = 8;
+    }
+  }
+
+  // Rapid fall and damage when extremely tilted
+  if (Math.abs(bal.tilt) > 1.2 && bal.stack.length > 0) {
+    // Drop multiple items quickly
+    const fallenItem = bal.stack.pop();
+    bal.dropAnim.push({
+      emoji: fallenItem.emoji,
+      x: W / 2 + bal.tilt * 80 * (1 + bal.stack.length * 0.3),
+      y: H - 100 - (bal.stack.length + 1) * 35,
+      vx: bal.tilt * 8,
+      vy: -3,
+      timer: 0
+    });
+    score -= 50;
+    bal.shakeTimer = 12;
+
+    // Take damage if all items fell while extremely tilted
+    if (bal.stack.length === 0 && bal.invincible <= 0) {
+      takeDamage('balance');
+      bal.invincible = 90;
+    }
+  }
+
+  // Update falling item animations
+  bal.dropAnim = bal.dropAnim.filter(d => {
+    d.timer++;
+    d.x += d.vx;
+    d.vy += 0.5; // gravity
+    d.y += d.vy;
+    return d.timer < 60;
+  });
+
+  // Stage complete
+  if (bal.timer >= bal.duration && hp > 0) {
+    advanceStage();
+  }
+}
+
+function drawBalance() {
+  // Background: circus/carnival gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#4a148c');
+  grad.addColorStop(0.4, '#7b1fa2');
+  grad.addColorStop(0.7, '#ce93d8');
+  grad.addColorStop(1, '#f3e5f5');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Decorative bunting at top
+  for (let i = 0; i < 10; i++) {
+    const bx = i * 90 + 40;
+    const by = 70 + Math.sin(i * 0.8 + frameCount * 0.02) * 5;
+    const colors = ['#f44336', '#ffeb3b', '#4caf50', '#2196f3', '#ff9800'];
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.beginPath();
+    ctx.moveTo(bx - 15, by - 10);
+    ctx.lineTo(bx + 15, by - 10);
+    ctx.lineTo(bx, by + 15);
+    ctx.closePath();
+    ctx.fill();
+  }
+  // Bunting string
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, 60);
+  for (let i = 0; i < 10; i++) {
+    const bx = i * 90 + 40;
+    const by = 60 + Math.sin(i * 0.8 + frameCount * 0.02) * 5;
+    ctx.lineTo(bx, by);
+  }
+  ctx.lineTo(W, 60);
+  ctx.stroke();
+
+  // Screen shake
+  if (bal.shakeTimer > 0) {
+    ctx.save();
+    ctx.translate(Math.random() * 4 - 2, Math.random() * 4 - 2);
+  }
+
+  // Ground
+  ctx.fillStyle = '#5d4037';
+  ctx.fillRect(0, H - 40, W, 40);
+  ctx.fillStyle = '#8d6e63';
+  for (let x = 0; x < W; x += 50) {
+    ctx.fillRect(x, H - 40, 25, 3);
+  }
+
+  // Player and stack
+  const baseX = W / 2;
+  const baseY = H - 80;
+  const tiltPx = bal.tilt * 80;
+
+  // Player
+  const blink = bal.invincible > 0 && Math.floor(bal.invincible / 4) % 2;
+  if (!blink) drawPlayer(baseX + tiltPx * 0.3, baseY, 36);
+
+  // Stack items (from bottom to top)
+  bal.stack.forEach((item, i) => {
+    const heightOffset = (i + 1) * 35;
+    const wobbleOffset = tiltPx * (1 + i * 0.3);
+    const ix = baseX + wobbleOffset;
+    const iy = baseY - heightOffset;
+    // Wobble animation on higher items
+    const wobble = Math.sin(frameCount * 0.05 + i * 1.2) * (i + 1) * 0.5;
+    drawEmoji(item.emoji, ix + wobble, iy, 28);
+  });
+
+  // Incoming item warning
+  if (bal.nextItem !== null) {
+    const warningX = baseX + tiltPx * (1 + bal.stack.length * 0.3);
+    const warningY = baseY - (bal.stack.length + 1) * 35 - 50;
+    const warningAlpha = 0.5 + Math.sin(frameCount * 0.2) * 0.3;
+    ctx.globalAlpha = warningAlpha;
+    drawEmoji(bal.nextItem, warningX, warningY, 24);
+    drawText('⬇️', warningX, warningY + 25, 16, '#ffeb3b');
+    ctx.globalAlpha = 1;
+  }
+
+  // Falling items animation
+  bal.dropAnim.forEach(d => {
+    const alpha = 1 - d.timer / 60;
+    ctx.globalAlpha = alpha;
+    drawEmoji(d.emoji, d.x, d.y, 24);
+    // Show impact when hitting ground
+    if (d.y > H - 60 && d.timer < 30) {
+      drawEmoji('💥', d.x, H - 50, 20);
+    }
+    ctx.globalAlpha = 1;
+  });
+
+  if (bal.shakeTimer > 0) ctx.restore();
+
+  // Tilt indicator meter at bottom
+  const meterX = 150, meterY = H - 25, meterW = W - 300, meterH = 12;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.roundRect(meterX, meterY, meterW, meterH, 4);
+  ctx.fill();
+
+  // Danger zones (red at edges)
+  const zoneW = meterW * 0.2;
+  ctx.fillStyle = 'rgba(244,67,54,0.6)';
+  ctx.fillRect(meterX, meterY, zoneW, meterH);
+  ctx.fillRect(meterX + meterW - zoneW, meterY, zoneW, meterH);
+
+  // Warning zones (orange)
+  ctx.fillStyle = 'rgba(255,152,0,0.4)';
+  ctx.fillRect(meterX + zoneW, meterY, zoneW, meterH);
+  ctx.fillRect(meterX + meterW - zoneW * 2, meterY, zoneW, meterH);
+
+  // Safe zone (green center)
+  ctx.fillStyle = 'rgba(76,175,80,0.4)';
+  ctx.fillRect(meterX + zoneW * 2, meterY, meterW - zoneW * 4, meterH);
+
+  // Tilt indicator dot
+  const dotPos = meterX + meterW / 2 + (bal.tilt / 1.5) * (meterW / 2);
+  const clampedDot = Math.max(meterX + 6, Math.min(meterX + meterW - 6, dotPos));
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(clampedDot, meterY + meterH / 2, 7, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Stack count
+  drawText(`📦 x${bal.stack.length}`, W - 80, 70, 16, '#fff', 'center');
+
+  // Progress bar
+  const prog = bal.timer / bal.duration;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(50, H - 15, W - 100, 8);
+  ctx.fillStyle = '#9c27b0';
+  ctx.fillRect(50, H - 15, (W - 100) * prog, 8);
+}
+
+// ============================================================
 // STAGE INIT ROUTER
 // ============================================================
 function initStage(n) {
@@ -2074,9 +2382,10 @@ function initStage(n) {
     case 0: initStage1(); break;
     case 1: initStage2(); break;
     case 2: initStage4(); break;
-    case 3: initStage5(); break;
-    case 4: initBonusGame(); break;
-    case 5: initStage3(); break;
+    case 3: initBalance(); break;
+    case 4: initStage5(); break;
+    case 5: initBonusGame(); break;
+    case 6: initStage3(); break;
   }
 }
 
@@ -2655,9 +2964,10 @@ function update() {
         case 0: updateStage1(); break;
         case 1: updateStage2(); break;
         case 2: updateStage4(); break;
-        case 3: updateStage5(); break;
-        case 4: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 5: updateStage3(); break;
+        case 3: updateBalance(); break;
+        case 4: updateStage5(); break;
+        case 5: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 6: updateStage3(); break;
       }
       break;
     case STATE.BONUS_INTRO:
@@ -2684,9 +2994,10 @@ function draw() {
         case 0: drawStage1(); break;
         case 1: drawStage2(); break;
         case 2: drawStage4(); break;
-        case 3: drawStage5(); break;
-        case 4: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 5: drawStage3(); break;
+        case 3: drawBalance(); break;
+        case 4: drawStage5(); break;
+        case 5: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 6: drawStage3(); break;
       }
       drawHUD();
       break;

@@ -260,9 +260,9 @@
     "en": "What is PPushyo Survival?"
   },
   "help_what_desc": {
-    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 5개 스테이지를 생존하는 미니게임 모음입니다.",
-    "jp": "プレイヤーがプショプショ(お菓子)の立場になり、壊されたり食べられたりしないよう5つのステージを生き残るミニゲーム集です。",
-    "en": "You play as PPushyo (a snack), surviving 5 stages without getting crushed or eaten. A mini-game collection!"
+    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 7개 스테이지를 생존하는 미니게임 모음입니다.",
+    "jp": "プレイヤーがプショプショ(お菓子)の立場になり、壊されたり食べられたりしないよう7つのステージを生き残るミニゲーム集です。",
+    "en": "You play as PPushyo (a snack), surviving 7 stages without getting crushed or eaten. A mini-game collection!"
   },
   "help_hp": {
     "ko": "❤️ 체력 시스템",
@@ -305,9 +305,9 @@
     "en": "🏆 Endings"
   },
   "help_endings1": {
-    "ko": "총 8개의 엔딩 (배드 6 + 굿 1 + 히든 1)",
-    "jp": "全8エンディング（バッド6+グッド1+隠し1）",
-    "en": "8 total endings (6 bad + 1 good + 1 hidden)"
+    "ko": "총 9개의 엔딩 (배드 7 + 굿 1 + 히든 1)",
+    "jp": "全9エンディング（バッド7+グッド1+隠し1）",
+    "en": "9 total endings (7 bad + 1 good + 1 hidden)"
   },
   "help_endings2": {
     "ko": "사망 원인에 따라 다른 엔딩이 표시됩니다",
@@ -520,9 +520,9 @@
     "en": "Survive 20 seconds to clear"
   },
   "help_s4_title": {
-    "ko": "S4. 거대한 젓가락 보스",
-    "jp": "S4. 巨大な箸ボス",
-    "en": "S4. Chopstick Boss"
+    "ko": "S5. 거대한 젓가락 보스",
+    "jp": "S5. 巨大な箸ボス",
+    "en": "S5. Chopstick Boss"
   },
   "help_s4_controls": {
     "ko": "← →  이동  |  Space  공격",
@@ -605,9 +605,9 @@
     "en": "S5. Haechi Guard"
   },
   "help_s5_title_s6": {
-    "ko": "S6. 해치상 경비대",
-    "jp": "S6. 獬豸像の警備隊",
-    "en": "S6. Haechi Guard"
+    "ko": "S7. 해치상 경비대",
+    "jp": "S7. 獬豸像の警備隊",
+    "en": "S7. Haechi Guard"
   },
   "help_s5_controls": {
     "ko": "Space 꾹 누르기 = 전진 | 떼기 = 멈춤",
@@ -705,9 +705,9 @@
     "en": "Died to pigeon in S1"
   },
   "e_cond_haechi": {
-    "ko": "S6에서 해치상에 사망",
-    "jp": "S6で獬豸[カイチ]像で死亡",
-    "en": "Died to Haechi in S6"
+    "ko": "S7에서 해치상에 사망",
+    "jp": "S7で獬豸[カイチ]像で死亡",
+    "en": "Died to Haechi in S7"
   },
   "e_cond_legend": {
     "ko": "전 스테이지 클리어",
@@ -800,14 +800,14 @@
     "en": "PPushyo lost the beat and crumbled to the rhythm..."
   },
   "e_cond_rhythm": {
-    "ko": "S5에서 리듬 미스로 사망",
-    "jp": "S5でリズムミスで死亡",
-    "en": "Died to rhythm misses in S5"
+    "ko": "S6에서 리듬 미스로 사망",
+    "jp": "S6でリズムミスで死亡",
+    "en": "Died to rhythm misses in S6"
   },
   "help_s6_title": {
-    "ko": "S5. 뿌셔뿌셔 리듬 카라테",
-    "jp": "S5. プシェプシェリズム空手",
-    "en": "S5. Rhythm Karate"
+    "ko": "S6. 뿌셔뿌셔 리듬 카라테",
+    "jp": "S6. プシェプシェリズム空手",
+    "en": "S6. Rhythm Karate"
   },
   "help_s6_controls": {
     "ko": "SPACE = 펀치!  꾹 누르고 떼기 = 어퍼컷!",
@@ -878,5 +878,80 @@
     "ko": "비트맵이 끝나면 클리어!",
     "jp": "ビートマップ終了でクリア！",
     "en": "Clear when beat map ends!"
+  },
+  "s_bal_name": {
+    "ko": "균형 잡기",
+    "jp": "バランスゲーム",
+    "en": "Balance Game"
+  },
+  "s_bal_sub": {
+    "ko": "떨어뜨리지 마!",
+    "jp": "落とすな！",
+    "en": "Don't drop them!"
+  },
+  "e_balance_title": {
+    "ko": "택배 사고",
+    "jp": "宅配事故",
+    "en": "Delivery Disaster"
+  },
+  "e_balance_desc": {
+    "ko": "물건을 떨어뜨린 뿌셔뿌셔는 택배 기사의 꿈을 접었습니다...",
+    "jp": "荷物を落としたプシェプシェは配達員の夢を諦めました...",
+    "en": "PPushyo dropped everything and gave up on being a delivery driver..."
+  },
+  "e_cond_balance": {
+    "ko": "S4에서 균형 실패로 사망",
+    "jp": "S4でバランス失敗で死亡",
+    "en": "Died from balance failure in S4"
+  },
+  "help_bal_title": {
+    "ko": "S4. 균형 잡기",
+    "jp": "S4. バランスゲーム",
+    "en": "S4. Balance Game"
+  },
+  "help_bal_controls": {
+    "ko": "← →  좌우로 기울기 조절!",
+    "jp": "← →  左右に傾きを調整！",
+    "en": "← →  Tilt left and right!"
+  },
+  "help_bal_desc": {
+    "ko": "머리 위에 쌓이는 물건의 균형을 잡으세요!",
+    "jp": "頭の上に積まれるアイテムのバランスを取ろう！",
+    "en": "Balance items stacking on your head!"
+  },
+  "help_bal_stack": {
+    "ko": "아이템 쌓기",
+    "jp": "アイテム積み上げ",
+    "en": "Item Stacking"
+  },
+  "help_bal_stack1": {
+    "ko": "2초마다 새 아이템이 떨어집니다",
+    "jp": "2秒ごとに新しいアイテムが落下",
+    "en": "New item drops every 2 seconds"
+  },
+  "help_bal_stack2": {
+    "ko": "아이템이 많을수록 균형잡기가 어려워집니다!",
+    "jp": "アイテムが多いほどバランスが難しく！",
+    "en": "More items = harder to balance!"
+  },
+  "help_bal_tilt": {
+    "ko": "기울기 시스템",
+    "jp": "傾きシステム",
+    "en": "Tilt System"
+  },
+  "help_bal_tilt1": {
+    "ko": "기울기가 너무 커지면 아이템이 떨어집니다",
+    "jp": "傾きが大きすぎるとアイテムが落ちます",
+    "en": "Too much tilt makes items fall"
+  },
+  "help_bal_tilt2": {
+    "ko": "떨어진 아이템마다 -50점!",
+    "jp": "落ちたアイテムごとに-50点！",
+    "en": "-50 points per dropped item!"
+  },
+  "help_bal_clear": {
+    "ko": "15초 생존하면 클리어!",
+    "jp": "15秒生存でクリア！",
+    "en": "Survive 15 seconds to clear!"
   }
 }
