@@ -65,7 +65,7 @@ const STATE = {
   BONUS_RESULT: 'bonus_result'
 };
 let helpPage = 0;
-const HELP_PAGES = 7;
+const HELP_PAGES = 8;
 
 let gameState = STATE.TITLE;
 let currentStage = 0;
@@ -91,6 +91,7 @@ const STAGES = [
   { nameKey: 's2_name', subKey: 's2_sub' },
   { nameKey: 's3_name', subKey: 's3_sub' },
   { nameKey: 's4_name', subKey: 's4_sub' },
+  { nameKey: 's6_name', subKey: 's6_sub' },
   { nameKey: 's5_name', subKey: 's5_sub' }
 ];
 
@@ -101,7 +102,8 @@ const ENDINGS = [
   { id: 'pigeon', titleKey: 'e_pigeon_title', descKey: 'e_pigeon_desc', emoji: '🕊️' },
   { id: 'haechi', titleKey: 'e_haechi_title', descKey: 'e_haechi_desc', emoji: '🦁' },
   { id: 'legend', titleKey: 'e_legend_title', descKey: 'e_legend_desc', emoji: '🏆' },
-  { id: 'japan', titleKey: 'e_japan_title', descKey: 'e_japan_desc', emoji: '🇯🇵' }
+  { id: 'japan', titleKey: 'e_japan_title', descKey: 'e_japan_desc', emoji: '🇯🇵' },
+  { id: 'rhythm', titleKey: 'e_rhythm_title', descKey: 'e_rhythm_desc', emoji: '🎵' }
 ];
 
 // --- INPUT ---
@@ -172,12 +174,12 @@ function handleClick(e) {
       helpPage = 0;
       gameState = STATE.HELP;
     }
-    // Bonus button
+    // Bonus button (quick access to rhythm stage)
     if (cx > 300 && cx < 500 && cy > 460 && cy < 500) {
-      initBonusGame();
+      startAtStage(4);
     }
     // Dev stage select buttons
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       const bx = 100 + i * 55, by = 580, bw = 45, bh = 18;
       if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
         startAtStage(i);
@@ -198,11 +200,6 @@ function handleClick(e) {
     }
   } else if (gameState === STATE.ENDING) {
     // Restart button
-    if (cx > 250 && cx < 550 && cy > 480 && cy < 540) {
-      gameState = STATE.TITLE;
-    }
-  } else if (gameState === STATE.BONUS_RESULT) {
-    // Back to title button
     if (cx > 250 && cx < 550 && cy > 480 && cy < 540) {
       gameState = STATE.TITLE;
     }
@@ -420,11 +417,11 @@ function drawTitle() {
 
   // Ending collection
   const found = Object.keys(endingsFound).length;
-  drawText(`${found} / 7 ${t('ending_collect')}`, W / 2, 520, 14, '#9e9e9e');
+  drawText(`${found} / 8 ${t('ending_collect')}`, W / 2, 520, 14, '#9e9e9e');
 
   // Ending icons
-  for (let i = 0; i < 7; i++) {
-    const ex = W / 2 - 105 + i * 35;
+  for (let i = 0; i < 8; i++) {
+    const ex = W / 2 - 122.5 + i * 35;
     const ey = 545;
     if (endingsFound[ENDINGS[i].id]) {
       drawEmoji(ENDINGS[i].emoji, ex, ey, 22);
@@ -438,7 +435,7 @@ function drawTitle() {
 
   // Dev stage select buttons
   drawText(t('dev'), 70, 590, 10, '#555');
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 6; i++) {
     const dbx = 100 + i * 55, dby = 580, dbw = 45, dbh = 18;
     const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
     ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
@@ -502,7 +499,7 @@ function startAtStage(n) {
 
 function advanceStage() {
   currentStage++;
-  if (currentStage >= 5) {
+  if (currentStage >= 6) {
     // Victory!
     triggerEnding('victory');
     return;
@@ -528,7 +525,8 @@ function triggerEnding(type) {
     else if (deathStage === 1) endingIndex = 0; // archer
     else if (deathStage === 2) endingIndex = 2; // dessert (coffee stage)
     else if (deathStage === 3) endingIndex = 0; // default to archer for boss
-    else if (deathStage === 4) endingIndex = 4; // haechi
+    else if (deathStage === 4) endingIndex = 7; // rhythm
+    else if (deathStage === 5) endingIndex = 4; // haechi
   } else if (type === 'victory') {
     if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
     else endingIndex = 5; // legend
@@ -796,8 +794,33 @@ function drawHelp() {
       drawText(t('help_s4_win'), W / 2, 515, 16, '#4caf50');
       break;
 
-    case 5: // S5
-      drawText(t('help_s5_title'), W / 2, 40, 28, '#9c27b0');
+    case 5: // S5 Rhythm Karate
+      drawText(t('help_s6_title'), W / 2, 40, 28, '#ff9800');
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
+
+      drawText(t('help_s6_controls'), W / 2, 100, 16, '#ffb74d');
+      drawText(t('help_s6_desc'), W / 2, 130, 14, '#bdbdbd');
+
+      drawText(t('help_s6_normal'), W / 2, 180, 16, '#ffeb3b');
+      drawText(t('help_s6_normal1'), 160, 210, 14, '#e0e0e0', 'left');
+      drawText(t('help_s6_normal2'), 160, 235, 14, '#e0e0e0', 'left');
+
+      drawText(t('help_s6_combo'), W / 2, 280, 16, '#ff9800');
+      drawText(t('help_s6_combo1'), 160, 310, 14, '#e0e0e0', 'left');
+      drawText(t('help_s6_combo2'), 160, 335, 14, '#e0e0e0', 'left');
+
+      drawText(t('help_s6_judge'), W / 2, 380, 16, '#ffd54f');
+      drawText(t('help_s6_perfect'), 160, 405, 14, '#ffeb3b', 'left');
+      drawText(t('help_s6_ok'), 160, 430, 14, '#4caf50', 'left');
+      drawText(t('help_s6_miss'), 160, 455, 14, '#f44336', 'left');
+
+      drawText(t('help_s6_penalty'), W / 2, 495, 14, '#ef5350');
+      drawText(t('help_s6_clear'), W / 2, 520, 16, '#ff9800');
+      break;
+
+    case 6: // S6 Haechi
+      drawText(t('help_s5_title_s6'), W / 2, 40, 28, '#9c27b0');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
 
@@ -836,22 +859,22 @@ function drawHelp() {
       drawText(t('help_s5_progress'), W / 2, 520, 12, '#9e9e9e');
       break;
 
-    case 6: // Ending list
+    case 7: // Ending list
       drawText(t('help_endlist_title'), W / 2, 40, 28, '#ffd54f');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
 
       drawText(t('help_endlist_desc'), W / 2, 100, 16, '#ffab91');
 
-      const endingCondKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan'];
+      const endingCondKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm'];
 
       for (let i = 0; i < ENDINGS.length; i++) {
-        const ey = 140 + i * 55;
+        const ey = 130 + i * 50;
         const found = endingsFound[ENDINGS[i].id];
 
-        drawEmoji(ENDINGS[i].emoji, 100, ey, 24);
-        drawText(found ? t(ENDINGS[i].titleKey) : '???', 140, ey - 8, 16, found ? '#ffd54f' : '#616161', 'left');
-        drawText(found ? t(endingCondKeys[i]) : '???', 140, ey + 14, 13, found ? '#bdbdbd' : '#424242', 'left');
+        drawEmoji(ENDINGS[i].emoji, 100, ey, 22);
+        drawText(found ? t(ENDINGS[i].titleKey) : '???', 140, ey - 7, 15, found ? '#ffd54f' : '#616161', 'left');
+        drawText(found ? t(endingCondKeys[i]) : '???', 140, ey + 13, 12, found ? '#bdbdbd' : '#424242', 'left');
 
         if (found) {
           drawText('✓', 700, ey, 18, '#4caf50');
@@ -880,7 +903,7 @@ function initStage1() {
     spawnTimer: 0,
     scrollY: 0,
     timer: 0,
-    duration: 1800, // 30 seconds at 60fps
+    duration: 1200, // 20 seconds at 60fps
     invincible: 0,
     bgElements: []
   };
@@ -912,7 +935,7 @@ function updateStage1() {
 
   // Spawn obstacles
   s1.spawnTimer++;
-  if (s1.spawnTimer > 30) {
+  if (s1.spawnTimer > 20) {
     s1.spawnTimer = 0;
     const types = ['tourist', 'pigeon', 'camera'];
     const emojis = ['👣', '🕊️', '📷'];
@@ -922,7 +945,7 @@ function updateStage1() {
       y: -30,
       type: types[ti],
       emoji: emojis[ti],
-      speed: 2 + Math.random() * 3
+      speed: 3 + Math.random() * 4
     });
   }
 
@@ -1037,7 +1060,7 @@ function initStage2() {
     arrows: [],
     spawnTimer: 0,
     timer: 0,
-    duration: 1800,
+    duration: 1200,
     sliceTrail: [],
     combo: 0,
     comboTimer: 0,
@@ -1053,14 +1076,14 @@ function updateStage2() {
 
   // Spawn arrows
   s2.spawnTimer++;
-  const spawnRate = Math.max(20, 50 - Math.floor(s2.timer / 120));
+  const spawnRate = Math.max(12, 35 - Math.floor(s2.timer / 120) * 2);
   if (s2.spawnTimer >= spawnRate) {
     s2.spawnTimer = 0;
     const fromLeft = Math.random() > 0.5;
     s2.arrows.push({
       x: fromLeft ? -20 : W + 20,
       y: 100 + Math.random() * 350,
-      vx: (fromLeft ? 1 : -1) * (3 + Math.random() * 3),
+      vx: (fromLeft ? 1 : -1) * (4 + Math.random() * 4),
       vy: Math.random() * 2 - 1,
       alive: true,
       sliced: false,
@@ -1222,7 +1245,7 @@ function initStage3() {
     looking: false,
     lookTimer: 0,
     lookDuration: 120,
-    greenDuration: 180,
+    greenDuration: 200,
     phase: 'green', // green, transition, or red
     phaseTimer: 0,
     haechiAngle: 0,
@@ -1254,7 +1277,14 @@ function updateStage3() {
     if (s3.phaseTimer >= s3.greenDuration) {
       s3.phase = 'transition';
       s3.phaseTimer = 0;
-      s3.transitionDuration = 60 + Math.random() * 60;
+      // Dynamic transition duration based on progress
+      const progress = Math.min(1, s3.playerX / s3.targetX);
+      if (Math.random() < 0.15 * progress) {
+        // Fake-out: very fast transition (catch players off guard)
+        s3.transitionDuration = 30 + Math.random() * 20;
+      } else {
+        s3.transitionDuration = Math.max(40, (90 - progress * 40) + Math.random() * 40);
+      }
     }
   } else if (s3.phase === 'transition') {
     s3.looking = false;
@@ -1262,8 +1292,10 @@ function updateStage3() {
     if (s3.phaseTimer >= s3.transitionDuration) {
       s3.phase = 'red';
       s3.phaseTimer = 0;
-      s3.lookDuration = 60 + Math.random() * 120;
-      s3.greenDuration = 90 + Math.random() * 150;
+      const progress = Math.min(1, s3.playerX / s3.targetX);
+      s3.lookDuration = 40 + Math.random() * 80 + progress * 40;
+      // Green duration: starts long, gets shorter with progress
+      s3.greenDuration = Math.max(60, (200 - progress * 150) + Math.random() * (80 - progress * 60));
       s3.litChars = s3.chant.length;
     }
   } else {
@@ -1285,7 +1317,7 @@ function updateStage3() {
   // Player movement (hold space)
   s3.moving = keys['Space'];
   if (s3.moving) {
-    s3.playerX += 2;
+    s3.playerX += 2.5;
   }
 
   // Caught detection
@@ -1415,7 +1447,7 @@ function initStage4() {
     ],
     hitZoneY: H - 100,
     timer: 0,
-    duration: 1800,
+    duration: 1200,
     spawnTimer: 0,
     hitEffects: [],
     invincible: 0,
@@ -1429,14 +1461,14 @@ function updateStage4() {
 
   // Spawn cups
   s4.spawnTimer++;
-  const rate = Math.max(15, 40 - Math.floor(s4.timer / 120) * 2);
+  const rate = Math.max(8, 30 - Math.floor(s4.timer / 120) * 2);
   if (s4.spawnTimer >= rate) {
     s4.spawnTimer = 0;
     const laneIdx = Math.floor(Math.random() * 4);
     const types = [
-      { emoji: '🧋', speed: 2, name: 'latte' },
-      { emoji: '☕', speed: 3.5, name: 'americano' },
-      { emoji: '🧊', speed: 5, name: 'iced' }
+      { emoji: '🧋', speed: 3, name: 'latte' },
+      { emoji: '☕', speed: 5, name: 'americano' },
+      { emoji: '🧊', speed: 7, name: 'iced' }
     ];
     const t = types[Math.floor(Math.random() * types.length)];
     s4.lanes[laneIdx].cups.push({
@@ -1630,7 +1662,7 @@ function updateStage5() {
 
   switch (s5.phase) {
     case 'idle':
-      if (s5.attackTimer > 90) {
+      if (s5.attackTimer > 60) {
         s5.phase = 'telegraph';
         s5.attackTimer = 0;
         s5.shadowX = s5.playerX + (Math.random() - 0.5) * 100; // predict near player
@@ -1639,8 +1671,8 @@ function updateStage5() {
       break;
 
     case 'telegraph':
-      s5.shadowAlpha = Math.min(0.8, s5.shadowAlpha + 0.02);
-      if (s5.attackTimer > 60) {
+      s5.shadowAlpha = Math.min(0.8, s5.shadowAlpha + 0.03);
+      if (s5.attackTimer > 40) {
         s5.phase = 'strike';
         s5.attackTimer = 0;
       }
@@ -1679,7 +1711,7 @@ function updateStage5() {
         s5.phase = 'idle';
         s5.attackTimer = 0;
       }
-      if (s5.stuckTimer > 90) {
+      if (s5.stuckTimer > 60) {
         s5.phase = 'idle';
         s5.attackTimer = 0;
       }
@@ -1762,7 +1794,7 @@ function drawStage5() {
       drawText(t('space_attack'), s5.stuckX, H - 130, 16, `rgba(255,235,59,${alpha})`);
     }
     // Stuck timer bar
-    const stPct = 1 - s5.stuckTimer / 90;
+    const stPct = 1 - s5.stuckTimer / 60;
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.fillRect(s5.stuckX - 30, H - 60, 60, 5);
     ctx.fillStyle = '#ffeb3b';
@@ -1794,7 +1826,8 @@ function initStage(n) {
     case 1: initStage2(); break;
     case 2: initStage4(); break;
     case 3: initStage5(); break;
-    case 4: initStage3(); break;
+    case 4: initBonusGame(); break;
+    case 5: initStage3(); break;
   }
 }
 
@@ -1967,10 +2000,18 @@ function initBonusGame() {
     finished: false,
     beatCount: 0,
     started: false,
-    introTimer: 0
+    introTimer: 0,
+    spamMisses: 0,
+    lastMissTime: 0
   };
   bonusKickScheduled = [];
-  gameState = STATE.BONUS_INTRO;
+  // When called as a stage, use STAGE_INTRO flow; only use BONUS_INTRO for standalone
+  if (gameState === STATE.PLAYING || gameState === STATE.STAGE_INTRO) {
+    // Called from stage init - go straight to bonus intro to wait for space
+    gameState = STATE.BONUS_INTRO;
+  } else {
+    gameState = STATE.BONUS_INTRO;
+  }
 }
 
 function startBonusPlay() {
@@ -2078,18 +2119,46 @@ function updateBonus() {
         if (diff < 0.08) {
           bonus.perfects++;
           bonus.score += 100;
+          score += 100;
           bonus.feedbacks.push({ text: 'PERFECT!', x: target.targetX, y: target.y - 40, timer: 0, color: '#ffeb3b' });
         } else {
           bonus.oks++;
           bonus.score += 50;
+          score += 50;
           bonus.feedbacks.push({ text: 'OK!', x: target.targetX, y: target.y - 40, timer: 0, color: '#4caf50' });
         }
         bonus.streak++;
         bonus.maxStreak = Math.max(bonus.maxStreak, bonus.streak);
+        bonus.spamMisses = 0; // reset spam counter on hit
         bonus.explosions.push({ x: target.targetX, y: target.y, timer: 0, big: false });
         playPunchHit();
         bonus.playerAnim = 'punch';
         bonus.playerAnimTimer = 15;
+      } else {
+        // MISS PENALTY: pressed Space with no valid target
+        bonus.score -= 50;
+        score -= 50;
+        bonus.misses++;
+        bonus.streak = 0;
+        bonus.feedbacks.push({ text: 'MISS!', x: 150, y: 280, timer: 0, color: '#f44336' });
+        playMissSound();
+        bonus.playerAnim = 'flinch';
+        bonus.playerAnimTimer = 15;
+        bonus.flashTimer = 8;
+        bonus.flashColor = 'rgba(255,0,0,0.2)';
+        // Spam detection: 3 consecutive misses within 1 second = lose 1 HP
+        const now = bonus.elapsed;
+        if (now - bonus.lastMissTime < 1.0) {
+          bonus.spamMisses++;
+        } else {
+          bonus.spamMisses = 1;
+        }
+        bonus.lastMissTime = now;
+        if (bonus.spamMisses >= 3) {
+          takeDamage('rhythm');
+          bonus.spamMisses = 0;
+          if (hp <= 0) return; // death handled by takeDamage
+        }
       }
     }
   }
@@ -2143,10 +2212,12 @@ function updateBonus() {
   // Update flash
   if (bonus.flashTimer > 0) bonus.flashTimer--;
 
-  // Check if game is over
+  // Check if beat map is complete
   if (bonus.elapsed > 42) {
     bonus.finished = true;
-    gameState = STATE.BONUS_RESULT;
+    if (hp > 0) {
+      advanceStage();
+    }
   }
 }
 
@@ -2258,7 +2329,11 @@ function drawBonus() {
   // HUD
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.fillRect(0, 0, W, 45);
-  drawText(`${t('score')}: ${bonus.score}`, 120, 22, 18, '#ffeb3b', 'left');
+  // HP hearts
+  for (let i = 0; i < 3; i++) {
+    drawEmoji(i < hp ? '❤️' : '🖤', 30 + i * 35, 22, 22);
+  }
+  drawText(`${t('score')}: ${score}`, 150, 22, 18, '#ffeb3b', 'left');
   drawText(`${t('bonus_streak')}: ${bonus.streak}`, W - 120, 22, 16, '#ff9800', 'right');
 
   // Beat progress bar
@@ -2330,7 +2405,8 @@ function update() {
         case 1: updateStage2(); break;
         case 2: updateStage4(); break;
         case 3: updateStage5(); break;
-        case 4: updateStage3(); break;
+        case 4: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 5: updateStage3(); break;
       }
       break;
     case STATE.BONUS_INTRO:
@@ -2358,7 +2434,8 @@ function draw() {
         case 1: drawStage2(); break;
         case 2: drawStage4(); break;
         case 3: drawStage5(); break;
-        case 4: drawStage3(); break;
+        case 4: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 5: drawStage3(); break;
       }
       drawHUD();
       break;
@@ -2373,9 +2450,6 @@ function draw() {
       break;
     case STATE.BONUS:
       drawBonus();
-      break;
-    case STATE.BONUS_RESULT:
-      drawBonusResult();
       break;
   }
 }

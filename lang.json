@@ -260,9 +260,9 @@
     "en": "What is PPushyo Survival?"
   },
   "help_what_desc": {
-    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 5개 스테이지를 생존하는 미니게임 모음입니다.",
-    "jp": "プレイヤーがプシェプシェ(お菓子)の立場になり、壊されたり食べられたりしないよう5つのステージを生き残るミニゲーム集です。",
-    "en": "You play as PPushyo (a snack), surviving 5 stages without getting crushed or eaten. A mini-game collection!"
+    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 6개 스테이지를 생존하는 미니게임 모음입니다.",
+    "jp": "プレイヤーがプシェプシェ(お菓子)の立場になり、壊されたり食べられたりしないよう6つのステージを生き残るミニゲーム集です。",
+    "en": "You play as PPushyo (a snack), surviving 6 stages without getting crushed or eaten. A mini-game collection!"
   },
   "help_hp": {
     "ko": "❤️ 체력 시스템",
@@ -305,9 +305,9 @@
     "en": "🏆 Endings"
   },
   "help_endings1": {
-    "ko": "총 7개의 엔딩 (배드 5 + 굿 1 + 히든 1)",
-    "jp": "全7エンディング（バッド5+グッド1+隠し1）",
-    "en": "7 total endings (5 bad + 1 good + 1 hidden)"
+    "ko": "총 8개의 엔딩 (배드 6 + 굿 1 + 히든 1)",
+    "jp": "全8エンディング（バッド6+グッド1+隠し1）",
+    "en": "8 total endings (6 bad + 1 good + 1 hidden)"
   },
   "help_endings2": {
     "ko": "사망 원인에 따라 다른 엔딩이 표시됩니다",
@@ -355,9 +355,9 @@
     "en": "📷  Camera — damage on contact"
   },
   "help_s1_speed": {
-    "ko": "속도가 2~5 사이로 랜덤 (빠른 것 주의!)",
-    "jp": "速度2~5ランダム（速いものに注意！）",
-    "en": "Random speed 2-5 (watch for fast ones!)"
+    "ko": "속도가 3~7 사이로 랜덤 (빠른 것 주의!)",
+    "jp": "速度3~7ランダム（速いものに注意！）",
+    "en": "Random speed 3-7 (watch for fast ones!)"
   },
   "help_s1_collect": {
     "ko": "수집 아이템",
@@ -380,9 +380,9 @@
     "en": "5+ unlocks hidden ending condition!"
   },
   "help_s1_clear": {
-    "ko": "30초 생존하면 클리어",
-    "jp": "30秒生存でクリア",
-    "en": "Survive 30 seconds to clear"
+    "ko": "20초 생존하면 클리어",
+    "jp": "20秒生存でクリア",
+    "en": "Survive 20 seconds to clear"
   },
   "help_progress": {
     "ko": "← 진행 바",
@@ -405,9 +405,9 @@
     "en": "Arrows 🏹"
   },
   "help_s2_arrow1": {
-    "ko": "좌우에서 날아옴, 속도 3~6",
-    "jp": "左右から飛来、速度3~6",
-    "en": "Fly from both sides, speed 3-6"
+    "ko": "좌우에서 날아옴, 속도 4~8",
+    "jp": "左右から飛来、速度4~8",
+    "en": "Fly from both sides, speed 4-8"
   },
   "help_s2_arrow2": {
     "ko": "시간이 지날수록 등장 빈도 증가",
@@ -450,9 +450,9 @@
     "en": "Arrows reaching bottom deal damage"
   },
   "help_s2_clear": {
-    "ko": "30초 생존하면 클리어",
-    "jp": "30秒生存でクリア",
-    "en": "Survive 30 seconds to clear"
+    "ko": "20초 생존하면 클리어",
+    "jp": "20秒生存でクリア",
+    "en": "Survive 20 seconds to clear"
   },
   "help_s3_title": {
     "ko": "S3. 성수 커피 디펜스",
@@ -515,9 +515,9 @@
     "en": "Miss = damage!"
   },
   "help_s3_clear": {
-    "ko": "30초 생존하면 클리어",
-    "jp": "30秒生存でクリア",
-    "en": "Survive 30 seconds to clear"
+    "ko": "20초 생존하면 클리어",
+    "jp": "20秒生存でクリア",
+    "en": "Survive 20 seconds to clear"
   },
   "help_s4_title": {
     "ko": "S4. 거대한 젓가락 보스",
@@ -540,9 +540,9 @@
     "en": "Boss Attack Pattern (4-phase loop)"
   },
   "help_s4_p1": {
-    "ko": "1. 대기 (1.5초)",
-    "jp": "1. 待機（1.5秒）",
-    "en": "1. Idle (1.5s)"
+    "ko": "1. 대기 (1초)",
+    "jp": "1. 待機（1秒）",
+    "en": "1. Idle (1s)"
   },
   "help_s4_p1d": {
     "ko": "— 아무 일도 없음, 이동 준비",
@@ -550,9 +550,9 @@
     "en": "— Nothing happens, prepare to move"
   },
   "help_s4_p2": {
-    "ko": "2. 경고 (1초)",
-    "jp": "2. 警告（1秒）",
-    "en": "2. Warning (1s)"
+    "ko": "2. 경고 (0.67초)",
+    "jp": "2. 警告（0.67秒）",
+    "en": "2. Warning (0.67s)"
   },
   "help_s4_p2d": {
     "ko": "— 바닥에 빨간 그림자 + ⚠️ 표시",
@@ -580,9 +580,9 @@
     "en": "— Being there = damage + screen shake"
   },
   "help_s4_p4": {
-    "ko": "4. 박힘 (1.5초) ← 공격 찬스!",
-    "jp": "4. 刺さり（1.5秒） ← 攻撃チャンス！",
-    "en": "4. Stuck (1.5s) -- Attack chance!"
+    "ko": "4. 박힘 (1초) ← 공격 찬스!",
+    "jp": "4. 刺さり（1秒） ← 攻撃チャンス！",
+    "en": "4. Stuck (1s) -- Attack chance!"
   },
   "help_s4_p4d": {
     "ko": "— 가까이 가서 Space → 킥! 보스 HP -1",
@@ -603,6 +603,11 @@
     "ko": "S5. 해치상 경비대",
     "jp": "S5. 獬豸像の警備隊",
     "en": "S5. Haechi Guard"
+  },
+  "help_s5_title_s6": {
+    "ko": "S6. 해치상 경비대",
+    "jp": "S6. 獬豸像の警備隊",
+    "en": "S6. Haechi Guard"
   },
   "help_s5_controls": {
     "ko": "Space 꾹 누르기 = 전진 | 떼기 = 멈춤",
@@ -700,9 +705,9 @@
     "en": "Died to pigeon in S1"
   },
   "e_cond_haechi": {
-    "ko": "S5에서 해치상에 사망",
-    "jp": "S5で獬豸像に死亡",
-    "en": "Died to Haechi in S5"
+    "ko": "S6에서 해치상에 사망",
+    "jp": "S6で獬豸像に死亡",
+    "en": "Died to Haechi in S6"
   },
   "e_cond_legend": {
     "ko": "전 스테이지 클리어",
@@ -773,5 +778,105 @@
     "ko": "SPACE로 시작!",
     "jp": "SPACEでスタート！",
     "en": "Press SPACE to start!"
+  },
+  "s6_name": {
+    "ko": "뿌셔뿌셔 리듬 카라테",
+    "jp": "プシェプシェリズム空手",
+    "en": "PPushyo Rhythm Karate"
+  },
+  "s6_sub": {
+    "ko": "리듬에 맞춰 펀치!",
+    "jp": "リズムに合わせてパンチ！",
+    "en": "Punch to the Beat!"
+  },
+  "e_rhythm_title": {
+    "ko": "박자치의 최후",
+    "jp": "リズムの最期",
+    "en": "Rhythm's End"
+  },
+  "e_rhythm_desc": {
+    "ko": "리듬을 놓친 뿌셔뿌셔는 박자에 맞춰 부서졌습니다...",
+    "jp": "リズムを逃したプシェプシェはビートに合わせて砕けました...",
+    "en": "PPushyo lost the beat and crumbled to the rhythm..."
+  },
+  "e_cond_rhythm": {
+    "ko": "S5에서 리듬 미스로 사망",
+    "jp": "S5でリズムミスで死亡",
+    "en": "Died to rhythm misses in S5"
+  },
+  "help_s6_title": {
+    "ko": "S5. 뿌셔뿌셔 리듬 카라테",
+    "jp": "S5. プシェプシェリズム空手",
+    "en": "S5. Rhythm Karate"
+  },
+  "help_s6_controls": {
+    "ko": "SPACE = 펀치!  꾹 누르고 떼기 = 어퍼컷!",
+    "jp": "SPACE = パンチ！  長押しして離す = アッパーカット！",
+    "en": "SPACE = Punch!  Hold + Release = Uppercut!"
+  },
+  "help_s6_desc": {
+    "ko": "리듬에 맞춰 날아오는 물체를 타이밍에 맞게 펀치하세요!",
+    "jp": "リズムに合わせて飛んでくるオブジェをタイミングよくパンチ！",
+    "en": "Punch objects flying to the beat with perfect timing!"
+  },
+  "help_s6_normal": {
+    "ko": "일반 펀치",
+    "jp": "通常パンチ",
+    "en": "Normal Punch"
+  },
+  "help_s6_normal1": {
+    "ko": "☕🏹🕊️ 가 날아오면 타이밍에 맞춰 SPACE",
+    "jp": "☕🏹🕊️ が飛んできたらタイミングに合わせてSPACE",
+    "en": "Press SPACE when ☕🏹🕊️ reach you"
+  },
+  "help_s6_normal2": {
+    "ko": "타이밍이 정확할수록 높은 점수!",
+    "jp": "タイミングが正確なほど高得点！",
+    "en": "Better timing = higher score!"
+  },
+  "help_s6_combo": {
+    "ko": "어퍼컷 콤보",
+    "jp": "アッパーカットコンボ",
+    "en": "Uppercut Combo"
+  },
+  "help_s6_combo1": {
+    "ko": "💡가 오면 SPACE를 꾹 누르세요",
+    "jp": "💡が来たらSPACEを長押し",
+    "en": "Hold SPACE when 💡 appears"
+  },
+  "help_s6_combo2": {
+    "ko": "두 번째 💡에 맞춰 떼면 어퍼컷! (2배 점수)",
+    "jp": "2つ目の💡に合わせて離すとアッパーカット！（2倍得点）",
+    "en": "Release on second 💡 for uppercut! (2x score)"
+  },
+  "help_s6_judge": {
+    "ko": "판정",
+    "jp": "判定",
+    "en": "Timing"
+  },
+  "help_s6_perfect": {
+    "ko": "PERFECT! (+100) — 매우 정확한 타이밍",
+    "jp": "PERFECT! (+100) — 非常に正確なタイミング",
+    "en": "PERFECT! (+100) — very precise timing"
+  },
+  "help_s6_ok": {
+    "ko": "OK! (+50) — 적당한 타이밍",
+    "jp": "OK! (+50) — まあまあのタイミング",
+    "en": "OK! (+50) — decent timing"
+  },
+  "help_s6_miss": {
+    "ko": "MISS (-50) — 놓치거나 빗나감",
+    "jp": "MISS (-50) — 逃したり外したり",
+    "en": "MISS (-50) — missed or wrong timing"
+  },
+  "help_s6_penalty": {
+    "ko": "잘못된 타이밍에 누르면 -50점, 연속 3번 스팸 시 HP -1!",
+    "jp": "間違ったタイミングで押すと-50点、連続3回スパムでHP-1！",
+    "en": "Wrong timing = -50 pts, 3 rapid misses = -1 HP!"
+  },
+  "help_s6_clear": {
+    "ko": "비트맵이 끝나면 클리어!",
+    "jp": "ビートマップ終了でクリア！",
+    "en": "Clear when beat map ends!"
   }
 }
