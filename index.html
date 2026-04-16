@@ -70,6 +70,14 @@ const HELP_PAGES = 8;
 let gameState = STATE.TITLE;
 let currentStage = 0;
 let score = 0;
+let highScores = JSON.parse(localStorage.getItem('ppushyo_highscores') || '[]');
+
+function saveHighScore(s) {
+  highScores.push(s);
+  highScores.sort((a, b) => b - a);
+  highScores = highScores.slice(0, 3);
+  localStorage.setItem('ppushyo_highscores', JSON.stringify(highScores));
+}
 let hp = 3;
 let stageTimer = 0;
 let introTimer = 0;
@@ -200,7 +208,7 @@ function handleClick(e) {
     }
   } else if (gameState === STATE.ENDING) {
     // Restart button
-    if (cx > 250 && cx < 550 && cy > 480 && cy < 540) {
+    if (cx > 250 && cx < 550 && cy > 510 && cy < 560) {
       gameState = STATE.TITLE;
     }
   }
@@ -534,6 +542,7 @@ function triggerEnding(type) {
   currentEnding = ENDINGS[endingIndex];
   endingsFound[currentEnding.id] = true;
   localStorage.setItem('ppushyo_endings', JSON.stringify(endingsFound));
+  saveHighScore(score);
   gameState = STATE.ENDING;
 }
 
@@ -574,16 +583,27 @@ function drawEnding() {
   wrapText(t(e.descKey), W / 2, 330, 16, '#e0e0e0', 600);
 
   // Score
-  drawText(`${t('score')}: ${score}`, W / 2, 420, 20, '#ffeb3b');
+  drawText(`${t('score')}: ${score}`, W / 2, 390, 20, '#ffeb3b');
+
+  // High scores TOP 3
+  drawText('🏅 TOP 3', W / 2, 420, 14, '#9e9e9e');
+  const medals = ['🥇', '🥈', '🥉'];
+  for (let i = 0; i < 3; i++) {
+    const hs = highScores[i];
+    const isNew = hs === score && i === highScores.indexOf(score);
+    const color = isNew ? '#ffd54f' : '#bdbdbd';
+    const label = hs !== undefined ? `${medals[i]} ${hs}` : `${medals[i]} ---`;
+    drawText(label, W / 2, 442 + i * 20, 14, color);
+  }
 
   // Restart button
-  const bx = 250, by = 480, bw = 300, bh = 60;
+  const bx = 250, by = 510, bw = 300, bh = 50;
   const hover = mouseX > bx && mouseX < bx + bw && mouseY > by && mouseY < by + bh;
   ctx.fillStyle = hover ? '#7b1fa2' : '#4a148c';
   ctx.beginPath();
   ctx.roundRect(bx, by, bw, bh, 10);
   ctx.fill();
-  drawText(t('restart'), W / 2, by + 30, 20, '#fff');
+  drawText(t('restart'), W / 2, by + 25, 18, '#fff');
 }
 
 function wrapText(text, x, y, size, color, maxW) {
@@ -1078,16 +1098,29 @@ function updateStage2() {
     s2.spawnTimer = 0;
     const fromLeft = Math.random() > 0.5;
     const isBomb = Math.random() < 0.15;
+    const ax = fromLeft ? -20 : W + 20;
+    const ay = 100 + Math.random() * 350;
+    const spd = 4 + Math.random() * 4;
+    let avx, avy, aAngle;
+    if (Math.random() < 0.65) {
+      // Aimed at player (with spread)
+      const tx = W / 2 + (Math.random() - 0.5) * 80;
+      const ty = H - 60 + (Math.random() - 0.5) * 60;
+      const dx = tx - ax, dy = ty - ay;
+      const dist = Math.hypot(dx, dy);
+      avx = (dx / dist) * spd;
+      avy = (dy / dist) * spd;
+      aAngle = Math.atan2(dy, dx);
+    } else {
+      // Random direction
+      avx = (fromLeft ? 1 : -1) * spd;
+      avy = Math.random() * 2 - 1;
+      aAngle = fromLeft ? 0 : Math.PI;
+    }
     s2.arrows.push({
-      x: fromLeft ? -20 : W + 20,
-      y: 100 + Math.random() * 350,
-      vx: (fromLeft ? 1 : -1) * (4 + Math.random() * 4),
-      vy: Math.random() * 2 - 1,
-      alive: true,
-      sliced: false,
-      sliceAnim: 0,
-      angle: fromLeft ? 0 : Math.PI,
-      bomb: isBomb
+      x: ax, y: ay, vx: avx, vy: avy,
+      alive: true, sliced: false, sliceAnim: 0,
+      angle: aAngle, bomb: isBomb
     });
   }
 
@@ -1574,6 +1607,10 @@ function updateStage4() {
         const bonus = closestDist < 20 ? 100 : closestDist < 40 ? 50 : 25;
         score += bonus;
         s4.hitEffects.push({ x: lane.x, y: s4.hitZoneY, timer: 0, text: bonus >= 100 ? 'PERFECT!' : bonus >= 50 ? 'GREAT!' : 'OK' });
+      } else {
+        // Miss penalty: no cup nearby
+        score -= 30;
+        s4.hitEffects.push({ x: lane.x, y: s4.hitZoneY, timer: 0, text: 'MISS!' });
       }
     }
   });
