@@ -35,6 +35,28 @@ canvas {
 <body>
 <div id="gameContainer">
   <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <div id="nameModal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center; z-index:10;">
+    <div style="background:linear-gradient(135deg,#1a0a2e,#2d1b69); border:2px solid #ff6b6b;
+      border-radius:16px; padding:40px 50px; text-align:center; box-shadow:0 0 40px rgba(255,107,107,0.4);">
+      <div style="font-size:28px; margin-bottom:5px;">🏆</div>
+      <div style="color:#ffd54f; font-size:22px; font-weight:900; margin-bottom:5px;">HIGH SCORE!</div>
+      <div id="nameScoreDisplay" style="color:#ffeb3b; font-size:18px; margin-bottom:20px;"></div>
+      <input id="nameInput" type="text" maxlength="6" placeholder="NAME"
+        style="background:#0d0521; border:2px solid #ff6b6b; border-radius:8px; color:#fff;
+        font-family:'Noto Sans KR',sans-serif; font-size:24px; font-weight:700;
+        text-align:center; padding:10px 20px; width:200px; outline:none; text-transform:uppercase;
+        letter-spacing:4px;">
+      <div style="margin-top:20px;">
+        <button id="nameSubmit" style="background:#c0392b; border:none; border-radius:8px;
+          color:#fff; font-family:'Noto Sans KR',sans-serif; font-size:16px; font-weight:700;
+          padding:10px 40px; cursor:pointer; transition:background 0.2s;"
+          onmouseover="this.style.background='#e74c3c'" onmouseout="this.style.background='#c0392b'">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 <script>
 // ============================================================
@@ -73,16 +95,40 @@ let currentStage = 0;
 let score = 0;
 let highScores = JSON.parse(localStorage.getItem('ppushyo_highscores2') || '[]');
 
+let pendingScore = null;
+
 function saveHighScore(s) {
   const qualifies = highScores.length < 3 || s > highScores[highScores.length - 1].score;
   if (qualifies && s > 0) {
-    const name = (prompt('HIGH SCORE! Enter your name:', 'AAA') || 'AAA').substring(0, 6).toUpperCase();
-    highScores.push({ name, score: s });
-    highScores.sort((a, b) => b.score - a.score);
-    highScores = highScores.slice(0, 3);
-    localStorage.setItem('ppushyo_highscores2', JSON.stringify(highScores));
+    pendingScore = s;
+    const modal = document.getElementById('nameModal');
+    const input = document.getElementById('nameInput');
+    document.getElementById('nameScoreDisplay').textContent = `SCORE: ${s}`;
+    modal.style.display = 'flex';
+    input.value = '';
+    input.focus();
   }
 }
+
+function submitHighScore() {
+  if (pendingScore === null) return;
+  const input = document.getElementById('nameInput');
+  const name = (input.value || 'AAA').substring(0, 6).toUpperCase();
+  highScores.push({ name, score: pendingScore });
+  highScores.sort((a, b) => b.score - a.score);
+  highScores = highScores.slice(0, 3);
+  localStorage.setItem('ppushyo_highscores2', JSON.stringify(highScores));
+  document.getElementById('nameModal').style.display = 'none';
+  pendingScore = null;
+  canvas.focus();
+}
+
+document.getElementById('nameSubmit').addEventListener('click', submitHighScore);
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') submitHighScore();
+  e.stopPropagation();
+});
+document.getElementById('nameInput').addEventListener('keyup', e => e.stopPropagation());
 let hp = 3;
 let stageTimer = 0;
 let introTimer = 0;
