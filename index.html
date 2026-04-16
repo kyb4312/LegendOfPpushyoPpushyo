@@ -143,6 +143,7 @@ let mousePath = [];
 let frameCount = 0;
 let pausedFrom = null; // state before pause
 let devMode = false; // toggle with Ctrl+Shift+D
+let endingsScrollY = 0;
 
 // Ending collection (localStorage)
 let endingsFound = JSON.parse(localStorage.getItem('ppushyo_endings') || '{}');
@@ -220,6 +221,14 @@ canvas.addEventListener('touchmove', e => {
   if (mouseDown) mousePath.push({ x: mouseX, y: mouseY, t: Date.now() });
 });
 canvas.addEventListener('touchend', e => { e.preventDefault(); mouseDown = false; });
+canvas.addEventListener('wheel', e => {
+  if (gameState === STATE.ENDINGS_VIEW) {
+    endingsScrollY += e.deltaY * 0.5;
+    const maxScroll = Math.max(0, ENDINGS.length * 45 - 400);
+    endingsScrollY = Math.max(0, Math.min(maxScroll, endingsScrollY));
+    e.preventDefault();
+  }
+}, { passive: false });
 
 function handleClick(e) {
   const rect = canvas.getBoundingClientRect();
@@ -260,8 +269,9 @@ function handleClick(e) {
     }
   } else if (gameState === STATE.ENDINGS_VIEW) {
     // Back button
-    if (cx > 300 && cx < 500 && cy > 540 && cy < 580) {
+    if (cx > 300 && cx < 500 && cy > 545 && cy < 585) {
       gameState = STATE.TITLE;
+      endingsScrollY = 0;
     }
   } else if (gameState === STATE.HELP) {
     // Back button
@@ -457,6 +467,10 @@ function drawTitle() {
       drawEmoji('🍜', nx, ny, 30);
     }
   }
+
+  // Dim overlay for readability
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
+  ctx.fillRect(0, 0, W, H);
 
   // Language buttons (top-right)
   const langs = ['ko', 'jp', 'en'];
@@ -1114,13 +1128,22 @@ function drawEndingsView() {
   const found = Object.keys(endingsFound).length;
   drawText(`${found} / ${ENDINGS.length}`, W / 2, 70, 16, '#9e9e9e');
 
+  // Scrollable area
+  const listTop = 90, listH = 440;
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
-  ctx.beginPath(); ctx.roundRect(40, 90, W - 80, 440, 12); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(40, listTop, W - 80, listH, 12); ctx.fill();
 
   const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance','e_cond_jump','e_cond_whack','e_cond_chop'];
 
+  // Clip to list area
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(40, listTop, W - 80, listH);
+  ctx.clip();
+
   for (let i = 0; i < ENDINGS.length; i++) {
-    const ey = 105 + i * 38;
+    const ey = listTop + 25 + i * 45 - endingsScrollY;
+    if (ey < listTop - 40 || ey > listTop + listH + 20) continue; // cull offscreen
     const e = ENDINGS[i];
     const isFound = endingsFound[e.id];
 
@@ -1129,12 +1152,25 @@ function drawEndingsView() {
     drawText(isFound ? t(condKeys[i]) : '???', 120, ey + 14, 12, isFound ? '#bdbdbd' : '#424242', 'left');
     drawText(isFound ? '✓' : '—', 720, ey, 16, isFound ? '#4caf50' : '#555');
   }
+  ctx.restore();
+
+  // Scroll indicator
+  const maxScroll = Math.max(1, ENDINGS.length * 45 - listH);
+  if (maxScroll > 1) {
+    const barH = Math.max(30, listH * (listH / (ENDINGS.length * 45)));
+    const barY = listTop + (endingsScrollY / maxScroll) * (listH - barH);
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.beginPath(); ctx.roundRect(W - 52, barY, 6, barH, 3); ctx.fill();
+  }
+
+  // Scroll hint
+  drawText('↕ scroll', W - 49, listTop + listH + 12, 10, '#555');
 
   // Back button
-  const bH = mouseX > 300 && mouseX < 500 && mouseY > 540 && mouseY < 580;
+  const bH = mouseX > 300 && mouseX < 500 && mouseY > 545 && mouseY < 585;
   ctx.fillStyle = bH ? '#c62828' : '#b71c1c';
-  ctx.beginPath(); ctx.roundRect(300, 540, 200, 40, 8); ctx.fill();
-  drawText(t('back'), 400, 560, 16, '#fff');
+  ctx.beginPath(); ctx.roundRect(300, 545, 200, 40, 8); ctx.fill();
+  drawText(t('back'), 400, 565, 16, '#fff');
 }
 
 // ============================================================
@@ -1260,13 +1296,7 @@ function drawStage1() {
     }
   }
 
-  // Scrolling ground path tiles (always on top of background)
-  ctx.fillStyle = 'rgba(212,167,106,0.45)';
-  ctx.fillRect(100, 0, W - 200, H);
-  ctx.fillStyle = 'rgba(196,154,94,0.5)';
-  for (let y = -s1.scrollY % 60; y < H; y += 60) {
-    ctx.fillRect(100, y, W - 200, 2);
-  }
+  // (ground path overlay removed — using bg image)
 
   // Obstacles
   s1.obstacles.forEach(o => {
