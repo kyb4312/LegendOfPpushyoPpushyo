@@ -6,7 +6,7 @@
   },
   "subtitle": {
     "ko": "뿌쇼뿌쇼 팀 프레젠트",
-    "jp": "プショプショチーム プレゼンツ",
+    "jp": "プショプショチーム Presents",
     "en": "Team PPushyo Presents"
   },
   "start": {
@@ -151,7 +151,7 @@
   },
   "s3_name": {
     "ko": "다방에서 살아남기",
-    "jp": "茶房で生き残れ",
+    "jp": "喫茶店で生き残れ",
     "en": "Survive the Teahouse"
   },
   "s3_sub": {
@@ -391,7 +391,7 @@
   },
   "help_s2_title": {
     "ko": "S2. 양궁장 베기",
-    "jp": "S2. アーチェリー場斬り",
+    "jp": "S2. 矢斬り",
     "en": "S2. Archery Slicer"
   },
   "help_s2_controls": {
@@ -676,7 +676,7 @@
   },
   "help_endlist_desc": {
     "ko": "사망 원인에 따라 다른 엔딩!",
-    "jp": "死亡原因によって異なるエンディング！",
+    "jp": "死因によって異なるエンディング！",
     "en": "Different endings based on death cause!"
   },
   "help_endlist_collect": {
@@ -796,7 +796,7 @@
   },
   "e_rhythm_desc": {
     "ko": "리듬을 놓친 뿌셔뿌셔는 박자에 맞춰 부서졌습니다...",
-    "jp": "リズムを逃したプシェプシェはビートに合わせて砕けました...",
+    "jp": "リズムを逃したプショプショはビートに合わせて砕けました...",
     "en": "PPushyo lost the beat and crumbled to the rhythm..."
   },
   "e_cond_rhythm": {
@@ -806,7 +806,7 @@
   },
   "help_s6_title": {
     "ko": "S8. 뿌셔뿌셔 리듬 카라테",
-    "jp": "S8. プシェプシェリズム空手",
+    "jp": "S8. プショプショリズム空手",
     "en": "S8. Rhythm Karate"
   },
   "help_s6_controls": {
@@ -896,7 +896,7 @@
   },
   "e_balance_desc": {
     "ko": "물건을 떨어뜨린 뿌셔뿌셔는 택배 기사의 꿈을 접었습니다...",
-    "jp": "荷物を落としたプシェプシェは配達員の夢を諦めました...",
+    "jp": "荷物を落としたプショプショは配達員の夢を諦めました...",
     "en": "PPushyo dropped everything and gave up on being a delivery driver..."
   },
   "e_cond_balance": {
@@ -971,7 +971,7 @@
   },
   "e_jump_desc": {
     "ko": "발을 헛디딘 뿌셔뿌셔는 블록 사이에 빠져 부서졌습니다...",
-    "jp": "足を踏み外したプシェプシェはブロックの間に落ちて砕けました...",
+    "jp": "足を踏み外したプショプショはブロックの間に落ちて砕けました...",
     "en": "PPushyo slipped and crumbled between the blocks..."
   },
   "e_cond_jump": {
@@ -1051,7 +1051,7 @@
   },
   "e_whack_desc": {
     "ko": "양념 봉지를 때려버린 뿌셔뿌셔는 자신의 양념이 되었습니다...",
-    "jp": "調味料パックを叩いてしまったプシェプシェは自分の調味料になりました...",
+    "jp": "調味料パックを叩いてしまったプショプショは自分の調味料になりました...",
     "en": "PPushyo hit the spice packet and became seasoning itself..."
   },
   "e_cond_whack": {
@@ -1066,7 +1066,7 @@
   },
   "e_chop_desc": {
     "ko": "거대한 젓가락에 집힌 뿌셔뿌셔는 누군가의 야식이 되었습니다...",
-    "jp": "巨大な箸に掴まれたプシェプシェは誰かの夜食になりました...",
+    "jp": "巨大な箸に掴まれたプショプショは誰かの夜食になりました...",
     "en": "Grabbed by giant chopsticks, PPushyo became someone's midnight snack..."
   },
   "e_cond_chop": {
