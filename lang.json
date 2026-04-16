@@ -171,7 +171,7 @@
   },
   "s5_name": {
     "ko": "해치상 경비대",
-    "jp": "獬豸像の警備隊",
+    "jp": "獬豸[カイチ]像の警備隊",
     "en": "Haechi Guard"
   },
   "s5_sub": {
@@ -186,7 +186,7 @@
   },
   "e_archer_desc": {
     "ko": "화살에 맞은 뿌셔뿌셔는 양궁 국가대표의 새 파트너가 되었습니다!",
-    "jp": "矢に当たったプシェプシェはアーチェリー代表の新パートナーになりました！",
+    "jp": "矢に当たったプショプショはアーチェリー代表の新パートナーになりました！",
     "en": "Hit by an arrow, PPushyo became the archery team's new partner!"
   },
   "e_insta_title": {
@@ -196,17 +196,17 @@
   },
   "e_insta_desc": {
     "ko": "밟힌 뿌셔뿌셔의 사진이 #감성 태그로 10만 좋아요를 받았습니다!",
-    "jp": "踏まれたプシェプシェの写真が#エモいタグで10万いいねを獲得！",
+    "jp": "踏まれたプショプショの写真が#エモいで10万いいねを獲得！",
     "en": "A photo of crushed PPushyo got 100K likes with #aesthetic!"
   },
   "e_dessert_title": {
     "ko": "성수 디저트",
-    "jp": "聖水デザート",
+    "jp": "聖水[ソンス]デザート",
     "en": "Seongsu Dessert"
   },
   "e_dessert_desc": {
     "ko": "라떼에 빠진 뿌셔뿌셔는 성수 시그니처 메뉴가 되었습니다!",
-    "jp": "ラテに落ちたプシェプシェは聖水シグネチャーメニューになりました！",
+    "jp": "ラテに落ちたプショプショは聖水[ソンス]の代表的なメニューになりました！",
     "en": "PPushyo fell into a latte and became Seongsu's signature menu!"
   },
   "e_pigeon_title": {
@@ -221,12 +221,12 @@
   },
   "e_haechi_title": {
     "ko": "해치상의 심판",
-    "jp": "獬豸像の審判",
+    "jp": "獬豸[カイチ]像の審判",
     "en": "Haechi's Judgment"
   },
   "e_haechi_desc": {
     "ko": "해치상에게 밟힌 뿌셔뿌셔는 경복궁의 전설이 되었습니다.",
-    "jp": "獬豸像に踏まれたプシェプシェは景福宮の伝説になりました。",
+    "jp": "獬豸像[カイチ]に踏まれたプショプショは景福宮[キョンボックン]の伝説になりました。",
     "en": "Crushed by Haechi, PPushyo became a palace legend."
   },
   "e_legend_title": {
@@ -236,7 +236,7 @@
   },
   "e_legend_desc": {
     "ko": "뿌쇼뿌쇼 팀의 마스코트가 된 뿌셔뿌셔! 경복궁, 양궁장, 미션파이브 성수를 함께 여행하며 전설이 되었습니다!",
-    "jp": "プショプショチームのマスコットになったプシェプシェ！景福宮、アーチェリー場、ミッションファイブ聖水を一緒に旅して伝説になりました！",
+    "jp": "プショプショチームのマスコットになったプショプショ！景福宮[キョンボックン]、アーチェリー場、ミッションファイブ聖水[ソンス]を一緒に旅して伝説になりました！",
     "en": "PPushyo became the team mascot, traveling through palace, range, and Seongsu to become a legend!"
   },
   "e_japan_title": {
@@ -246,7 +246,7 @@
   },
   "e_japan_desc": {
     "ko": "국제적 감각의 뿌셔뿌셔는 돈키호테에 수출되었습니다!",
-    "jp": "国際的センスのプシェプシェはドンキホーテに輸出されました！",
+    "jp": "国際的センスのプショプショはドン・キホーテに輸出されました！",
     "en": "The internationally-minded PPushyo was exported to Don Quijote!"
   },
   "help_title": {
@@ -256,12 +256,12 @@
   },
   "help_what_is": {
     "ko": "뿌셔뿌셔 서바이벌이란?",
-    "jp": "プシェプシェサバイバルとは？",
+    "jp": "プショプショサバイバルとは？",
     "en": "What is PPushyo Survival?"
   },
   "help_what_desc": {
     "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 5개 스테이지를 생존하는 미니게임 모음입니다.",
-    "jp": "プレイヤーがプシェプシェ(お菓子)の立場になり、壊されたり食べられたりしないよう5つのステージを生き残るミニゲーム集です。",
+    "jp": "プレイヤーがプショプショ(お菓子)の立場になり、壊されたり食べられたりしないよう5つのステージを生き残るミニゲーム集です。",
     "en": "You play as PPushyo (a snack), surviving 5 stages without getting crushed or eaten. A mini-game collection!"
   },
   "help_hp": {
@@ -311,7 +311,7 @@
   },
   "help_endings2": {
     "ko": "사망 원인에 따라 다른 엔딩이 표시됩니다",
-    "jp": "死亡原因によって異なるエンディングが表示されます",
+    "jp": "死因によって異なるエンディングが表示されます",
     "en": "Different endings based on cause of death"
   },
   "help_endings3": {
@@ -321,7 +321,7 @@
   },
   "help_s1_title": {
     "ko": "S1. 경복궁 러너",
-    "jp": "S1. 景福宮ランナー",
+    "jp": "S1. 景福宮[キョンボックン]ランナー",
     "en": "S1. Palace Runner"
   },
   "help_s1_controls": {
@@ -386,7 +386,7 @@
   },
   "help_progress": {
     "ko": "← 진행 바",
-    "jp": "← 進行バー",
+    "jp": "← 進行度",
     "en": "← Progress bar"
   },
   "help_s2_title": {
@@ -456,7 +456,7 @@
   },
   "help_s3_title": {
     "ko": "S3. 성수 커피 디펜스",
-    "jp": "S3. 聖水コーヒーディフェンス",
+    "jp": "S3. 聖水[ソンス]コーヒーディフェンス",
     "en": "S3. Coffee Defense"
   },
   "help_s3_controls": {
@@ -601,7 +601,7 @@
   },
   "help_s5_title": {
     "ko": "S5. 해치상 경비대",
-    "jp": "S5. 獬豸像の警備隊",
+    "jp": "S5. 獬豸[カイチ]像の警備隊",
     "en": "S5. Haechi Guard"
   },
   "help_s5_controls": {
@@ -611,7 +611,7 @@
   },
   "help_s5_haechi": {
     "ko": "🦁 해치상",
-    "jp": "🦁 獬豸像",
+    "jp": "🦁 獬豸[カイチ]像",
     "en": "🦁 Haechi Statue"
   },
   "help_s5_desc": {
@@ -641,12 +641,12 @@
   },
   "help_s5_green": {
     "ko": "🟢 초록: \"움직여!\" — 자유롭게 전진",
-    "jp": "🟢 緑: \"動け！\" — 自由に前進",
+    "jp": "🟢 緑: \"進め！\" — 自由に前進",
     "en": "🟢 Green: \"MOVE!\" — freely advance"
   },
   "help_s5_yellow": {
     "ko": "🟡 전환: \"준비...\" — 글자 점등 중, 아직 이동 가능",
-    "jp": "🟡 切替: \"準備...\" — 文字点灯中、まだ移動可能",
+    "jp": "🟡 切替: \"注意...\" — 文字点灯中、まだ移動可能",
     "en": "🟡 Transition: \"READY...\" — still can move"
   },
   "help_s5_red": {
@@ -681,27 +681,27 @@
   },
   "e_cond_archer": {
     "ko": "S2에서 화살에 사망",
-    "jp": "S2で矢に死亡",
+    "jp": "S2で矢で死亡",
     "en": "Died to arrows in S2"
   },
   "e_cond_insta": {
     "ko": "S1에서 관광객/카메라에 사망",
-    "jp": "S1で観光客/カメラに死亡",
+    "jp": "S1で観光客/カメラで死亡",
     "en": "Died to tourist/camera in S1"
   },
   "e_cond_dessert": {
     "ko": "S3에서 커피에 사망",
-    "jp": "S3でコーヒーに死亡",
+    "jp": "S3でコーヒーで死亡",
     "en": "Died to coffee in S3"
   },
   "e_cond_pigeon": {
     "ko": "S1에서 비둘기에 사망",
-    "jp": "S1でハトに死亡",
+    "jp": "S1でハトで死亡",
     "en": "Died to pigeon in S1"
   },
   "e_cond_haechi": {
     "ko": "S5에서 해치상에 사망",
-    "jp": "S5で獬豸像に死亡",
+    "jp": "S5で獬豸[カイチ]像で死亡",
     "en": "Died to Haechi in S5"
   },
   "e_cond_legend": {
@@ -716,7 +716,7 @@
   },
   "bonus_title": {
     "ko": "뿌셔뿌셔 리듬 카라테",
-    "jp": "プシェプシェリズム空手",
+    "jp": "プショプショリズム空手",
     "en": "PPushyo Rhythm Karate"
   },
   "bonus_subtitle": {
