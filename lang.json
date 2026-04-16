@@ -260,9 +260,9 @@
     "en": "What is PPushyo Survival?"
   },
   "help_what_desc": {
-    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 8개 스테이지를 생존하는 미니게임 모음입니다.",
-    "jp": "プレイヤーがプショプショ(お菓子)の立場になり、壊されたり食べられたりしないよう8つのステージを生き残るミニゲーム集です。",
-    "en": "You play as PPushyo (a snack), surviving 8 stages without getting crushed or eaten. A mini-game collection!"
+    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 9개 스테이지를 생존하는 미니게임 모음입니다.",
+    "jp": "プレイヤーがプショプショ(お菓子)の立場になり、壊されたり食べられたりしないよう9つのステージを生き残るミニゲーム集です。",
+    "en": "You play as PPushyo (a snack), surviving 9 stages without getting crushed or eaten. A mini-game collection!"
   },
   "help_hp": {
     "ko": "❤️ 체력 시스템",
@@ -305,9 +305,9 @@
     "en": "🏆 Endings"
   },
   "help_endings1": {
-    "ko": "총 10개의 엔딩 (배드 8 + 굿 1 + 히든 1)",
-    "jp": "全10エンディング（バッド8+グッド1+隠し1）",
-    "en": "10 total endings (8 bad + 1 good + 1 hidden)"
+    "ko": "총 11개의 엔딩 (배드 9 + 굿 1 + 히든 1)",
+    "jp": "全11エンディング（バッド9+グッド1+隠し1）",
+    "en": "11 total endings (9 bad + 1 good + 1 hidden)"
   },
   "help_endings2": {
     "ko": "사망 원인에 따라 다른 엔딩이 표시됩니다",
@@ -520,9 +520,9 @@
     "en": "Survive 20 seconds to clear"
   },
   "help_s4_title": {
-    "ko": "S6. 거대한 젓가락 보스",
-    "jp": "S6. 巨大な箸ボス",
-    "en": "S6. Chopstick Boss"
+    "ko": "S7. 거대한 젓가락 보스",
+    "jp": "S7. 巨大な箸ボス",
+    "en": "S7. Chopstick Boss"
   },
   "help_s4_controls": {
     "ko": "← →  이동  |  Space  공격",
@@ -605,9 +605,9 @@
     "en": "S5. Haechi Guard"
   },
   "help_s5_title_s6": {
-    "ko": "S8. 해치상 경비대",
-    "jp": "S8. 獬豸像の警備隊",
-    "en": "S8. Haechi Guard"
+    "ko": "S9. 해치상 경비대",
+    "jp": "S9. 獬豸像の警備隊",
+    "en": "S9. Haechi Guard"
   },
   "help_s5_controls": {
     "ko": "Space 꾹 누르기 = 전진 | 떼기 = 멈춤",
@@ -705,9 +705,9 @@
     "en": "Died to pigeon in S1"
   },
   "e_cond_haechi": {
-    "ko": "S8에서 해치상에 사망",
-    "jp": "S8で獬豸[カイチ]像で死亡",
-    "en": "Died to Haechi in S8"
+    "ko": "S9에서 해치상에 사망",
+    "jp": "S9で獬豸[カイチ]像で死亡",
+    "en": "Died to Haechi in S9"
   },
   "e_cond_legend": {
     "ko": "전 스테이지 클리어",
@@ -800,14 +800,14 @@
     "en": "PPushyo lost the beat and crumbled to the rhythm..."
   },
   "e_cond_rhythm": {
-    "ko": "S7에서 리듬 미스로 사망",
-    "jp": "S7でリズムミスで死亡",
-    "en": "Died to rhythm misses in S7"
+    "ko": "S8에서 리듬 미스로 사망",
+    "jp": "S8でリズムミスで死亡",
+    "en": "Died to rhythm misses in S8"
   },
   "help_s6_title": {
-    "ko": "S7. 뿌셔뿌셔 리듬 카라테",
-    "jp": "S7. プシェプシェリズム空手",
-    "en": "S7. Rhythm Karate"
+    "ko": "S8. 뿌셔뿌셔 리듬 카라테",
+    "jp": "S8. プシェプシェリズム空手",
+    "en": "S8. Rhythm Karate"
   },
   "help_s6_controls": {
     "ko": "SPACE = 펀치!  꾹 누르고 떼기 = 어퍼컷!",
@@ -1033,5 +1033,85 @@
     "ko": "12번 점프 성공하면 클리어!",
     "jp": "12回ジャンプ成功でクリア！",
     "en": "Land 12 jumps to clear!"
+  },
+  "s_wam_name": {
+    "ko": "두더지 잡기",
+    "jp": "モグラたたき",
+    "en": "Whack-a-Mole"
+  },
+  "s_wam_sub": {
+    "ko": "빠르게 잡아라!",
+    "jp": "素早く叩け！",
+    "en": "Whack them fast!"
+  },
+  "e_whack_title": {
+    "ko": "잘못된 타격",
+    "jp": "誤った一撃",
+    "en": "Wrong Hit"
+  },
+  "e_whack_desc": {
+    "ko": "양념 봉지를 때려버린 뿌셔뿌셔는 자신의 양념이 되었습니다...",
+    "jp": "調味料パックを叩いてしまったプシェプシェは自分の調味料になりました...",
+    "en": "PPushyo hit the spice packet and became seasoning itself..."
+  },
+  "e_cond_whack": {
+    "ko": "S6에서 잘못된 타격으로 사망",
+    "jp": "S6で誤った一撃で死亡",
+    "en": "Died from wrong hits in S6"
+  },
+  "help_wam_title": {
+    "ko": "S6. 두더지 잡기",
+    "jp": "S6. モグラたたき",
+    "en": "S6. Whack-a-Mole"
+  },
+  "help_wam_controls": {
+    "ko": "마우스 클릭으로 적을 잡으세요!",
+    "jp": "マウスクリックで敵を叩け！",
+    "en": "Click enemies to whack them!"
+  },
+  "help_wam_desc": {
+    "ko": "3x3 구멍에서 나타나는 적을 클릭하세요!",
+    "jp": "3x3の穴から出てくる敵をクリック！",
+    "en": "Click enemies popping from 3x3 holes!"
+  },
+  "help_wam_enemies": {
+    "ko": "적 종류",
+    "jp": "敵の種類",
+    "en": "Enemy Types"
+  },
+  "help_wam_tourist": {
+    "ko": "👣  관광객 — +10점",
+    "jp": "👣  観光客 — +10点",
+    "en": "👣  Tourist — +10 pts"
+  },
+  "help_wam_pigeon": {
+    "ko": "🕊️  비둘기 — +15점",
+    "jp": "🕊️  ハト — +15点",
+    "en": "🕊️  Pigeon — +15 pts"
+  },
+  "help_wam_camera": {
+    "ko": "📷  카메라 — +20점",
+    "jp": "📷  カメラ — +20点",
+    "en": "📷  Camera — +20 pts"
+  },
+  "help_wam_bomb": {
+    "ko": "💣  폭탄 — +30점 (빠르게 사라짐!)",
+    "jp": "💣  爆弾 — +30点（すぐ消える！）",
+    "en": "💣  Bomb — +30 pts (disappears fast!)"
+  },
+  "help_wam_spice": {
+    "ko": "🌶️  양념 봉지 — 때리면 -50점 + 피격!",
+    "jp": "🌶️  調味料パック — 叩くと-50点+ダメージ！",
+    "en": "🌶️  Spice pack — hitting = -50 pts + damage!"
+  },
+  "help_wam_miss": {
+    "ko": "빈 곳 클릭 시 -5점",
+    "jp": "空振りで-5点",
+    "en": "Clicking empty space = -5 pts"
+  },
+  "help_wam_clear": {
+    "ko": "15초 생존하면 클리어!",
+    "jp": "15秒生存でクリア！",
+    "en": "Survive 15 seconds to clear!"
   }
 }

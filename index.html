@@ -89,7 +89,7 @@ const STATE = {
   ENDINGS_VIEW: 'endings_view'
 };
 let helpPage = 0;
-const HELP_PAGES = 9;
+const HELP_PAGES = 10;
 
 let gameState = STATE.TITLE;
 let currentStage = 0;
@@ -153,6 +153,7 @@ const STAGES = [
   { nameKey: 's3_name', subKey: 's3_sub' },
   { nameKey: 's_bal_name', subKey: 's_bal_sub' },
   { nameKey: 's_jmp_name', subKey: 's_jmp_sub' },
+  { nameKey: 's_wam_name', subKey: 's_wam_sub' },
   { nameKey: 's4_name', subKey: 's4_sub' },
   { nameKey: 's6_name', subKey: 's6_sub' },
   { nameKey: 's5_name', subKey: 's5_sub' }
@@ -168,7 +169,8 @@ const ENDINGS = [
   { id: 'japan', titleKey: 'e_japan_title', descKey: 'e_japan_desc', emoji: '🇯🇵' },
   { id: 'rhythm', titleKey: 'e_rhythm_title', descKey: 'e_rhythm_desc', emoji: '🎵' },
   { id: 'balance', titleKey: 'e_balance_title', descKey: 'e_balance_desc', emoji: '📦' },
-  { id: 'jump', titleKey: 'e_jump_title', descKey: 'e_jump_desc', emoji: '🕳️' }
+  { id: 'jump', titleKey: 'e_jump_title', descKey: 'e_jump_desc', emoji: '🕳️' },
+  { id: 'whack', titleKey: 'e_whack_title', descKey: 'e_whack_desc', emoji: '🔨' }
 ];
 
 // --- INPUT ---
@@ -244,8 +246,8 @@ function handleClick(e) {
       gameState = STATE.ENDINGS_VIEW;
     }
     // Dev stage select buttons
-    for (let i = 0; i < 8; i++) {
-      const bx = 55 + i * 92, by = 580, bw = 85, bh = 18;
+    for (let i = 0; i < 9; i++) {
+      const bx = 45 + i * 82, by = 580, bw = 76, bh = 18;
       if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
         startAtStage(i);
       }
@@ -268,6 +270,9 @@ function handleClick(e) {
     if (cx > 650 && cx < 750 && cy > 545 && cy < 585 && helpPage < HELP_PAGES - 1) {
       helpPage++;
     }
+  } else if (gameState === STATE.PLAYING && currentStage === 5) {
+    // Whack-a-Mole click handling
+    whackClick(cx, cy);
   } else if (gameState === STATE.ENDING) {
     // Restart button
     if (cx > 250 && cx < 550 && cy > 510 && cy < 560) {
@@ -491,14 +496,14 @@ function drawTitle() {
 
   // Dev stage select buttons
   const devNamesMap = {
-    ko: ['러너', '양궁', '커피', '균형', '점프', '보스', '리듬', '해치'],
-    jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ジャンプ', 'ボス', 'リズム', '獬豸'],
-    en: ['Run', 'Archer', 'Coffee', 'Bal', 'Jump', 'Boss', 'Beat', 'Haechi']
+    ko: ['러너', '양궁', '커피', '균형', '점프', '두더지', '보스', '리듬', '해치'],
+    jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ジャンプ', 'モグラ', 'ボス', 'リズム', '獬豸'],
+    en: ['Run', 'Archer', 'Coffee', 'Bal', 'Jump', 'Whack', 'Boss', 'Beat', 'Haechi']
   };
   const devNames = devNamesMap[lang] || devNamesMap.ko;
-  drawText(t('dev'), 35, 590, 10, '#555');
-  for (let i = 0; i < 8; i++) {
-    const dbx = 55 + i * 92, dby = 580, dbw = 85, dbh = 18;
+  drawText(t('dev'), 25, 590, 10, '#555');
+  for (let i = 0; i < 9; i++) {
+    const dbx = 45 + i * 82, dby = 580, dbw = 76, dbh = 18;
     const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
     ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
     ctx.beginPath();
@@ -517,6 +522,7 @@ const STAGE_CONTROLS = [
   { icon: '⌨️', text: 'A  S  D  F' },
   { icon: '⌨️', text: '← →  Balance' },
   { icon: '⌨️', text: 'Hold Space = Charge / Release = Jump' },
+  { icon: '🖱️', text: 'Click enemies! Avoid 🌶️' },
   { icon: '⌨️', text: '← →  +  Space ×2~3' },
   { icon: '⌨️', text: 'Space (Timing)  /  Hold+Release' },
   { icon: '⌨️', text: 'Hold Space = Move  /  Release = Stop' },
@@ -594,7 +600,7 @@ function startAtStage(n) {
 
 function advanceStage() {
   currentStage++;
-  if (currentStage >= 8) {
+  if (currentStage >= 9) {
     // Victory!
     triggerEnding('victory');
     return;
@@ -621,9 +627,10 @@ function triggerEnding(type) {
     else if (deathStage === 2) endingIndex = 2; // dessert (coffee stage)
     else if (deathStage === 3) endingIndex = 8; // balance
     else if (deathStage === 4) endingIndex = 9; // jump
-    else if (deathStage === 5) endingIndex = 0; // default to archer for boss
-    else if (deathStage === 6) endingIndex = 7; // rhythm
-    else if (deathStage === 7) endingIndex = 4; // haechi
+    else if (deathStage === 5) endingIndex = 10; // whack
+    else if (deathStage === 6) endingIndex = 0; // default to archer for boss
+    else if (deathStage === 7) endingIndex = 7; // rhythm
+    else if (deathStage === 8) endingIndex = 4; // haechi
   } else if (type === 'victory') {
     if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
     else endingIndex = 5; // legend
@@ -956,7 +963,43 @@ function drawHelp() {
       drawText(t('help_jmp_clear'), W / 2, 520, 16, '#2196f3');
       break;
 
-    case 6: // S6 Boss
+    case 6: // S6 Whack-a-Mole
+      drawText(t('help_wam_title'), W / 2, 40, 28, '#4caf50');
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
+
+      drawText(t('help_wam_controls'), W / 2, 100, 16, '#81c784');
+      drawText(t('help_wam_desc'), W / 2, 130, 14, '#bdbdbd');
+
+      drawText(t('help_wam_enemies'), W / 2, 180, 16, '#ef5350');
+      drawText(t('help_wam_tourist'), 160, 210, 14, '#e0e0e0', 'left');
+      drawText(t('help_wam_pigeon'), 160, 235, 14, '#e0e0e0', 'left');
+      drawText(t('help_wam_camera'), 160, 260, 14, '#e0e0e0', 'left');
+      drawText(t('help_wam_bomb'), 160, 285, 14, '#e0e0e0', 'left');
+
+      drawText(t('help_wam_spice'), 160, 330, 14, '#ff5722', 'left');
+      drawText(t('help_wam_miss'), 160, 360, 14, '#9e9e9e', 'left');
+
+      // Illustration: 3x3 grid of holes
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          const hx = 350 + c * 70, hy = 410 + r * 45;
+          ctx.fillStyle = '#3e2723';
+          ctx.beginPath();
+          ctx.ellipse(hx, hy + 8, 22, 9, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      // Some enemies popping
+      drawEmoji('👣', 350, 400, 20);
+      drawEmoji('🕊️', 490, 445, 20);
+      drawEmoji('🌶️', 420, 448, 18);
+      drawEmoji('🔨', 490, 420, 24);
+
+      drawText(t('help_wam_clear'), W / 2, 510, 16, '#4caf50');
+      break;
+
+    case 7: // S7 Boss
       drawText(t('help_s4_title'), W / 2, 40, 28, '#f44336');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -987,7 +1030,7 @@ function drawHelp() {
       drawText(t('help_s4_win'), W / 2, 515, 16, '#4caf50');
       break;
 
-    case 7: // S7 Rhythm Karate
+    case 8: // S8 Rhythm Karate
       drawText(t('help_s6_title'), W / 2, 40, 28, '#ff9800');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -1012,7 +1055,7 @@ function drawHelp() {
       drawText(t('help_s6_clear'), W / 2, 520, 16, '#ff9800');
       break;
 
-    case 8: // S8 Haechi
+    case 9: // S9 Haechi
       drawText(t('help_s5_title_s6'), W / 2, 40, 28, '#9c27b0');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -1075,10 +1118,10 @@ function drawEndingsView() {
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
   ctx.beginPath(); ctx.roundRect(40, 90, W - 80, 440, 12); ctx.fill();
 
-  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance','e_cond_jump'];
+  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance','e_cond_jump','e_cond_whack'];
 
   for (let i = 0; i < ENDINGS.length; i++) {
-    const ey = 110 + i * 42;
+    const ey = 105 + i * 38;
     const e = ENDINGS[i];
     const isFound = endingsFound[e.id];
 
@@ -2882,6 +2925,317 @@ function drawJump() {
 }
 
 // ============================================================
+// WHACK-A-MOLE STAGE
+// ============================================================
+let wam = {};
+function initWhack() {
+  wam = {
+    holes: [],
+    timer: 0,
+    duration: 900,    // 15 seconds at 60fps
+    spawnTimer: 0,
+    score_local: 0,
+    invincible: 0,
+    hitEffects: [],
+    missEffects: [],
+    comboCount: 0,
+    comboTimer: 0,
+    shakeTimer: 0
+  };
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      wam.holes.push({
+        x: 200 + c * 200,
+        y: 180 + r * 140,
+        active: false,
+        emoji: '',
+        type: '',
+        points: 0,
+        timer: 0,
+        maxTimer: 60,
+        hitAnim: 0,
+        popY: 0,
+        popTarget: 40,
+        retreating: false
+      });
+    }
+  }
+}
+
+function whackClick(cx, cy) {
+  let hitSomething = false;
+  for (let i = 0; i < wam.holes.length; i++) {
+    const h = wam.holes[i];
+    if (!h.active || h.hitAnim > 0 || h.retreating) continue;
+    const dist = Math.hypot(cx - h.x, cy - (h.y - h.popY * 0.5));
+    if (dist < 55) {
+      hitSomething = true;
+      if (h.type === 'friend') {
+        // Hit spice packet - penalty
+        score -= 50;
+        wam.score_local -= 50;
+        wam.hitEffects.push({ x: h.x, y: h.y - 30, text: '-50', color: '#f44336', timer: 0 });
+        wam.comboCount = 0;
+        wam.comboTimer = 0;
+        wam.shakeTimer = 10;
+        if (wam.invincible <= 0) {
+          takeDamage('whack');
+          wam.invincible = 60;
+        }
+      } else {
+        // Hit enemy - score
+        score += h.points;
+        wam.score_local += h.points;
+        wam.comboCount++;
+        wam.comboTimer = 60;
+        wam.hitEffects.push({ x: h.x, y: h.y - 30, text: `+${h.points}`, color: '#ffeb3b', timer: 0 });
+        if (wam.comboCount >= 3) {
+          const comboBonus = wam.comboCount * 5;
+          score += comboBonus;
+          wam.score_local += comboBonus;
+        }
+      }
+      h.hitAnim = 15;
+      h.active = false;
+      break;
+    }
+  }
+  if (!hitSomething) {
+    // Clicked empty space
+    score -= 5;
+    wam.score_local -= 5;
+    wam.missEffects.push({ x: cx, y: cy, timer: 0 });
+    wam.comboCount = 0;
+    wam.comboTimer = 0;
+  }
+}
+
+function updateWhack() {
+  wam.timer++;
+  if (wam.invincible > 0) wam.invincible--;
+  if (wam.shakeTimer > 0) wam.shakeTimer--;
+  if (wam.comboTimer > 0) wam.comboTimer--;
+  if (wam.comboTimer <= 0) wam.comboCount = 0;
+
+  // Spawn timing: gets faster over time
+  const progress = wam.timer / wam.duration;
+  const spawnInterval = Math.max(20, 45 - Math.floor(progress * 25));
+  wam.spawnTimer++;
+  if (wam.spawnTimer >= spawnInterval) {
+    wam.spawnTimer = 0;
+    // Find empty holes
+    const emptyHoles = wam.holes.filter(h => !h.active && h.hitAnim <= 0);
+    if (emptyHoles.length > 0) {
+      const h = emptyHoles[Math.floor(Math.random() * emptyHoles.length)];
+      const isFriendly = Math.random() < 0.2;
+      if (isFriendly) {
+        h.emoji = '🌶️';
+        h.type = 'friend';
+        h.points = 0;
+      } else {
+        const roll = Math.random();
+        if (roll < 0.35) {
+          h.emoji = '👣';
+          h.type = 'enemy';
+          h.points = 10;
+        } else if (roll < 0.65) {
+          h.emoji = '🕊️';
+          h.type = 'enemy';
+          h.points = 15;
+        } else if (roll < 0.85) {
+          h.emoji = '📷';
+          h.type = 'enemy';
+          h.points = 20;
+        } else {
+          h.emoji = '💣';
+          h.type = 'enemy';
+          h.points = 30;
+        }
+      }
+      h.active = true;
+      h.timer = 0;
+      // Duration: shorter over time, bombs always short
+      const baseDuration = h.emoji === '💣' ? 30 : 65;
+      h.maxTimer = Math.max(25, baseDuration - Math.floor(progress * 25));
+      h.popY = 0;
+      h.popTarget = 40;
+      h.retreating = false;
+    }
+  }
+
+  // Update holes
+  wam.holes.forEach(h => {
+    // Pop-up animation
+    if (h.active && !h.retreating) {
+      if (h.popY < h.popTarget) {
+        h.popY += (h.popTarget - h.popY) * 0.25;
+        if (h.popTarget - h.popY < 1) h.popY = h.popTarget;
+      }
+      h.timer++;
+      if (h.timer >= h.maxTimer) {
+        h.retreating = true;
+      }
+    }
+    // Retreat animation
+    if (h.retreating) {
+      h.popY -= 4;
+      if (h.popY <= 0) {
+        h.popY = 0;
+        h.active = false;
+        h.retreating = false;
+      }
+    }
+    // Hit animation countdown
+    if (h.hitAnim > 0) {
+      h.hitAnim--;
+    }
+  });
+
+  // Update effects
+  wam.hitEffects = wam.hitEffects.filter(e => { e.timer++; return e.timer < 40; });
+  wam.missEffects = wam.missEffects.filter(e => { e.timer++; return e.timer < 20; });
+
+  // Stage complete
+  if (wam.timer >= wam.duration && hp > 0) {
+    advanceStage();
+  }
+}
+
+function drawWhack() {
+  // Background: park/garden gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#1b5e20');
+  grad.addColorStop(0.4, '#2e7d32');
+  grad.addColorStop(0.7, '#4caf50');
+  grad.addColorStop(1, '#81c784');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Decorative grass tufts
+  ctx.fillStyle = '#388e3c';
+  for (let i = 0; i < 12; i++) {
+    const gx = (i * 73 + 20) % W;
+    const gy = 100 + (i * 47) % 400;
+    ctx.beginPath();
+    ctx.moveTo(gx - 8, gy + 5);
+    ctx.quadraticCurveTo(gx - 3, gy - 10, gx, gy + 5);
+    ctx.quadraticCurveTo(gx + 3, gy - 12, gx + 8, gy + 5);
+    ctx.fill();
+  }
+
+  // Screen shake
+  if (wam.shakeTimer > 0) {
+    ctx.save();
+    ctx.translate(Math.random() * 6 - 3, Math.random() * 6 - 3);
+  }
+
+  // Draw holes
+  wam.holes.forEach(h => {
+    // Hole shadow on ground
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.beginPath();
+    ctx.ellipse(h.x, h.y + 25, 50, 20, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Dark hole ellipse
+    ctx.fillStyle = '#1b0f00';
+    ctx.beginPath();
+    ctx.ellipse(h.x, h.y + 18, 42, 16, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Hole rim (brown ring)
+    ctx.strokeStyle = '#5d4037';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.ellipse(h.x, h.y + 18, 44, 17, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // If active, draw character popping up (clipped to hole area)
+    if (h.active && h.popY > 0) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(h.x - 40, h.y - 60, 80, 78);
+      ctx.clip();
+      // Friendly items glow differently
+      if (h.type === 'friend') {
+        ctx.fillStyle = 'rgba(255,87,34,0.25)';
+        ctx.beginPath();
+        ctx.arc(h.x, h.y - h.popY + 10, 24, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      drawEmoji(h.emoji, h.x, h.y - h.popY + 10, 36);
+      ctx.restore();
+    }
+
+    // Hit animation (burst)
+    if (h.hitAnim > 0) {
+      const alpha = h.hitAnim / 15;
+      ctx.globalAlpha = alpha;
+      drawEmoji('💥', h.x, h.y - 15, 30 + (15 - h.hitAnim) * 1.5);
+      // Stars burst outward
+      const spread = (15 - h.hitAnim) * 3;
+      for (let s = 0; s < 4; s++) {
+        const angle = (s / 4) * Math.PI * 2 + h.hitAnim * 0.2;
+        drawEmoji('✦', h.x + Math.cos(angle) * spread, h.y - 15 + Math.sin(angle) * spread, 12);
+      }
+      ctx.globalAlpha = 1;
+    }
+  });
+
+  // Floating score texts
+  wam.hitEffects.forEach(e => {
+    const alpha = 1 - e.timer / 40;
+    const ey = e.y - e.timer * 1.5;
+    ctx.globalAlpha = alpha;
+    drawText(e.text, e.x, ey, 22, e.color);
+    ctx.globalAlpha = 1;
+  });
+
+  // Miss effects (small X)
+  wam.missEffects.forEach(e => {
+    const alpha = 1 - e.timer / 20;
+    ctx.globalAlpha = alpha;
+    drawText('✕', e.x, e.y, 18, '#ff5252');
+    ctx.globalAlpha = 1;
+  });
+
+  // Combo display
+  if (wam.comboCount >= 3 && wam.comboTimer > 0) {
+    const ca = Math.min(1, wam.comboTimer / 30);
+    const pulse = 1 + Math.sin(frameCount * 0.15) * 0.1;
+    ctx.save();
+    ctx.translate(W / 2, 80);
+    ctx.scale(pulse, pulse);
+    drawText(`COMBO x${wam.comboCount}`, 0, 0, 28, `rgba(255,235,59,${ca})`);
+    ctx.restore();
+  }
+
+  // Hammer cursor following mouse (only during this stage)
+  drawEmoji('🔨', mouseX + 15, mouseY - 15, 32);
+
+  if (wam.shakeTimer > 0) ctx.restore();
+
+  // Score display
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.roundRect(W - 150, 55, 130, 35, 8);
+  ctx.fill();
+  drawText(`🎯 ${wam.score_local}`, W - 85, 72, 18, '#ffeb3b');
+
+  // Progress bar
+  const prog = wam.timer / wam.duration;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(50, H - 20, W - 100, 10);
+  ctx.fillStyle = '#4caf50';
+  ctx.fillRect(50, H - 20, (W - 100) * prog, 10);
+
+  // Timer countdown
+  const secLeft = Math.max(0, Math.ceil((wam.duration - wam.timer) / 60));
+  const timerColor = secLeft <= 5 ? '#f44336' : secLeft <= 10 ? '#ff9800' : '#fff';
+  drawText(`⏱ ${secLeft}s`, 80, 72, 18, timerColor);
+}
+
+// ============================================================
 // STAGE INIT ROUTER
 // ============================================================
 function initStage(n) {
@@ -2891,9 +3245,10 @@ function initStage(n) {
     case 2: initStage4(); break;
     case 3: initBalance(); break;
     case 4: initJump(); break;
-    case 5: initStage5(); break;
-    case 6: initBonusGame(); break;
-    case 7: initStage3(); break;
+    case 5: initWhack(); break;
+    case 6: initStage5(); break;
+    case 7: initBonusGame(); break;
+    case 8: initStage3(); break;
   }
 }
 
@@ -3474,9 +3829,10 @@ function update() {
         case 2: updateStage4(); break;
         case 3: updateBalance(); break;
         case 4: updateJump(); break;
-        case 5: updateStage5(); break;
-        case 6: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 7: updateStage3(); break;
+        case 5: updateWhack(); break;
+        case 6: updateStage5(); break;
+        case 7: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 8: updateStage3(); break;
       }
       break;
     case STATE.BONUS_INTRO:
@@ -3505,9 +3861,10 @@ function draw() {
         case 2: drawStage4(); break;
         case 3: drawBalance(); break;
         case 4: drawJump(); break;
-        case 5: drawStage5(); break;
-        case 6: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 7: drawStage3(); break;
+        case 5: drawWhack(); break;
+        case 6: drawStage5(); break;
+        case 7: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 8: drawStage3(); break;
       }
       drawHUD();
       break;
