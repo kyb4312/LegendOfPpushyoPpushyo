@@ -2160,8 +2160,8 @@ function drawStage5() {
 let bal = {};
 function initBalance() {
   bal = {
-    tilt: 0,
-    tiltSpeed: 0,
+    tilt: (Math.random() - 0.5) * 0.3,  // start slightly off-center
+    tiltSpeed: (Math.random() - 0.5) * 0.01,
     stack: [],
     timer: 0,
     duration: 900, // 15 seconds at 60fps
@@ -2170,7 +2170,13 @@ function initBalance() {
     dropAnim: [],
     nextItem: null,
     dropWarning: 0,
-    shakeTimer: 0
+    shakeTimer: 0,
+    // Wind/disturbance system
+    windForce: 0,
+    windTimer: 0,
+    windInterval: 180 + Math.random() * 120,  // first wind at 3~5 seconds
+    windLabel: '',
+    windLabelTimer: 0
   };
 }
 
@@ -2179,17 +2185,46 @@ function updateBalance() {
   if (bal.invincible > 0) bal.invincible--;
   if (bal.shakeTimer > 0) bal.shakeTimer--;
 
-  // Controls
+  // Controls (reduced sensitivity)
   if (keys['ArrowLeft'] || keys['KeyA']) {
-    bal.tiltSpeed -= 0.04;
+    bal.tiltSpeed -= 0.02;
   }
   if (keys['ArrowRight'] || keys['KeyD']) {
-    bal.tiltSpeed += 0.04;
+    bal.tiltSpeed += 0.02;
   }
 
-  // Physics: gravity pulls toward lean direction
+  // Wind / disturbance events
+  bal.windTimer++;
+  if (bal.windLabelTimer > 0) bal.windLabelTimer--;
+  bal.windForce *= 0.96; // wind dies down
+  if (bal.windTimer >= bal.windInterval) {
+    bal.windTimer = 0;
+    bal.windInterval = 120 + Math.random() * 150; // next event in 2~4.5s
+    const roll = Math.random();
+    const dir = Math.random() > 0.5 ? 1 : -1;
+    if (roll < 0.4) {
+      // Wind gust
+      bal.windForce = dir * (0.015 + Math.random() * 0.015);
+      bal.windLabel = '💨';
+      bal.windLabelTimer = 60;
+    } else if (roll < 0.7) {
+      // Truck passes - big shake
+      bal.windForce = dir * (0.025 + Math.random() * 0.02);
+      bal.windLabel = '🚛';
+      bal.windLabelTimer = 60;
+      bal.shakeTimer = 15;
+    } else {
+      // Bird bump
+      bal.windForce = dir * (0.01 + Math.random() * 0.01);
+      bal.windLabel = '🕊️';
+      bal.windLabelTimer = 40;
+    }
+  }
+
+  // Physics: gravity + wind
   const gravityMult = 1 + bal.stack.length * 0.15;
   bal.tiltSpeed += bal.tilt * 0.003 * gravityMult;
+  bal.tiltSpeed += bal.windForce;
 
   // Friction / damping
   bal.tiltSpeed *= 0.95;
@@ -2403,6 +2438,16 @@ function drawBalance() {
   ctx.strokeStyle = '#000';
   ctx.lineWidth = 1.5;
   ctx.stroke();
+
+  // Wind/disturbance label
+  if (bal.windLabelTimer > 0) {
+    const wa = Math.min(1, bal.windLabelTimer / 20);
+    const wx = bal.windForce > 0 ? 100 : W - 100;
+    drawEmoji(bal.windLabel, wx, H / 2, 40);
+    ctx.globalAlpha = wa;
+    drawEmoji(bal.windLabel, wx + (bal.windForce > 0 ? -40 : 40), H / 2, 28);
+    ctx.globalAlpha = 1;
+  }
 
   // Stack count
   drawText(`📦 x${bal.stack.length}`, W - 80, 70, 16, '#fff', 'center');
