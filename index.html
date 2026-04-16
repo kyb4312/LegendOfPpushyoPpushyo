@@ -1353,8 +1353,34 @@ function initStage3() {
     won: false,
     chant: '무궁화꽃이피었습니다',
     litChars: 0,
-    transitionDuration: 120
+    transitionDuration: 120,
+    charTimes: []
   };
+  generateChantTiming();
+}
+
+function generateChantTiming() {
+  const len = s3.chant.length;
+  const delays = [];
+  let total = 0;
+  for (let i = 0; i < len; i++) {
+    let delay;
+    if (Math.random() < 0.15) {
+      // Dramatic pause (느린 음절): 20~35 frames
+      delay = 20 + Math.floor(Math.random() * 15);
+    } else {
+      // Fast-biased (빠른 쪽으로 가중치): 3~20 frames
+      delay = 3 + Math.floor(Math.pow(Math.random(), 2) * 17);
+    }
+    delays.push(delay);
+    total += delay;
+  }
+  // Build cumulative times
+  s3.charTimes = [0];
+  for (let i = 0; i < len; i++) {
+    s3.charTimes.push(s3.charTimes[i] + delays[i]);
+  }
+  s3.transitionDuration = total;
 }
 
 function getS3Pos(dist) {
@@ -1383,9 +1409,13 @@ function updateStage3() {
   // Phase cycling: transition (움직여! + 글자 점등) ↔ red (멈춰!)
   s3.phaseTimer++;
   if (s3.phase === 'transition') {
-    // Can move, letters lighting up
+    // Can move, letters lighting up (per-char timing)
     s3.looking = false;
-    s3.litChars = Math.min(s3.chant.length, Math.floor((s3.phaseTimer / s3.transitionDuration) * s3.chant.length));
+    let lit = 0;
+    for (let i = 1; i < s3.charTimes.length; i++) {
+      if (s3.phaseTimer >= s3.charTimes[i]) lit = i;
+    }
+    s3.litChars = Math.min(s3.chant.length, lit);
     if (s3.phaseTimer >= s3.transitionDuration) {
       s3.phase = 'red';
       s3.phaseTimer = 0;
@@ -1406,15 +1436,8 @@ function updateStage3() {
       s3.haechiAngle = 0;
       s3.looking = false;
       s3.litChars = 0;
-      // Highly random transition: 0.5~3초, 예측 불가
-      const roll = Math.random();
-      if (roll < 0.25) {
-        s3.transitionDuration = 30 + Math.random() * 25;   // 급속 (0.5~0.9초)
-      } else if (roll < 0.45) {
-        s3.transitionDuration = 130 + Math.random() * 50;  // 느림 (2.2~3초)
-      } else {
-        s3.transitionDuration = 55 + Math.random() * 75;   // 중간 (0.9~2.2초)
-      }
+      // Generate new per-character timing for next chant
+      generateChantTiming();
     }
   }
 
