@@ -497,20 +497,26 @@ function drawTitle() {
     drawText(labels[i], lbx + lbw / 2, lby + lbh / 2, 11, selected ? '#fff' : '#bbb');
   }
 
-  titlePulse = Math.sin(frameCount * 0.05) * 0.1 + 1;
+  titlePulse = Math.sin(frameCount * 0.05) * 0.05 + 1;
 
-  // Title
-  ctx.save();
-  ctx.translate(W / 2, 210);
-  ctx.scale(titlePulse, titlePulse);
-  drawText(t('title'), 0, 0, 42, '#ff6b6b');
-  ctx.restore();
-
-  // Subtitle
-  drawText(t('subtitle'), W / 2, 260, 16, '#b39ddb');
-
-  // Player character preview
-  drawPlayer(W / 2, 300, 40);
+  // Title image with pulse animation
+  const titleImg = bgImages['title'];
+  if (titleImg && titleImg.complete && titleImg.naturalWidth > 0) {
+    ctx.save();
+    const imgW = 500, imgH = 250;
+    ctx.translate(W / 2, 190);
+    ctx.scale(titlePulse, titlePulse);
+    ctx.drawImage(titleImg, -imgW / 2, -imgH / 2, imgW, imgH);
+    ctx.restore();
+  } else {
+    // Fallback text
+    ctx.save();
+    ctx.translate(W / 2, 210);
+    ctx.scale(titlePulse, titlePulse);
+    drawText(t('title'), 0, 0, 42, '#ff6b6b');
+    ctx.restore();
+    drawText(t('subtitle'), W / 2, 260, 16, '#b39ddb');
+  }
 
   // Start button
   const bx = 300, by = 340, bw = 200, bh = 50;
