@@ -85,10 +85,11 @@ const STATE = {
   BONUS_INTRO: 'bonus_intro',
   BONUS: 'bonus',
   BONUS_RESULT: 'bonus_result',
-  PAUSED: 'paused'
+  PAUSED: 'paused',
+  ENDINGS_VIEW: 'endings_view'
 };
 let helpPage = 0;
-const HELP_PAGES = 9;
+const HELP_PAGES = 8;
 
 let gameState = STATE.TITLE;
 let currentStage = 0;
@@ -236,12 +237,21 @@ function handleClick(e) {
       helpPage = 0;
       gameState = STATE.HELP;
     }
+    // Ending collection button
+    if (cx > 280 && cx < 520 && cy > 480 && cy < 515) {
+      gameState = STATE.ENDINGS_VIEW;
+    }
     // Dev stage select buttons
     for (let i = 0; i < 7; i++) {
-      const bx = 100 + i * 55, by = 580, bw = 45, bh = 18;
+      const bx = 75 + i * 100, by = 580, bw = 90, bh = 18;
       if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
         startAtStage(i);
       }
+    }
+  } else if (gameState === STATE.ENDINGS_VIEW) {
+    // Back button
+    if (cx > 300 && cx < 500 && cy > 540 && cy < 580) {
+      gameState = STATE.TITLE;
     }
   } else if (gameState === STATE.HELP) {
     // Back button
@@ -461,34 +471,33 @@ function drawTitle() {
   ctx.stroke();
   drawText(t('help'), W / 2, 430, 16, '#fff');
 
-  // Ending collection
+  // Ending collection button
   const found = Object.keys(endingsFound).length;
-  drawText(`${found} / 9 ${t('ending_collect')}`, W / 2, 490, 14, '#9e9e9e');
-
-  // Ending icons
-  for (let i = 0; i < 9; i++) {
-    const ex = W / 2 - 140 + i * 35;
-    const ey = 515;
-    if (endingsFound[ENDINGS[i].id]) {
-      drawEmoji(ENDINGS[i].emoji, ex, ey, 22);
-    } else {
-      drawText('?', ex, ey, 18, '#555');
-    }
-  }
+  const ebx = 280, eby = 480, ebw = 240, ebh = 35;
+  const eHover = mouseX > ebx && mouseX < ebx + ebw && mouseY > eby && mouseY < eby + ebh;
+  ctx.fillStyle = eHover ? '#424242' : '#2a2a2a';
+  ctx.beginPath();
+  ctx.roundRect(ebx, eby, ebw, ebh, 8);
+  ctx.fill();
+  ctx.strokeStyle = '#616161';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  drawText(`🏆 ${found} / 9 ${t('ending_collect')}`, W / 2, eby + ebh / 2, 14, eHover ? '#ffd54f' : '#9e9e9e');
 
   // Controls hint
   drawText(t('controls_hint'), W / 2, 572, 11, '#666');
 
   // Dev stage select buttons
-  drawText(t('dev'), 70, 590, 10, '#555');
+  const devNames = ['궁', '궁', '커피', '균형', '보스', '리듬', '해치'];
+  drawText(t('dev'), 55, 590, 10, '#555');
   for (let i = 0; i < 7; i++) {
-    const dbx = 100 + i * 55, dby = 580, dbw = 45, dbh = 18;
+    const dbx = 75 + i * 100, dby = 580, dbw = 90, dbh = 18;
     const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
     ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
     ctx.beginPath();
     ctx.roundRect(dbx, dby, dbw, dbh, 4);
     ctx.fill();
-    drawText(`S${i + 1}`, dbx + dbw / 2, dby + dbh / 2, 11, '#ce93d8');
+    drawText(`${i+1}.${devNames[i]}`, dbx + dbw / 2, dby + dbh / 2, 10, '#ce93d8');
   }
 }
 
@@ -993,35 +1002,47 @@ function drawHelp() {
       drawText(t('help_s5_progress'), W / 2, 520, 12, '#9e9e9e');
       break;
 
-    case 8: // Ending list
-      drawText(t('help_endlist_title'), W / 2, 40, 28, '#ffd54f');
-      ctx.fillStyle = 'rgba(255,255,255,0.1)';
-      ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
-
-      drawText(t('help_endlist_desc'), W / 2, 100, 16, '#ffab91');
-
-      const endingCondKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance'];
-
-      for (let i = 0; i < ENDINGS.length; i++) {
-        const ey = 130 + i * 50;
-        const found = endingsFound[ENDINGS[i].id];
-
-        drawEmoji(ENDINGS[i].emoji, 100, ey, 22);
-        drawText(found ? t(ENDINGS[i].titleKey) : '???', 140, ey - 7, 15, found ? '#ffd54f' : '#616161', 'left');
-        drawText(found ? t(endingCondKeys[i]) : '???', 140, ey + 13, 12, found ? '#bdbdbd' : '#424242', 'left');
-
-        if (found) {
-          drawText('✓', 700, ey, 18, '#4caf50');
-        } else {
-          drawText('—', 700, ey, 18, '#616161');
-        }
-      }
-
-      drawText(t('help_endlist_collect'), W / 2, 520, 14, '#9e9e9e');
-      break;
+    // Ending list removed - now accessible from title screen button
   }
 
   drawHelpNav();
+}
+
+// ============================================================
+// ENDINGS VIEW (standalone screen)
+// ============================================================
+function drawEndingsView() {
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#0d1b2a');
+  grad.addColorStop(1, '#1b2838');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  drawText('🏆 ' + t('ending_collect'), W / 2, 40, 28, '#ffd54f');
+  const found = Object.keys(endingsFound).length;
+  drawText(`${found} / ${ENDINGS.length}`, W / 2, 70, 16, '#9e9e9e');
+
+  ctx.fillStyle = 'rgba(255,255,255,0.06)';
+  ctx.beginPath(); ctx.roundRect(40, 90, W - 80, 440, 12); ctx.fill();
+
+  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance'];
+
+  for (let i = 0; i < ENDINGS.length; i++) {
+    const ey = 115 + i * 47;
+    const e = ENDINGS[i];
+    const isFound = endingsFound[e.id];
+
+    drawEmoji(isFound ? e.emoji : '❓', 85, ey, 22);
+    drawText(isFound ? t(e.titleKey) : '???', 120, ey - 8, 16, isFound ? '#ffd54f' : '#555', 'left');
+    drawText(isFound ? t(condKeys[i]) : '???', 120, ey + 14, 12, isFound ? '#bdbdbd' : '#424242', 'left');
+    drawText(isFound ? '✓' : '—', 720, ey, 16, isFound ? '#4caf50' : '#555');
+  }
+
+  // Back button
+  const bH = mouseX > 300 && mouseX < 500 && mouseY > 540 && mouseY < 580;
+  ctx.fillStyle = bH ? '#c62828' : '#b71c1c';
+  ctx.beginPath(); ctx.roundRect(300, 540, 200, 40, 8); ctx.fill();
+  drawText(t('back'), 400, 560, 16, '#fff');
 }
 
 // ============================================================
@@ -1442,6 +1463,8 @@ function initStage3() {
     moving: false,
     invincible: 0,
     won: false,
+    timeLimit: 1200, // 20 seconds
+    elapsed: 0,
     chant: '무궁화꽃이피었습니다',
     litChars: 0,
     transitionDuration: 120,
@@ -1543,6 +1566,14 @@ function updateStage3() {
     takeDamage('haechi');
     s3.invincible = 90;
     s3.distance = Math.max(0, s3.distance - 150);
+  }
+
+  // Time limit
+  s3.elapsed++;
+  if (s3.elapsed >= s3.timeLimit && !s3.won) {
+    takeDamage('haechi');
+    takeDamage('haechi');
+    takeDamage('haechi'); // instant death
   }
 
   // Win condition
@@ -1657,6 +1688,11 @@ function drawStage3() {
   ctx.fillRect(50, H - 20, W - 100, 10);
   ctx.fillStyle = '#9c27b0';
   ctx.fillRect(50, H - 20, (W - 100) * Math.min(1, prog), 10);
+
+  // Timer countdown
+  const secLeft = Math.max(0, Math.ceil((s3.timeLimit - s3.elapsed) / 60));
+  const timerColor = secLeft <= 5 ? '#f44336' : secLeft <= 10 ? '#ff9800' : '#fff';
+  drawText(`⏱ ${secLeft}s`, W - 60, 180, 18, timerColor);
 
   // Hint
   if (frameCount % 120 < 60) {
@@ -3006,6 +3042,9 @@ function draw() {
       break;
     case STATE.HELP:
       drawHelp();
+      break;
+    case STATE.ENDINGS_VIEW:
+      drawEndingsView();
       break;
     case STATE.BONUS_INTRO:
       drawBonusIntro();
