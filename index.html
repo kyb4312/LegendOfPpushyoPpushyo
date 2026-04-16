@@ -89,7 +89,7 @@ const STATE = {
   ENDINGS_VIEW: 'endings_view'
 };
 let helpPage = 0;
-const HELP_PAGES = 10;
+const HELP_PAGES = 9;
 
 let gameState = STATE.TITLE;
 let currentStage = 0;
@@ -153,7 +153,6 @@ const STAGES = [
   { nameKey: 's3_name', subKey: 's3_sub' },
   { nameKey: 's_bal_name', subKey: 's_bal_sub' },
   { nameKey: 's_jmp_name', subKey: 's_jmp_sub' },
-  { nameKey: 's_wam_name', subKey: 's_wam_sub' },
   { nameKey: 's4_name', subKey: 's4_sub' },
   { nameKey: 's6_name', subKey: 's6_sub' },
   { nameKey: 's5_name', subKey: 's5_sub' }
@@ -247,7 +246,7 @@ function handleClick(e) {
       gameState = STATE.ENDINGS_VIEW;
     }
     // Dev stage select buttons
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 8; i++) {
       const bx = 45 + i * 82, by = 580, bw = 76, bh = 18;
       if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
         startAtStage(i);
@@ -271,9 +270,6 @@ function handleClick(e) {
     if (cx > 650 && cx < 750 && cy > 545 && cy < 585 && helpPage < HELP_PAGES - 1) {
       helpPage++;
     }
-  } else if (gameState === STATE.PLAYING && currentStage === 5) {
-    // Whack-a-Mole click handling
-    whackClick(cx, cy);
   } else if (gameState === STATE.ENDING) {
     // Restart button
     if (cx > 250 && cx < 550 && cy > 510 && cy < 560) {
@@ -497,13 +493,13 @@ function drawTitle() {
 
   // Dev stage select buttons
   const devNamesMap = {
-    ko: ['러너', '양궁', '커피', '균형', '점프', '두더지', '보스', '리듬', '해치'],
-    jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ジャンプ', 'モグラ', 'ボス', 'リズム', '獬豸'],
-    en: ['Run', 'Archer', 'Coffee', 'Bal', 'Jump', 'Whack', 'Boss', 'Beat', 'Haechi']
+    ko: ['러너', '양궁', '커피', '균형', '점프', '보스', '리듬', '해치'],
+    jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ジャンプ', 'ボス', 'リズム', '獬豸'],
+    en: ['Run', 'Archer', 'Coffee', 'Bal', 'Jump', 'Boss', 'Beat', 'Haechi']
   };
   const devNames = devNamesMap[lang] || devNamesMap.ko;
   drawText(t('dev'), 25, 590, 10, '#555');
-  for (let i = 0; i < 9; i++) {
+  for (let i = 0; i < 8; i++) {
     const dbx = 45 + i * 82, dby = 580, dbw = 76, dbh = 18;
     const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
     ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
@@ -523,7 +519,6 @@ const STAGE_CONTROLS = [
   { icon: '⌨️', text: 'A  S  D  F' },
   { icon: '⌨️', text: '← →  Balance' },
   { icon: '⌨️', text: 'Hold Space = Charge / Release = Jump' },
-  { icon: '🖱️', text: 'Click enemies! Avoid 🌶️' },
   { icon: '⌨️', text: '← →  +  Space ×2~3' },
   { icon: '⌨️', text: 'Space (Timing)  /  Hold+Release' },
   { icon: '⌨️', text: 'Hold Space = Move  /  Release = Stop' },
@@ -600,8 +595,10 @@ function startAtStage(n) {
 }
 
 function advanceStage() {
+  // Recover 1 HP on stage clear (max 3)
+  hp = Math.min(3, hp + 1);
   currentStage++;
-  if (currentStage >= 9) {
+  if (currentStage >= 8) {
     // Victory!
     triggerEnding('victory');
     return;
@@ -628,10 +625,9 @@ function triggerEnding(type) {
     else if (deathStage === 2) endingIndex = 2; // dessert (coffee stage)
     else if (deathStage === 3) endingIndex = 8; // balance
     else if (deathStage === 4) endingIndex = 9; // jump
-    else if (deathStage === 5) endingIndex = 10; // whack
-    else if (deathStage === 6) endingIndex = 11; // chopstick boss
-    else if (deathStage === 7) endingIndex = 7; // rhythm
-    else if (deathStage === 8) endingIndex = 4; // haechi
+    else if (deathStage === 5) endingIndex = 11; // chopstick boss
+    else if (deathStage === 6) endingIndex = 7; // rhythm
+    else if (deathStage === 7) endingIndex = 4; // haechi
   } else if (type === 'victory') {
     if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
     else endingIndex = 5; // legend
@@ -964,43 +960,7 @@ function drawHelp() {
       drawText(t('help_jmp_clear'), W / 2, 520, 16, '#2196f3');
       break;
 
-    case 6: // S6 Whack-a-Mole
-      drawText(t('help_wam_title'), W / 2, 40, 28, '#4caf50');
-      ctx.fillStyle = 'rgba(255,255,255,0.1)';
-      ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
-
-      drawText(t('help_wam_controls'), W / 2, 100, 16, '#81c784');
-      drawText(t('help_wam_desc'), W / 2, 130, 14, '#bdbdbd');
-
-      drawText(t('help_wam_enemies'), W / 2, 180, 16, '#ef5350');
-      drawText(t('help_wam_tourist'), 160, 210, 14, '#e0e0e0', 'left');
-      drawText(t('help_wam_pigeon'), 160, 235, 14, '#e0e0e0', 'left');
-      drawText(t('help_wam_camera'), 160, 260, 14, '#e0e0e0', 'left');
-      drawText(t('help_wam_bomb'), 160, 285, 14, '#e0e0e0', 'left');
-
-      drawText(t('help_wam_spice'), 160, 330, 14, '#ff5722', 'left');
-      drawText(t('help_wam_miss'), 160, 360, 14, '#9e9e9e', 'left');
-
-      // Illustration: 3x3 grid of holes
-      for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 3; c++) {
-          const hx = 350 + c * 70, hy = 410 + r * 45;
-          ctx.fillStyle = '#3e2723';
-          ctx.beginPath();
-          ctx.ellipse(hx, hy + 8, 22, 9, 0, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
-      // Some enemies popping
-      drawEmoji('👣', 350, 400, 20);
-      drawEmoji('🕊️', 490, 445, 20);
-      drawEmoji('🌶️', 420, 448, 18);
-      drawEmoji('🔨', 490, 420, 24);
-
-      drawText(t('help_wam_clear'), W / 2, 510, 16, '#4caf50');
-      break;
-
-    case 7: // S7 Boss
+    case 6: // S6 Boss
       drawText(t('help_s4_title'), W / 2, 40, 28, '#f44336');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -1031,7 +991,7 @@ function drawHelp() {
       drawText(t('help_s4_win'), W / 2, 515, 16, '#4caf50');
       break;
 
-    case 8: // S8 Rhythm Karate
+    case 7: // S7 Rhythm Karate
       drawText(t('help_s6_title'), W / 2, 40, 28, '#ff9800');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -1056,7 +1016,7 @@ function drawHelp() {
       drawText(t('help_s6_clear'), W / 2, 520, 16, '#ff9800');
       break;
 
-    case 9: // S9 Haechi
+    case 8: // S8 Haechi
       drawText(t('help_s5_title_s6'), W / 2, 40, 28, '#9c27b0');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -3245,10 +3205,9 @@ function initStage(n) {
     case 2: initStage4(); break;
     case 3: initBalance(); break;
     case 4: initJump(); break;
-    case 5: initWhack(); break;
-    case 6: initStage5(); break;
-    case 7: initBonusGame(); break;
-    case 8: initStage3(); break;
+    case 5: initStage5(); break;
+    case 6: initBonusGame(); break;
+    case 7: initStage3(); break;
   }
 }
 
@@ -3829,10 +3788,9 @@ function update() {
         case 2: updateStage4(); break;
         case 3: updateBalance(); break;
         case 4: updateJump(); break;
-        case 5: updateWhack(); break;
-        case 6: updateStage5(); break;
-        case 7: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 8: updateStage3(); break;
+        case 5: updateStage5(); break;
+        case 6: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 7: updateStage3(); break;
       }
       break;
     case STATE.BONUS_INTRO:
@@ -3861,10 +3819,9 @@ function draw() {
         case 2: drawStage4(); break;
         case 3: drawBalance(); break;
         case 4: drawJump(); break;
-        case 5: drawWhack(); break;
-        case 6: drawStage5(); break;
-        case 7: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 8: drawStage3(); break;
+        case 5: drawStage5(); break;
+        case 6: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 7: drawStage3(); break;
       }
       drawHUD();
       break;
