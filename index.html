@@ -147,6 +147,8 @@ let endingsScrollY = 0;
 
 // Ending collection (localStorage)
 let endingsFound = JSON.parse(localStorage.getItem('ppushyo_endings') || '{}');
+// Stage unlock tracking
+let maxStageReached = parseInt(localStorage.getItem('ppushyo_unlocked') || '0');
 
 // --- STAGE DATA ---
 const STAGES = [
@@ -251,13 +253,22 @@ function handleClick(e) {
     if (cx > 300 && cx < 500 && cy > 350 && cy < 400) {
       startGame();
     }
+    // Stage select buttons
+    if (maxStageReached > 0) {
+      for (let i = 0; i < 8; i++) {
+        const sbx = 72 + i * 84, sby = 424, sbw = 76, sbh = 24;
+        if (i <= maxStageReached && cx > sbx && cx < sbx + sbw && cy > sby && cy < sby + sbh) {
+          startAtStage(i);
+        }
+      }
+    }
     // Help button
-    if (cx > 300 && cx < 500 && cy > 410 && cy < 450) {
+    if (cx > 300 && cx < 500 && cy > 460 && cy < 500) {
       helpPage = 0;
       gameState = STATE.HELP;
     }
     // Ending collection button
-    if (cx > 280 && cx < 520 && cy > 480 && cy < 515) {
+    if (cx > 280 && cx < 520 && cy > 515 && cy < 545) {
       gameState = STATE.ENDINGS_VIEW;
     }
     // Dev stage select buttons (only when devMode active)
@@ -513,8 +524,34 @@ function drawTitle() {
   ctx.stroke();
   drawText(t('start'), W / 2, 375, 20, '#fff');
 
+  // Stage select buttons (unlocked stages)
+  if (maxStageReached > 0) {
+    drawText('STAGE SELECT', W / 2, 412, 12, '#9e9e9e');
+    const stageShortNames = {
+      ko: ['러너','양궁','커피','균형','점프','보스','리듬','해치'],
+      jp: ['ラン','弓','珈琲','バラ','跳','ボス','リズ','獬豸'],
+      en: ['Run','Arch','Cof','Bal','Jmp','Boss','Rhy','Hae']
+    };
+    const sNames = stageShortNames[lang] || stageShortNames.ko;
+    for (let i = 0; i < 8; i++) {
+      const sbx = 72 + i * 84, sby = 424, sbw = 76, sbh = 24;
+      const unlocked = i <= maxStageReached;
+      const sHover = unlocked && mouseX > sbx && mouseX < sbx + sbw && mouseY > sby && mouseY < sby + sbh;
+      ctx.fillStyle = sHover ? '#4a148c' : unlocked ? '#311b92' : '#1a1a1a';
+      ctx.beginPath();
+      ctx.roundRect(sbx, sby, sbw, sbh, 5);
+      ctx.fill();
+      if (unlocked) {
+        ctx.strokeStyle = sHover ? '#ce93d8' : '#7c4dff';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      drawText(`${i+1}.${sNames[i]}`, sbx + sbw / 2, sby + sbh / 2, 9, unlocked ? (sHover ? '#fff' : '#ce93d8') : '#444');
+    }
+  }
+
   // Help button
-  const hbx = 300, hby = 410, hbw = 200, hbh = 40;
+  const hbx = 300, hby = 460, hbw = 200, hbh = 40;
   const hHover = mouseX > hbx && mouseX < hbx + hbw && mouseY > hby && mouseY < hby + hbh;
   ctx.fillStyle = hHover ? '#1565c0' : '#0d47a1';
   ctx.beginPath();
@@ -523,11 +560,11 @@ function drawTitle() {
   ctx.strokeStyle = '#42a5f5';
   ctx.lineWidth = 2;
   ctx.stroke();
-  drawText(t('help'), W / 2, 430, 16, '#fff');
+  drawText(t('help'), W / 2, 480, 16, '#fff');
 
   // Ending collection button
   const found = Object.keys(endingsFound).length;
-  const ebx = 280, eby = 480, ebw = 240, ebh = 35;
+  const ebx = 280, eby = 515, ebw = 240, ebh = 30;
   const eHover = mouseX > ebx && mouseX < ebx + ebw && mouseY > eby && mouseY < eby + ebh;
   ctx.fillStyle = eHover ? '#424242' : '#2a2a2a';
   ctx.beginPath();
@@ -539,7 +576,7 @@ function drawTitle() {
   drawText(`🏆 ${found} / ${ENDINGS.length} ${t('ending_collect')}`, W / 2, eby + ebh / 2, 14, eHover ? '#ffd54f' : '#9e9e9e');
 
   // Controls hint
-  drawText(t('controls_hint'), W / 2, 572, 11, '#666');
+  drawText(t('controls_hint'), W / 2, 560, 10, '#666');
 
   // Dev stage select buttons (Ctrl+Shift+D to toggle)
   if (devMode) {
@@ -650,6 +687,9 @@ function advanceStage() {
   // Recover 1 HP on stage clear (max 3)
   hp = Math.min(3, hp + 1);
   currentStage++;
+  // Track unlocked stages
+  maxStageReached = Math.max(maxStageReached, currentStage);
+  localStorage.setItem('ppushyo_unlocked', maxStageReached);
   if (currentStage >= 8) {
     // Victory!
     triggerEnding('victory');
@@ -661,6 +701,9 @@ function advanceStage() {
 
 function takeDamage(cause) {
   hp--;
+  // Record that player reached this stage
+  maxStageReached = Math.max(maxStageReached, currentStage);
+  localStorage.setItem('ppushyo_unlocked', maxStageReached);
   if (hp <= 0) {
     deathCause = cause;
     deathStage = currentStage;
