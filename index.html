@@ -2260,18 +2260,18 @@ function updateBalance() {
     const dir = Math.random() > 0.5 ? 1 : -1;
     if (roll < 0.4) {
       // Wind gust (reduced)
-      bal.windForce = dir * (0.008 + Math.random() * 0.008);
+      bal.windForce = dir * (0.003 + Math.random() * 0.004);
       bal.windLabel = '💨';
       bal.windLabelTimer = 60;
     } else if (roll < 0.7) {
-      // Truck passes (reduced)
-      bal.windForce = dir * (0.013 + Math.random() * 0.01);
+      // Truck passes
+      bal.windForce = dir * (0.005 + Math.random() * 0.005);
       bal.windLabel = '🚛';
       bal.windLabelTimer = 60;
-      bal.shakeTimer = 10;
+      bal.shakeTimer = 8;
     } else {
-      // Bird bump (reduced)
-      bal.windForce = dir * (0.005 + Math.random() * 0.005);
+      // Bird bump
+      bal.windForce = dir * (0.002 + Math.random() * 0.003);
       bal.windLabel = '🕊️';
       bal.windLabelTimer = 40;
     }
