@@ -142,6 +142,7 @@ let mouseDown = false;
 let mousePath = [];
 let frameCount = 0;
 let pausedFrom = null; // state before pause
+let devMode = false; // toggle with Ctrl+Shift+D
 
 // Ending collection (localStorage)
 let endingsFound = JSON.parse(localStorage.getItem('ppushyo_endings') || '{}');
@@ -176,6 +177,11 @@ const ENDINGS = [
 // --- INPUT ---
 let keysJustPressed = {};
 document.addEventListener('keydown', e => {
+  // Ctrl+Shift+D toggles dev mode
+  if (e.ctrlKey && e.shiftKey && e.code === 'KeyD') {
+    devMode = !devMode;
+    return;
+  }
   if (!keys[e.code]) keysJustPressed[e.code] = true;
   keys[e.code] = true;
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
@@ -245,9 +251,9 @@ function handleClick(e) {
     if (cx > 280 && cx < 520 && cy > 480 && cy < 515) {
       gameState = STATE.ENDINGS_VIEW;
     }
-    // Dev stage select buttons
-    for (let i = 0; i < 8; i++) {
-      const bx = 45 + i * 82, by = 580, bw = 76, bh = 18;
+    // Dev stage select buttons (only when devMode active)
+    if (devMode) for (let i = 0; i < 8; i++) {
+      const bx = 55 + i * 82, by = 580, bw = 76, bh = 18;
       if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
         startAtStage(i);
       }
@@ -521,22 +527,24 @@ function drawTitle() {
   // Controls hint
   drawText(t('controls_hint'), W / 2, 572, 11, '#666');
 
-  // Dev stage select buttons
-  const devNamesMap = {
-    ko: ['러너', '양궁', '커피', '균형', '점프', '보스', '리듬', '해치'],
-    jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ジャンプ', 'ボス', 'リズム', '獬豸'],
-    en: ['Run', 'Archer', 'Coffee', 'Bal', 'Jump', 'Boss', 'Beat', 'Haechi']
-  };
-  const devNames = devNamesMap[lang] || devNamesMap.ko;
-  drawText(t('dev'), 25, 590, 10, '#555');
-  for (let i = 0; i < 8; i++) {
-    const dbx = 45 + i * 82, dby = 580, dbw = 76, dbh = 18;
-    const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
-    ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
-    ctx.beginPath();
-    ctx.roundRect(dbx, dby, dbw, dbh, 4);
-    ctx.fill();
-    drawText(`${i+1}.${devNames[i]}`, dbx + dbw / 2, dby + dbh / 2, 9, '#ce93d8');
+  // Dev stage select buttons (Ctrl+Shift+D to toggle)
+  if (devMode) {
+    const devNamesMap = {
+      ko: ['러너', '양궁', '커피', '균형', '점프', '보스', '리듬', '해치'],
+      jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ジャンプ', 'ボス', 'リズム', '獬豸'],
+      en: ['Run', 'Archer', 'Coffee', 'Bal', 'Jump', 'Boss', 'Beat', 'Haechi']
+    };
+    const devNames = devNamesMap[lang] || devNamesMap.ko;
+    drawText('🔧 DEV', 25, 590, 10, '#ff5722');
+    for (let i = 0; i < 8; i++) {
+      const dbx = 55 + i * 82, dby = 580, dbw = 76, dbh = 18;
+      const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
+      ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
+      ctx.beginPath();
+      ctx.roundRect(dbx, dby, dbw, dbh, 4);
+      ctx.fill();
+      drawText(`${i+1}.${devNames[i]}`, dbx + dbw / 2, dby + dbh / 2, 9, '#ce93d8');
+    }
   }
 }
 
