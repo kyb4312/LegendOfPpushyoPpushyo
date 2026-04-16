@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>뿌셔뿌셔 서바이벌 / プシェプシェサバイバル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #1a0a2e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-family: 'Noto Sans KR', 'Noto Sans JP', sans-serif;
+  overflow: hidden;
+}
+canvas { display: block; image-rendering: pixelated; }
+#gameContainer {
+  position: relative;
+  width: 800px;
+  height: 600px;
+}
+canvas {
+  width: 800px;
+  height: 600px;
+  border: 3px solid #ff6b6b;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+}
+</style>
+</head>
+<body>
+<div id="gameContainer">
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+</div>
+<script>
+// ============================================================
+// PPUSHYO PPUSHYO SURVIVAL - Complete Mini-Game Prototype
+// ============================================================
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const W = 800, H = 600;
+
+// --- GAME STATE ---
+const STATE = {
+  TITLE: 'title',
+  STAGE_INTRO: 'stage_intro',
+  PLAYING: 'playing',
+  ENDING: 'ending',
+  GAME_OVER: 'game_over'
+};
+
+let gameState = STATE.TITLE;
+let currentStage = 0;
+let score = 0;
+let hp = 3;
+let stageTimer = 0;
+let introTimer = 0;
+let spiceCollected = 0;
+let deathCause = '';
+let deathStage = 0;
+let keys = {};
+let mouseX = 0, mouseY = 0;
+let mouseDown = false;
+let mousePath = [];
+let frameCount = 0;
+
+// Ending collection (localStorage)
+let endingsFound = JSON.parse(localStorage.getItem('ppushyo_endings') || '{}');
+
+// --- STAGE DATA ---
+const STAGES = [
+  { ko: '경복궁 러너', jp: '景福宮ランナー', sub_ko: '관광객을 피해 달려라!', sub_jp: '観光客を避けて走れ！' },
+  { ko: '양궁장 베기', jp: 'アーチェリー場斬り', sub_ko: '날아오는 화살을 베어라!', sub_jp: '飛んでくる矢を斬れ！' },
+  { ko: '성수 커피 디펜스', jp: '聖水コーヒーディフェンス', sub_ko: '커피를 막아라!', sub_jp: 'コーヒーを防げ！' },
+  { ko: '거대한 젓가락 보스', jp: '巨大な箸ボス', sub_ko: '최종 보스를 물리쳐라!', sub_jp: '最終ボスを倒せ！' },
+  { ko: '해치상 경비대', jp: '獬豸像の警備隊', sub_ko: '무궁화 꽃이 피었습니다!', sub_jp: 'だるまさんがころんだ！' }
+];
+
+const ENDINGS = [
+  { id: 'archer', title_ko: '국가대표의 탄생', title_jp: '国家代表の誕生',
+    desc_ko: '화살에 맞은 뿌셔뿌셔는 양궁 국가대표의 새 파트너가 되었습니다!',
+    desc_jp: '矢に当たったプシェプシェはアーチェリー代表の新パートナーになりました！', emoji: '🏹' },
+  { id: 'insta', title_ko: '인스타 스타', title_jp: 'インスタスター',
+    desc_ko: '밟힌 뿌셔뿌셔의 사진이 #감성 태그로 10만 좋아요를 받았습니다!',
+    desc_jp: '踏まれたプシェプシェの写真が#エモいタグで10万いいねを獲得！', emoji: '📷' },
+  { id: 'dessert', title_ko: '성수 디저트', title_jp: '聖水デザート',
+    desc_ko: '라떼에 빠진 뿌셔뿌셔는 성수 시그니처 메뉴가 되었습니다!',
+    desc_jp: 'ラテに落ちたプシェプシェは聖水シグネチャーメニューになりました！', emoji: '☕' },
+  { id: 'pigeon', title_ko: '비둘기 납치', title_jp: 'ハトに誘拐',
+    desc_ko: '비둘기 둥지에서 새끼들의 점심이 되었습니다.',
+    desc_jp: 'ハトの巣で子バトのランチになりました。', emoji: '🕊️' },
+  { id: 'haechi', title_ko: '해치상의 심판', title_jp: '獬豸像の審判',
+    desc_ko: '해치상에게 밟힌 뿌셔뿌셔는 경복궁의 전설이 되었습니다.',
+    desc_jp: '獬豸像に踏まれたプシェプシェは景福宮の伝説になりました。', emoji: '🦁' },
+  { id: 'legend', title_ko: '전설의 과자', title_jp: '伝説のお菓子',
+    desc_ko: '뿌쇼뿌쇼 팀의 마스코트가 된 뿌셔뿌셔! 경복궁, 양궁장, 미션파이브 성수를 함께 여행하며 전설이 되었습니다!',
+    desc_jp: 'プショプショチームのマスコットになったプシェプシェ！景福宮、アーチェリー場、ミッションファイブ聖水を一緒に旅して伝説になりました！', emoji: '🏆' },
+  { id: 'japan', title_ko: '일본 진출', title_jp: '日本進出',
+    desc_ko: '국제적 감각의 뿌셔뿌셔는 돈키호테에 수출되었습니다!',
+    desc_jp: '国際的センスのプシェプシェはドンキホーテに輸出されました！', emoji: '🇯🇵' }
+];
+
+// --- INPUT ---
+let keysJustPressed = {};
+document.addEventListener('keydown', e => {
+  if (!keys[e.code]) keysJustPressed[e.code] = true;
+  keys[e.code] = true;
+  e.preventDefault();
+});
+document.addEventListener('keyup', e => { keys[e.code] = false; });
+canvas.addEventListener('mousemove', e => {
+  const rect = canvas.getBoundingClientRect();
+  mouseX = (e.clientX - rect.left) * (W / rect.width);
+  mouseY = (e.clientY - rect.top) * (H / rect.height);
+  if (mouseDown) mousePath.push({ x: mouseX, y: mouseY, t: Date.now() });
+});
+canvas.addEventListener('mousedown', e => {
+  mouseDown = true;
+  mousePath = [{ x: mouseX, y: mouseY, t: Date.now() }];
+});
+canvas.addEventListener('mouseup', () => { mouseDown = false; });
+canvas.addEventListener('click', handleClick);
+
+// Touch support
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  mouseX = (touch.clientX - rect.left) * (W / rect.width);
+  mouseY = (touch.clientY - rect.top) * (H / rect.height);
+  mouseDown = true;
+  mousePath = [{ x: mouseX, y: mouseY, t: Date.now() }];
+});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  mouseX = (touch.clientX - rect.left) * (W / rect.width);
+  mouseY = (touch.clientY - rect.top) * (H / rect.height);
+  if (mouseDown) mousePath.push({ x: mouseX, y: mouseY, t: Date.now() });
+});
+canvas.addEventListener('touchend', e => { e.preventDefault(); mouseDown = false; });
+
+function handleClick(e) {
+  const rect = canvas.getBoundingClientRect();
+  const cx = (e.clientX - rect.left) * (W / rect.width);
+  const cy = (e.clientY - rect.top) * (H / rect.height);
+
+  if (gameState === STATE.TITLE) {
+    // Start button
+    if (cx > 300 && cx < 500 && cy > 380 && cy < 440) {
+      startGame();
+    }
+    // Dev stage select buttons
+    for (let i = 0; i < 5; i++) {
+      const bx = 100 + i * 55, by = 565, bw = 45, bh = 24;
+      if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
+        startAtStage(i);
+      }
+    }
+  } else if (gameState === STATE.ENDING) {
+    // Restart button
+    if (cx > 250 && cx < 550 && cy > 480 && cy < 540) {
+      gameState = STATE.TITLE;
+    }
+  }
+}
+
+// --- UTILITY ---
+function drawText(text, x, y, size, color, align, maxWidth) {
+  ctx.fillStyle = color || '#fff';
+  ctx.font = `bold ${size}px 'Noto Sans KR', 'Noto Sans JP', sans-serif`;
+  ctx.textAlign = align || 'center';
+  ctx.textBaseline = 'middle';
+  if (maxWidth) {
+    ctx.fillText(text, x, y, maxWidth);
+  } else {
+    ctx.fillText(text, x, y);
+  }
+}
+
+function drawBilingual(ko, jp, x, y, sizeKo, sizeJp, color) {
+  drawText(ko, x, y - sizeJp * 0.4, sizeKo, color);
+  drawText(jp, x, y + sizeKo * 0.5, sizeJp, color || 'rgba(255,255,255,0.7)');
+}
+
+function drawEmoji(emoji, x, y, size) {
+  ctx.font = `${size}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, x, y);
+}
+
+function rectCollision(a, b) {
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function drawPalaceRoof(x, y, w) {
+  ctx.fillStyle = '#c0392b';
+  ctx.beginPath();
+  ctx.moveTo(x - w * 0.6, y + 30);
+  ctx.quadraticCurveTo(x, y - 20, x + w * 0.6, y + 30);
+  ctx.fill();
+  ctx.fillStyle = '#2c3e50';
+  ctx.fillRect(x - w * 0.5, y + 30, w, 8);
+  // Decorative lines
+  ctx.strokeStyle = '#e74c3c';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < 5; i++) {
+    const lx = x - w * 0.4 + i * (w * 0.8 / 4);
+    ctx.beginPath();
+    ctx.moveTo(lx, y + 30);
+    ctx.lineTo(lx, y + 38);
+    ctx.stroke();
+  }
+}
+
+// --- PLAYER ---
+let player = { x: 380, y: 500, w: 40, h: 40, vx: 0, vy: 0 };
+const playerImg = new Image();
+playerImg.src = 'img1.jpg';
+let playerImgLoaded = false;
+playerImg.onload = () => { playerImgLoaded = true; };
+
+function drawPlayer(x, y, size) {
+  const s = size || 40;
+  const rx = x - s / 2, ry = y - s / 2;
+  if (playerImgLoaded) {
+    ctx.drawImage(playerImg, rx, ry, s, s);
+  } else {
+    ctx.fillStyle = '#ff8c00';
+    ctx.fillRect(rx, ry, s, s);
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${Math.floor(s * 0.25)}px 'Noto Sans KR', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('뿌셔', x, y);
+  }
+  // Cracks based on missing HP
+  const cracks = 3 - hp;
+  ctx.strokeStyle = '#ff0000';
+  ctx.lineWidth = 2;
+  for (let i = 0; i < cracks; i++) {
+    ctx.beginPath();
+    const cx = rx + 5 + i * 12;
+    const cy = ry + 5;
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + 5, cy + 10);
+    ctx.lineTo(cx + 2, cy + 20);
+    ctx.stroke();
+  }
+}
+
+// --- HUD ---
+function drawHUD() {
+  // Background bar
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  ctx.fillRect(0, 0, W, 50);
+
+  // HP hearts
+  for (let i = 0; i < 3; i++) {
+    drawEmoji(i < hp ? '❤️' : '🖤', 30 + i * 35, 25, 24);
+  }
+
+  // Score
+  drawText(`SCORE: ${score}`, 200, 25, 18, '#ffeb3b', 'left');
+
+  // Stage name
+  if (currentStage < STAGES.length) {
+    const st = STAGES[currentStage];
+    drawText(st.ko, W / 2, 18, 14, '#ff6b6b');
+    drawText(st.jp, W / 2, 36, 11, 'rgba(255,255,255,0.6)');
+  }
+
+  // Spice count (Stage 1)
+  if (currentStage === 0) {
+    drawText(`🌶️ x ${spiceCollected}`, W - 80, 25, 16, '#ff5722', 'center');
+  }
+}
+
+// ============================================================
+// TITLE SCREEN
+// ============================================================
+let titlePulse = 0;
+function drawTitle() {
+  // Background gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#1a0a2e');
+  grad.addColorStop(0.5, '#2d1b69');
+  grad.addColorStop(1, '#1a0a2e');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Palace roof decoration
+  drawPalaceRoof(W / 2, 60, 300);
+
+  // Floating noodles
+  for (let i = 0; i < 8; i++) {
+    const nx = 100 + i * 90;
+    const ny = 120 + Math.sin(frameCount * 0.02 + i) * 20;
+    drawEmoji('🍜', nx, ny, 30);
+  }
+
+  titlePulse = Math.sin(frameCount * 0.05) * 0.1 + 1;
+
+  // Title
+  ctx.save();
+  ctx.translate(W / 2, 220);
+  ctx.scale(titlePulse, titlePulse);
+  drawText('뿌셔뿌셔 서바이벌', 0, -15, 42, '#ff6b6b');
+  drawText('プシェプシェサバイバル', 0, 25, 22, '#ffab91');
+  ctx.restore();
+
+  // Subtitle
+  drawText('뿌쇼뿌쇼 팀 프레젠트', W / 2, 280, 16, '#b39ddb');
+  drawText('プショプショチーム プレゼンツ', W / 2, 300, 12, 'rgba(179,157,219,0.7)');
+
+  // Player character preview
+  drawPlayer(W / 2, 350, 50);
+
+  // Start button
+  const bx = 300, by = 380, bw = 200, bh = 60;
+  const hover = mouseX > bx && mouseX < bx + bw && mouseY > by && mouseY < by + bh;
+  ctx.fillStyle = hover ? '#e74c3c' : '#c0392b';
+  ctx.beginPath();
+  ctx.roundRect(bx, by, bw, bh, 10);
+  ctx.fill();
+  ctx.strokeStyle = '#ff6b6b';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  drawText('START', W / 2, 400, 20, '#fff');
+  drawText('시작 / スタート', W / 2, 420, 12, 'rgba(255,255,255,0.7)');
+
+  // Ending collection
+  const found = Object.keys(endingsFound).length;
+  drawText(`${found} / 7 엔딩 수집`, W / 2, 480, 16, '#9e9e9e');
+  drawText(`${found} / 7 エンディング収集`, W / 2, 500, 12, 'rgba(158,158,158,0.6)');
+
+  // Ending icons
+  for (let i = 0; i < 7; i++) {
+    const ex = W / 2 - 105 + i * 35;
+    const ey = 535;
+    if (endingsFound[ENDINGS[i].id]) {
+      drawEmoji(ENDINGS[i].emoji, ex, ey, 22);
+    } else {
+      drawText('?', ex, ey, 18, '#555');
+    }
+  }
+
+  // Controls hint
+  drawText('← → : 이동 / 移動   SPACE : 액션 / アクション', W / 2, 560, 11, '#666');
+
+  // Dev stage select buttons
+  drawText('DEV', 70, 575, 10, '#555');
+  for (let i = 0; i < 5; i++) {
+    const bx = 100 + i * 55, by = 565, bw = 45, bh = 24;
+    const hover = mouseX > bx && mouseX < bx + bw && mouseY > by && mouseY < by + bh;
+    ctx.fillStyle = hover ? '#5e35b1' : '#311b92';
+    ctx.beginPath();
+    ctx.roundRect(bx, by, bw, bh, 4);
+    ctx.fill();
+    drawText(`S${i + 1}`, bx + bw / 2, by + bh / 2, 11, '#ce93d8');
+  }
+}
+
+// ============================================================
+// STAGE INTRO
+// ============================================================
+function drawStageIntro() {
+  ctx.fillStyle = '#1a0a2e';
+  ctx.fillRect(0, 0, W, H);
+
+  const st = STAGES[currentStage];
+  const progress = Math.min(introTimer / 30, 1);
+
+  // Stage number
+  drawText(`STAGE ${currentStage + 1}`, W / 2, 180, 30, `rgba(255,107,107,${progress})`);
+
+  // Stage name
+  drawText(st.ko, W / 2, 260, 48, `rgba(255,255,255,${progress})`);
+  drawText(st.jp, W / 2, 310, 28, `rgba(255,171,145,${progress})`);
+
+  // Subtitle
+  drawText(st.sub_ko, W / 2, 380, 20, `rgba(189,189,189,${progress})`);
+  drawText(st.sub_jp, W / 2, 410, 14, `rgba(158,158,158,${progress})`);
+
+  introTimer++;
+  if (introTimer > 120) {
+    gameState = STATE.PLAYING;
+    initStage(currentStage);
+  }
+}
+
+// ============================================================
+// START GAME
+// ============================================================
+function startGame() {
+  gameState = STATE.STAGE_INTRO;
+  currentStage = 0;
+  score = 0;
+  hp = 3;
+  spiceCollected = 0;
+  deathCause = '';
+  deathStage = 0;
+  introTimer = 0;
+}
+
+function startAtStage(n) {
+  gameState = STATE.STAGE_INTRO;
+  currentStage = n;
+  score = 0;
+  hp = 3;
+  spiceCollected = 0;
+  deathCause = '';
+  deathStage = 0;
+  introTimer = 0;
+}
+
+function advanceStage() {
+  currentStage++;
+  if (currentStage >= 5) {
+    // Victory!
+    triggerEnding('victory');
+    return;
+  }
+  gameState = STATE.STAGE_INTRO;
+  introTimer = 0;
+}
+
+function takeDamage(cause) {
+  hp--;
+  if (hp <= 0) {
+    deathCause = cause;
+    deathStage = currentStage;
+    triggerEnding('death');
+  }
+}
+
+function triggerEnding(type) {
+  let endingIndex = 5; // default: legend
+  if (type === 'death') {
+    if (deathStage === 0 && (deathCause === 'tourist' || deathCause === 'camera')) endingIndex = 1; // insta
+    else if (deathStage === 0 && deathCause === 'pigeon') endingIndex = 3; // pigeon
+    else if (deathStage === 1) endingIndex = 0; // archer
+    else if (deathStage === 2) endingIndex = 2; // dessert (coffee stage)
+    else if (deathStage === 3) endingIndex = 0; // default to archer for boss
+    else if (deathStage === 4) endingIndex = 4; // haechi
+  } else if (type === 'victory') {
+    if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
+    else endingIndex = 5; // legend
+  }
+  currentEnding = ENDINGS[endingIndex];
+  endingsFound[currentEnding.id] = true;
+  localStorage.setItem('ppushyo_endings', JSON.stringify(endingsFound));
+  gameState = STATE.ENDING;
+}
+
+// ============================================================
+// ENDING SCREEN
+// ============================================================
+let currentEnding = null;
+let endingTimer = 0;
+
+function drawEnding() {
+  endingTimer++;
+  const e = currentEnding;
+
+  // Background
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#1a0a2e');
+  grad.addColorStop(1, '#0d0521');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Stars
+  for (let i = 0; i < 30; i++) {
+    const sx = (i * 137 + frameCount * 0.3) % W;
+    const sy = (i * 97) % (H * 0.4);
+    ctx.fillStyle = `rgba(255,255,255,${0.3 + Math.sin(frameCount * 0.05 + i) * 0.3})`;
+    ctx.fillRect(sx, sy, 2, 2);
+  }
+
+  // Emoji
+  const ey = 130 + Math.sin(frameCount * 0.03) * 10;
+  drawEmoji(e.emoji, W / 2, ey, 60);
+
+  // Ending title
+  drawText('ENDING', W / 2, 200, 16, '#ff6b6b');
+  drawText(e.title_ko, W / 2, 240, 36, '#ffd54f');
+  drawText(e.title_jp, W / 2, 275, 20, '#ffab91');
+
+  // Description
+  wrapText(e.desc_ko, W / 2, 330, 16, '#e0e0e0', 600);
+  wrapText(e.desc_jp, W / 2, 370, 13, 'rgba(224,224,224,0.7)', 600);
+
+  // Score
+  drawText(`SCORE: ${score}`, W / 2, 420, 20, '#ffeb3b');
+
+  // Restart button
+  const bx = 250, by = 480, bw = 300, bh = 60;
+  const hover = mouseX > bx && mouseX < bx + bw && mouseY > by && mouseY < by + bh;
+  ctx.fillStyle = hover ? '#7b1fa2' : '#4a148c';
+  ctx.beginPath();
+  ctx.roundRect(bx, by, bw, bh, 10);
+  ctx.fill();
+  drawBilingual('다시 시작', 'もう一度', W / 2, by + 30, 20, 14, '#fff');
+}
+
+function wrapText(text, x, y, size, color, maxW) {
+  ctx.fillStyle = color;
+  ctx.font = `${size}px 'Noto Sans KR', 'Noto Sans JP', sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // Simple wrap
+  const words = text.split('');
+  let line = '';
+  let ly = y;
+  for (let i = 0; i < words.length; i++) {
+    const test = line + words[i];
+    if (ctx.measureText(test).width > maxW) {
+      ctx.fillText(line, x, ly);
+      line = words[i];
+      ly += size + 4;
+    } else {
+      line = test;
+    }
+  }
+  ctx.fillText(line, x, ly);
+}
+
+// ============================================================
+// STAGE 1: GYEONGBOKGUNG RUNNER
+// ============================================================
+let s1 = {};
+function initStage1() {
+  s1 = {
+    playerX: W / 2,
+    playerY: H - 80,
+    obstacles: [],
+    spices: [],
+    spawnTimer: 0,
+    scrollY: 0,
+    timer: 0,
+    duration: 1800, // 30 seconds at 60fps
+    invincible: 0,
+    bgElements: []
+  };
+  // Pre-generate background elements
+  for (let i = 0; i < 10; i++) {
+    s1.bgElements.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      type: Math.random() > 0.5 ? 'tree' : 'pillar'
+    });
+  }
+  player.x = W / 2 - 20;
+  player.y = H - 80;
+}
+
+function updateStage1() {
+  s1.timer++;
+  s1.scrollY += 3;
+  if (s1.invincible > 0) s1.invincible--;
+
+  // Player movement
+  const speed = 5;
+  if (keys['ArrowLeft'] || keys['KeyA']) s1.playerX -= speed;
+  if (keys['ArrowRight'] || keys['KeyD']) s1.playerX += speed;
+  if (keys['ArrowUp'] || keys['KeyW']) s1.playerY -= speed;
+  if (keys['ArrowDown'] || keys['KeyS']) s1.playerY += speed;
+  s1.playerX = Math.max(30, Math.min(W - 30, s1.playerX));
+  s1.playerY = Math.max(80, Math.min(H - 40, s1.playerY));
+
+  // Spawn obstacles
+  s1.spawnTimer++;
+  if (s1.spawnTimer > 30) {
+    s1.spawnTimer = 0;
+    const types = ['tourist', 'pigeon', 'camera'];
+    const emojis = ['👣', '🕊️', '📷'];
+    const ti = Math.floor(Math.random() * 3);
+    s1.obstacles.push({
+      x: Math.random() * (W - 60) + 30,
+      y: -30,
+      type: types[ti],
+      emoji: emojis[ti],
+      speed: 2 + Math.random() * 3
+    });
+  }
+
+  // Spawn spices (rarer)
+  if (s1.spawnTimer === 15 && Math.random() < 0.25) {
+    s1.spices.push({
+      x: Math.random() * (W - 60) + 30,
+      y: -30,
+      speed: 2
+    });
+  }
+
+  // Update obstacles
+  const pRect = { x: s1.playerX - 15, y: s1.playerY - 15, w: 30, h: 30 };
+  s1.obstacles = s1.obstacles.filter(o => {
+    o.y += o.speed;
+    if (o.y > H + 30) return false;
+    const oRect = { x: o.x - 15, y: o.y - 15, w: 30, h: 30 };
+    if (rectCollision(pRect, oRect) && s1.invincible <= 0) {
+      takeDamage(o.type);
+      s1.invincible = 60;
+      return false;
+    }
+    return true;
+  });
+
+  // Update spices
+  s1.spices = s1.spices.filter(sp => {
+    sp.y += sp.speed;
+    if (sp.y > H + 30) return false;
+    const sRect = { x: sp.x - 12, y: sp.y - 12, w: 24, h: 24 };
+    if (rectCollision(pRect, sRect)) {
+      spiceCollected++;
+      score += 100;
+      return false;
+    }
+    return true;
+  });
+
+  // Stage complete
+  if (s1.timer >= s1.duration && hp > 0) {
+    advanceStage();
+  }
+}
+
+function drawStage1() {
+  // Background: palace ground
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#1a472a');
+  grad.addColorStop(0.3, '#2d6a4f');
+  grad.addColorStop(1, '#52796f');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Ground path
+  ctx.fillStyle = '#d4a76a';
+  ctx.fillRect(100, 0, W - 200, H);
+  ctx.fillStyle = '#c49a5e';
+  for (let y = -s1.scrollY % 60; y < H; y += 60) {
+    ctx.fillRect(100, y, W - 200, 2);
+  }
+
+  // Palace background elements
+  drawPalaceRoof(200, 20 + (s1.scrollY * 0.1) % 40, 120);
+  drawPalaceRoof(600, 30 + (s1.scrollY * 0.1) % 50, 100);
+  drawPalaceRoof(400, 10 + (s1.scrollY * 0.05) % 30, 180);
+
+  // Trees on sides
+  for (let y = -s1.scrollY % 120; y < H; y += 120) {
+    drawEmoji('🌳', 60, y, 30);
+    drawEmoji('🌳', W - 60, y, 30);
+  }
+
+  // Obstacles
+  s1.obstacles.forEach(o => {
+    drawEmoji(o.emoji, o.x, o.y, 32);
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.beginPath();
+    ctx.ellipse(o.x, o.y + 18, 12, 4, 0, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Spices
+  s1.spices.forEach(sp => {
+    drawEmoji('🌶️', sp.x, sp.y, 24);
+    // Glow
+    ctx.fillStyle = 'rgba(255,87,34,0.3)';
+    ctx.beginPath();
+    ctx.arc(sp.x, sp.y, 18, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Player
+  const blink = s1.invincible > 0 && Math.floor(s1.invincible / 4) % 2;
+  if (!blink) drawPlayer(s1.playerX, s1.playerY, 36);
+
+  // Progress bar
+  const prog = s1.timer / s1.duration;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(50, H - 20, W - 100, 10);
+  ctx.fillStyle = '#4caf50';
+  ctx.fillRect(50, H - 20, (W - 100) * prog, 10);
+}
+
+// ============================================================
+// STAGE 2: ARCHERY SLICER
+// ============================================================
+let s2 = {};
+function initStage2() {
+  s2 = {
+    arrows: [],
+    spawnTimer: 0,
+    timer: 0,
+    duration: 1800,
+    sliceTrail: [],
+    combo: 0,
+    comboTimer: 0,
+    comboText: '',
+    invincible: 0
+  };
+}
+
+function updateStage2() {
+  s2.timer++;
+  if (s2.invincible > 0) s2.invincible--;
+  if (s2.comboTimer > 0) s2.comboTimer--;
+
+  // Spawn arrows
+  s2.spawnTimer++;
+  const spawnRate = Math.max(20, 50 - Math.floor(s2.timer / 120));
+  if (s2.spawnTimer >= spawnRate) {
+    s2.spawnTimer = 0;
+    const fromLeft = Math.random() > 0.5;
+    s2.arrows.push({
+      x: fromLeft ? -20 : W + 20,
+      y: 100 + Math.random() * 350,
+      vx: (fromLeft ? 1 : -1) * (3 + Math.random() * 3),
+      vy: Math.random() * 2 - 1,
+      alive: true,
+      sliced: false,
+      sliceAnim: 0,
+      angle: fromLeft ? 0 : Math.PI
+    });
+  }
+
+  // Update arrows
+  s2.arrows = s2.arrows.filter(a => {
+    if (a.sliced) {
+      a.sliceAnim++;
+      a.y += 5;
+      a.x += a.vx * 0.5;
+      return a.sliceAnim < 30;
+    }
+    a.x += a.vx;
+    a.y += a.vy;
+    // Check if arrow hit player area (center zone)
+    if (a.x > 300 && a.x < 500 && a.y > 450 && a.alive) {
+      if (s2.invincible <= 0) {
+        takeDamage('arrow');
+        s2.invincible = 60;
+      }
+      return false;
+    }
+    return a.x > -50 && a.x < W + 50 && a.y < H + 50;
+  });
+
+  // Slice detection
+  if (mouseDown && mousePath.length > 2) {
+    const now = Date.now();
+    const recentPath = mousePath.filter(p => now - p.t < 200);
+    if (recentPath.length >= 2) {
+      let slicedThisFrame = 0;
+      s2.arrows.forEach(a => {
+        if (a.sliced) return;
+        for (let i = 1; i < recentPath.length; i++) {
+          const p1 = recentPath[i - 1];
+          const p2 = recentPath[i];
+          const dist = pointToSegmentDist(a.x, a.y, p1.x, p1.y, p2.x, p2.y);
+          if (dist < 30) {
+            a.sliced = true;
+            a.sliceAnim = 0;
+            slicedThisFrame++;
+            score += 50;
+            break;
+          }
+        }
+      });
+      if (slicedThisFrame > 0) {
+        s2.combo += slicedThisFrame;
+        s2.comboTimer = 60;
+        if (slicedThisFrame > 1) {
+          score += slicedThisFrame * 30; // combo bonus
+          s2.comboText = `COMBO x${s2.combo}!`;
+        }
+      } else if (s2.comboTimer <= 0) {
+        s2.combo = 0;
+      }
+    }
+  }
+
+  // Slice trail fade
+  s2.sliceTrail = mousePath.filter(p => Date.now() - p.t < 300);
+
+  if (s2.timer >= s2.duration && hp > 0) advanceStage();
+}
+
+function pointToSegmentDist(px, py, ax, ay, bx, by) {
+  const dx = bx - ax, dy = by - ay;
+  const len2 = dx * dx + dy * dy;
+  if (len2 === 0) return Math.hypot(px - ax, py - ay);
+  let t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / len2));
+  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+}
+
+function drawStage2() {
+  // Background: archery range
+  ctx.fillStyle = '#1b5e20';
+  ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = '#2e7d32';
+  ctx.fillRect(0, H * 0.7, W, H * 0.3);
+
+  // Targets in background
+  for (let i = 0; i < 3; i++) {
+    const tx = 150 + i * 250;
+    drawEmoji('🎯', tx, 80, 40);
+  }
+
+  // Fence
+  ctx.fillStyle = '#5d4037';
+  for (let x = 0; x < W; x += 60) {
+    ctx.fillRect(x, H * 0.65, 8, 50);
+  }
+  ctx.fillRect(0, H * 0.65, W, 5);
+
+  // Player at bottom center
+  drawPlayer(W / 2, H - 60, 40);
+
+  // Arrows
+  s2.arrows.forEach(a => {
+    ctx.save();
+    ctx.translate(a.x, a.y);
+    if (a.sliced) {
+      ctx.globalAlpha = 1 - a.sliceAnim / 30;
+      ctx.rotate(a.sliceAnim * 0.1);
+      drawEmoji('💥', 0, 0, 30);
+    } else {
+      ctx.rotate(a.angle);
+      drawEmoji('🏹', 0, 0, 32);
+    }
+    ctx.restore();
+  });
+
+  // Slice trail
+  if (s2.sliceTrail.length > 1) {
+    ctx.strokeStyle = 'rgba(255, 255, 100, 0.8)';
+    ctx.lineWidth = 4;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(s2.sliceTrail[0].x, s2.sliceTrail[0].y);
+    s2.sliceTrail.forEach(p => ctx.lineTo(p.x, p.y));
+    ctx.stroke();
+    // Glow
+    ctx.strokeStyle = 'rgba(255, 255, 100, 0.3)';
+    ctx.lineWidth = 12;
+    ctx.stroke();
+  }
+
+  // Combo text
+  if (s2.comboTimer > 0 && s2.comboText) {
+    const alpha = Math.min(1, s2.comboTimer / 30);
+    drawText(s2.comboText, W / 2, 200, 36, `rgba(255,235,59,${alpha})`);
+  }
+
+  // Hint
+  if (s2.timer < 120) {
+    drawBilingual('마우스로 화살을 베세요!', 'マウスで矢を斬れ！', W / 2, H / 2, 18, 13, 'rgba(255,255,255,0.7)');
+  }
+
+  // Progress bar
+  const prog = s2.timer / s2.duration;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(50, H - 20, W - 100, 10);
+  ctx.fillStyle = '#ff9800';
+  ctx.fillRect(50, H - 20, (W - 100) * prog, 10);
+}
+
+// ============================================================
+// STAGE 3: RED LIGHT GREEN LIGHT
+// ============================================================
+let s3 = {};
+function initStage3() {
+  s3 = {
+    playerX: 50,
+    targetX: W - 80,
+    speed: 0,
+    looking: false,
+    lookTimer: 0,
+    lookDuration: 120,
+    greenDuration: 180,
+    phase: 'green', // green, transition, or red
+    phaseTimer: 0,
+    haechiAngle: 0,
+    moving: false,
+    caught: false,
+    caughtAnim: 0,
+    invincible: 0,
+    won: false,
+    chant: '무궁화꽃이피었습니다',
+    litChars: 0,
+    transitionDuration: 90
+  };
+}
+
+function updateStage3() {
+  // Handle win animation separately
+  if (s3.won) {
+    s3.winTimer = (s3.winTimer || 0) + 1;
+    if (s3.winTimer > 60 && hp > 0) advanceStage();
+    return;
+  }
+  if (s3.invincible > 0) s3.invincible--;
+
+  // Phase cycling
+  s3.phaseTimer++;
+  if (s3.phase === 'green') {
+    s3.looking = false;
+    s3.litChars = 0;
+    if (s3.phaseTimer >= s3.greenDuration) {
+      s3.phase = 'transition';
+      s3.phaseTimer = 0;
+      s3.transitionDuration = 60 + Math.random() * 60;
+    }
+  } else if (s3.phase === 'transition') {
+    s3.looking = false;
+    s3.litChars = Math.min(s3.chant.length, Math.floor((s3.phaseTimer / s3.transitionDuration) * s3.chant.length));
+    if (s3.phaseTimer >= s3.transitionDuration) {
+      s3.phase = 'red';
+      s3.phaseTimer = 0;
+      s3.lookDuration = 60 + Math.random() * 120;
+      s3.greenDuration = 90 + Math.random() * 150;
+      s3.litChars = s3.chant.length;
+    }
+  } else {
+    // Red phase - turning animation
+    if (s3.phaseTimer < 20) {
+      s3.haechiAngle = lerp(0, Math.PI, s3.phaseTimer / 20);
+    } else {
+      s3.looking = true;
+    }
+    if (s3.phaseTimer >= s3.lookDuration) {
+      s3.phase = 'green';
+      s3.phaseTimer = 0;
+      s3.haechiAngle = 0;
+      s3.looking = false;
+      s3.litChars = 0;
+    }
+  }
+
+  // Player movement (hold space)
+  s3.moving = keys['Space'];
+  if (s3.moving) {
+    s3.playerX += 2;
+  }
+
+  // Caught detection
+  if (s3.looking && s3.moving && s3.invincible <= 0) {
+    takeDamage('haechi');
+    s3.invincible = 90;
+    s3.playerX = Math.max(50, s3.playerX - 100); // knocked back
+  }
+
+  // Win condition
+  if (s3.playerX >= s3.targetX) {
+    s3.won = true;
+    s3.winTimer = 0;
+    score += 500;
+  }
+}
+
+function drawStage3() {
+  // Background: palace courtyard
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#ff8a65');
+  grad.addColorStop(0.3, '#ffccbc');
+  grad.addColorStop(1, '#d7ccc8');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Path
+  ctx.fillStyle = '#a1887f';
+  ctx.fillRect(0, H / 2 - 40, W, 80);
+  ctx.fillStyle = '#8d6e63';
+  for (let x = 0; x < W; x += 40) {
+    ctx.fillRect(x, H / 2 - 40, 2, 80);
+  }
+
+  // Palace walls
+  drawPalaceRoof(W / 2, 40, 400);
+  ctx.fillStyle = '#795548';
+  ctx.fillRect(50, 80, W - 100, 120);
+  ctx.fillStyle = '#5d4037';
+  for (let x = 80; x < W - 80; x += 80) {
+    ctx.fillRect(x, 100, 40, 60);
+    ctx.fillStyle = '#4e342e';
+    ctx.fillRect(x + 5, 110, 30, 40);
+    ctx.fillStyle = '#5d4037';
+  }
+
+  // 무궁화꽃이피었습니다 chant display
+  const chantY = 230;
+  const chant = s3.chant;
+  const totalW = chant.length * 28;
+  const startX = (W - totalW) / 2;
+
+  // Background bar
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.beginPath();
+  ctx.roundRect(startX - 10, chantY - 18, totalW + 20, 40, 8);
+  ctx.fill();
+
+  for (let i = 0; i < chant.length; i++) {
+    const cx = startX + i * 28 + 14;
+    const lit = i < s3.litChars;
+    ctx.font = `bold 20px 'Noto Sans KR', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    if (lit) {
+      ctx.fillStyle = '#ff5252';
+      // Glow effect on lit characters
+      ctx.shadowColor = '#ff5252';
+      ctx.shadowBlur = 10;
+    } else {
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.shadowBlur = 0;
+    }
+    ctx.fillText(chant[i], cx, chantY);
+  }
+  ctx.shadowBlur = 0;
+
+  // Haechi statue at the end
+  ctx.save();
+  ctx.translate(s3.targetX + 20, H / 2);
+  ctx.scale(s3.looking ? -1 : 1, 1);
+  drawEmoji('🦁', 0, 0, 50);
+  ctx.restore();
+
+  // Status text
+  if (s3.phase === 'green') {
+    drawBilingual('움직여!', '動け！', W / 2, H / 2 - 80, 24, 16, '#4caf50');
+  } else if (s3.phase === 'transition') {
+    drawBilingual('준비...', '準備...', W / 2, H / 2 - 80, 24, 16, '#ff9800');
+  } else if (s3.looking) {
+    drawBilingual('멈춰!', '止まれ！', W / 2, H / 2 - 80, 24, 16, '#f44336');
+  }
+
+  // Player
+  const blink = s3.invincible > 0 && Math.floor(s3.invincible / 4) % 2;
+  if (!blink) drawPlayer(s3.playerX, H / 2, 36);
+
+  // Progress indicator
+  const prog = (s3.playerX - 50) / (s3.targetX - 50);
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(50, H - 20, W - 100, 10);
+  ctx.fillStyle = '#9c27b0';
+  ctx.fillRect(50, H - 20, (W - 100) * Math.min(1, prog), 10);
+
+  // Hint
+  if (frameCount % 120 < 60) {
+    drawBilingual('스페이스바를 눌러 이동', 'スペースキーで移動', W / 2, H - 50, 14, 10, 'rgba(0,0,0,0.5)');
+  }
+
+  // Win message
+  if (s3.won) {
+    drawBilingual('통과!', '通過！', W / 2, H / 2, 48, 28, '#ffd54f');
+  }
+}
+
+// ============================================================
+// STAGE 4: COFFEE DEFENSE (RHYTHM)
+// ============================================================
+let s4 = {};
+function initStage4() {
+  s4 = {
+    lanes: [
+      { key: 'KeyA', label: 'A', x: W / 2 - 150, cups: [] },
+      { key: 'KeyS', label: 'S', x: W / 2 - 50, cups: [] },
+      { key: 'KeyD', label: 'D', x: W / 2 + 50, cups: [] },
+      { key: 'KeyF', label: 'F', x: W / 2 + 150, cups: [] }
+    ],
+    hitZoneY: H - 100,
+    timer: 0,
+    duration: 1800,
+    spawnTimer: 0,
+    hitEffects: [],
+    invincible: 0,
+    keyFlash: {} // which keys are flashing
+  };
+}
+
+function updateStage4() {
+  s4.timer++;
+  if (s4.invincible > 0) s4.invincible--;
+
+  // Spawn cups
+  s4.spawnTimer++;
+  const rate = Math.max(15, 40 - Math.floor(s4.timer / 120) * 2);
+  if (s4.spawnTimer >= rate) {
+    s4.spawnTimer = 0;
+    const laneIdx = Math.floor(Math.random() * 4);
+    const types = [
+      { emoji: '🧋', speed: 2, name: 'latte' },
+      { emoji: '☕', speed: 3.5, name: 'americano' },
+      { emoji: '🧊', speed: 5, name: 'iced' }
+    ];
+    const t = types[Math.floor(Math.random() * types.length)];
+    s4.lanes[laneIdx].cups.push({
+      y: -30,
+      speed: t.speed,
+      emoji: t.emoji,
+      type: t.name,
+      hit: false,
+      hitAnim: 0
+    });
+  }
+
+  // Update cups and check hits
+  s4.lanes.forEach((lane, li) => {
+    lane.cups = lane.cups.filter(cup => {
+      if (cup.hit) {
+        cup.hitAnim++;
+        return cup.hitAnim < 20;
+      }
+      cup.y += cup.speed;
+      // Missed - past hit zone
+      if (cup.y > H + 20) {
+        if (s4.invincible <= 0) {
+          takeDamage('coffee');
+          s4.invincible = 30;
+        }
+        return false;
+      }
+      return true;
+    });
+  });
+
+  // Key press detection
+  s4.lanes.forEach((lane, li) => {
+    if (keysJustPressed[lane.key]) {
+      s4.keyFlash[lane.key] = 10;
+      // Find closest cup in hit zone
+      let closest = null;
+      let closestDist = Infinity;
+      lane.cups.forEach(cup => {
+        if (cup.hit) return;
+        const dist = Math.abs(cup.y - s4.hitZoneY);
+        if (dist < 60 && dist < closestDist) {
+          closest = cup;
+          closestDist = dist;
+        }
+      });
+      if (closest) {
+        closest.hit = true;
+        closest.hitAnim = 0;
+        const bonus = closestDist < 20 ? 100 : closestDist < 40 ? 50 : 25;
+        score += bonus;
+        s4.hitEffects.push({ x: lane.x, y: s4.hitZoneY, timer: 0, text: bonus >= 100 ? 'PERFECT!' : bonus >= 50 ? 'GREAT!' : 'OK' });
+      }
+    }
+  });
+
+  // Update key flash
+  Object.keys(s4.keyFlash).forEach(k => {
+    if (s4.keyFlash[k] > 0) s4.keyFlash[k]--;
+  });
+
+  // Update hit effects
+  s4.hitEffects = s4.hitEffects.filter(e => { e.timer++; return e.timer < 30; });
+
+  if (s4.timer >= s4.duration && hp > 0) advanceStage();
+}
+
+function drawStage4() {
+  // Background: cafe
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#3e2723');
+  grad.addColorStop(0.5, '#4e342e');
+  grad.addColorStop(1, '#5d4037');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Cafe lights
+  for (let i = 0; i < 5; i++) {
+    const lx = 100 + i * 160;
+    ctx.fillStyle = `rgba(255,183,77,${0.3 + Math.sin(frameCount * 0.03 + i) * 0.1})`;
+    ctx.beginPath();
+    ctx.arc(lx, 30, 40, 0, Math.PI * 2);
+    ctx.fill();
+    drawEmoji('💡', lx, 30, 20);
+  }
+
+  // Seongsu text
+  drawText('聖水 SEONGSU', W / 2, 70, 14, 'rgba(255,183,77,0.5)');
+
+  // Lane lines
+  s4.lanes.forEach((lane, li) => {
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    ctx.fillRect(lane.x - 35, 90, 70, H - 130);
+
+    // Lane guide line
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(lane.x, 90);
+    ctx.lineTo(lane.x, H - 50);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Hit zone
+    const flash = s4.keyFlash[lane.key] > 0;
+    ctx.strokeStyle = flash ? '#ffeb3b' : 'rgba(255,255,255,0.3)';
+    ctx.lineWidth = flash ? 4 : 2;
+    ctx.beginPath();
+    ctx.arc(lane.x, s4.hitZoneY, 30, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Key label
+    ctx.fillStyle = flash ? '#ffeb3b' : 'rgba(255,255,255,0.5)';
+    ctx.font = `bold 24px 'Noto Sans KR', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(lane.label, lane.x, H - 40);
+
+    // Cups
+    lane.cups.forEach(cup => {
+      if (cup.hit) {
+        const alpha = 1 - cup.hitAnim / 20;
+        ctx.globalAlpha = alpha;
+        drawEmoji('💥', lane.x, cup.y, 28);
+        ctx.globalAlpha = 1;
+      } else {
+        drawEmoji(cup.emoji, lane.x, cup.y, 30);
+      }
+    });
+  });
+
+  // Player at bottom center
+  drawPlayer(W / 2, H - 60, 32);
+
+  // Hit effects
+  s4.hitEffects.forEach(e => {
+    const alpha = 1 - e.timer / 30;
+    const color = e.text === 'PERFECT!' ? '#ffeb3b' : e.text === 'GREAT!' ? '#4caf50' : '#ff9800';
+    drawText(e.text, e.x, s4.hitZoneY - 40 - e.timer, 18, `rgba(${color === '#ffeb3b' ? '255,235,59' : color === '#4caf50' ? '76,175,80' : '255,152,0'},${alpha})`);
+  });
+
+  // Progress
+  const prog = s4.timer / s4.duration;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(50, H - 15, W - 100, 8);
+  ctx.fillStyle = '#ff9800';
+  ctx.fillRect(50, H - 15, (W - 100) * prog, 8);
+}
+
+// ============================================================
+// STAGE 5: CHOPSTICK BOSS
+// ============================================================
+let s5 = {};
+function initStage5() {
+  s5 = {
+    playerX: W / 2,
+    playerY: H - 80,
+    bossHP: 3,
+    bossMaxHP: 3,
+    chopsticks: [],
+    attackTimer: 0,
+    phase: 'idle', // idle, telegraph, strike, stuck
+    stuckTimer: 0,
+    stuckX: 0,
+    shadowX: 0,
+    shadowAlpha: 0,
+    invincible: 0,
+    hits: 0,
+    shakeTimer: 0,
+    won: false,
+    winTimer: 0
+  };
+}
+
+function updateStage5() {
+  if (s5.won) {
+    s5.winTimer++;
+    if (s5.winTimer > 120) advanceStage();
+    return;
+  }
+  if (s5.invincible > 0) s5.invincible--;
+
+  // Player movement
+  const speed = 5;
+  if (keys['ArrowLeft'] || keys['KeyA']) s5.playerX -= speed;
+  if (keys['ArrowRight'] || keys['KeyD']) s5.playerX += speed;
+  s5.playerX = Math.max(40, Math.min(W - 40, s5.playerX));
+
+  s5.attackTimer++;
+
+  switch (s5.phase) {
+    case 'idle':
+      if (s5.attackTimer > 90) {
+        s5.phase = 'telegraph';
+        s5.attackTimer = 0;
+        s5.shadowX = s5.playerX + (Math.random() - 0.5) * 100; // predict near player
+        s5.shadowAlpha = 0;
+      }
+      break;
+
+    case 'telegraph':
+      s5.shadowAlpha = Math.min(0.8, s5.shadowAlpha + 0.02);
+      if (s5.attackTimer > 60) {
+        s5.phase = 'strike';
+        s5.attackTimer = 0;
+      }
+      break;
+
+    case 'strike':
+      if (s5.attackTimer >= 10) {
+        // Check if player is hit
+        const pRect = { x: s5.playerX - 18, y: s5.playerY - 18, w: 36, h: 36 };
+        const sRect = { x: s5.shadowX - 25, y: H - 120, w: 50, h: 80 };
+        if (rectCollision(pRect, sRect) && s5.invincible <= 0) {
+          takeDamage('chopstick');
+          s5.invincible = 60;
+          s5.shakeTimer = 15;
+        }
+        s5.phase = 'stuck';
+        s5.stuckX = s5.shadowX;
+        s5.stuckTimer = 0;
+        s5.attackTimer = 0;
+      }
+      break;
+
+    case 'stuck':
+      s5.stuckTimer++;
+      // Player can kick
+      if (keysJustPressed['Space'] && Math.abs(s5.playerX - s5.stuckX) < 60) {
+        s5.bossHP--;
+        s5.hits++;
+        score += 200;
+        s5.shakeTimer = 20;
+        if (s5.bossHP <= 0) {
+          s5.won = true;
+          s5.winTimer = 0;
+          score += 1000;
+        }
+        s5.phase = 'idle';
+        s5.attackTimer = 0;
+      }
+      if (s5.stuckTimer > 90) {
+        s5.phase = 'idle';
+        s5.attackTimer = 0;
+      }
+      break;
+  }
+
+  if (s5.shakeTimer > 0) s5.shakeTimer--;
+}
+
+function drawStage5() {
+  // Background: dark arena
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#0d0d0d');
+  grad.addColorStop(0.5, '#1a1a2e');
+  grad.addColorStop(1, '#16213e');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Screen shake
+  if (s5.shakeTimer > 0) {
+    ctx.save();
+    ctx.translate(Math.random() * 6 - 3, Math.random() * 6 - 3);
+  }
+
+  // Arena floor
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(0, H - 40, W, 40);
+  ctx.fillStyle = '#333';
+  for (let x = 0; x < W; x += 50) {
+    ctx.fillRect(x, H - 40, 25, 3);
+  }
+
+  // Spotlight
+  const spotGrad = ctx.createRadialGradient(W / 2, 50, 10, W / 2, 50, 400);
+  spotGrad.addColorStop(0, 'rgba(255,235,59,0.15)');
+  spotGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = spotGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Boss HP bar
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  ctx.fillRect(200, 60, 400, 25);
+  ctx.strokeStyle = '#f44336';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(200, 60, 400, 25);
+  const hpPct = s5.bossHP / s5.bossMaxHP;
+  ctx.fillStyle = hpPct > 0.5 ? '#f44336' : hpPct > 0.25 ? '#ff9800' : '#ff5722';
+  ctx.fillRect(202, 62, 396 * hpPct, 21);
+  drawText('BOSS 🥢', W / 2, 72, 14, '#fff');
+
+  // Giant chopsticks at top
+  drawEmoji('🥢', W / 2 - 30, 30, 40);
+  drawEmoji('🥢', W / 2 + 30, 30, 40);
+
+  // Shadow / telegraph
+  if (s5.phase === 'telegraph') {
+    ctx.fillStyle = `rgba(255,0,0,${s5.shadowAlpha * 0.3})`;
+    ctx.beginPath();
+    ctx.ellipse(s5.shadowX, H - 50, 30, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Warning markers
+    drawText('⚠️', s5.shadowX, H - 80, 24, `rgba(255,0,0,${s5.shadowAlpha})`);
+  }
+
+  // Chopstick strike animation
+  if (s5.phase === 'strike') {
+    const progress = s5.attackTimer / 10;
+    const chopY = lerp(-50, H - 80, progress);
+    drawEmoji('🥢', s5.shadowX - 10, chopY, 50);
+    drawEmoji('🥢', s5.shadowX + 10, chopY, 50);
+  }
+
+  // Stuck chopsticks
+  if (s5.phase === 'stuck') {
+    drawEmoji('🥢', s5.stuckX - 10, H - 80, 50);
+    drawEmoji('🥢', s5.stuckX + 10, H - 80, 50);
+    // "Kick me" hint
+    if (Math.abs(s5.playerX - s5.stuckX) < 60) {
+      const alpha = Math.sin(frameCount * 0.1) * 0.3 + 0.7;
+      drawBilingual('SPACE로 공격!', 'SPACEで攻撃！', s5.stuckX, H - 130, 16, 12, `rgba(255,235,59,${alpha})`);
+    }
+    // Stuck timer bar
+    const stPct = 1 - s5.stuckTimer / 90;
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(s5.stuckX - 30, H - 60, 60, 5);
+    ctx.fillStyle = '#ffeb3b';
+    ctx.fillRect(s5.stuckX - 30, H - 60, 60 * stPct, 5);
+  }
+
+  // Player
+  const blink = s5.invincible > 0 && Math.floor(s5.invincible / 4) % 2;
+  if (!blink) drawPlayer(s5.playerX, s5.playerY, 38);
+
+  if (s5.shakeTimer > 0) ctx.restore();
+
+  // Win message
+  if (s5.won) {
+    const alpha = Math.min(1, s5.winTimer / 60);
+    ctx.fillStyle = `rgba(0,0,0,${alpha * 0.5})`;
+    ctx.fillRect(0, 0, W, H);
+    drawBilingual('승리!', '勝利！', W / 2, H / 2 - 30, 56, 32, `rgba(255,215,0,${alpha})`);
+    drawBilingual('전설의 과자가 되었다!', '伝説のお菓子になった！', W / 2, H / 2 + 40, 22, 15, `rgba(255,255,255,${alpha})`);
+  }
+}
+
+// ============================================================
+// STAGE INIT ROUTER
+// ============================================================
+function initStage(n) {
+  switch (n) {
+    case 0: initStage1(); break;
+    case 1: initStage2(); break;
+    case 2: initStage4(); break;
+    case 3: initStage5(); break;
+    case 4: initStage3(); break;
+  }
+}
+
+// ============================================================
+// MAIN GAME LOOP
+// ============================================================
+function update() {
+  switch (gameState) {
+    case STATE.PLAYING:
+      switch (currentStage) {
+        case 0: updateStage1(); break;
+        case 1: updateStage2(); break;
+        case 2: updateStage4(); break;
+        case 3: updateStage5(); break;
+        case 4: updateStage3(); break;
+      }
+      break;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, W, H);
+
+  switch (gameState) {
+    case STATE.TITLE:
+      drawTitle();
+      break;
+    case STATE.STAGE_INTRO:
+      drawStageIntro();
+      break;
+    case STATE.PLAYING:
+      switch (currentStage) {
+        case 0: drawStage1(); break;
+        case 1: drawStage2(); break;
+        case 2: drawStage4(); break;
+        case 3: drawStage5(); break;
+        case 4: drawStage3(); break;
+      }
+      drawHUD();
+      break;
+    case STATE.ENDING:
+      drawEnding();
+      break;
+  }
+}
+
+function gameLoop() {
+  frameCount++;
+  update();
+  draw();
+  keysJustPressed = {};
+  requestAnimationFrame(gameLoop);
+}
+
+// Start the game loop
+gameLoop();
+</script>
+</body>
+</html>

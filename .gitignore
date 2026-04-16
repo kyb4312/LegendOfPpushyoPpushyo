@@ -1,0 +1,10 @@
+venv/
+.DS_Store
+.omc/
+.claude/
+~$*
+*.zip
+*.py
+GAME_INFO.md
+text.json
+*.pptx
