@@ -260,9 +260,9 @@
     "en": "What is PPushyo Survival?"
   },
   "help_what_desc": {
-    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 7개 스테이지를 생존하는 미니게임 모음입니다.",
-    "jp": "プレイヤーがプショプショ(お菓子)の立場になり、壊されたり食べられたりしないよう7つのステージを生き残るミニゲーム集です。",
-    "en": "You play as PPushyo (a snack), surviving 7 stages without getting crushed or eaten. A mini-game collection!"
+    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 8개 스테이지를 생존하는 미니게임 모음입니다.",
+    "jp": "プレイヤーがプショプショ(お菓子)の立場になり、壊されたり食べられたりしないよう8つのステージを生き残るミニゲーム集です。",
+    "en": "You play as PPushyo (a snack), surviving 8 stages without getting crushed or eaten. A mini-game collection!"
   },
   "help_hp": {
     "ko": "❤️ 체력 시스템",
@@ -305,9 +305,9 @@
     "en": "🏆 Endings"
   },
   "help_endings1": {
-    "ko": "총 9개의 엔딩 (배드 7 + 굿 1 + 히든 1)",
-    "jp": "全9エンディング（バッド7+グッド1+隠し1）",
-    "en": "9 total endings (7 bad + 1 good + 1 hidden)"
+    "ko": "총 10개의 엔딩 (배드 8 + 굿 1 + 히든 1)",
+    "jp": "全10エンディング（バッド8+グッド1+隠し1）",
+    "en": "10 total endings (8 bad + 1 good + 1 hidden)"
   },
   "help_endings2": {
     "ko": "사망 원인에 따라 다른 엔딩이 표시됩니다",
@@ -520,9 +520,9 @@
     "en": "Survive 20 seconds to clear"
   },
   "help_s4_title": {
-    "ko": "S5. 거대한 젓가락 보스",
-    "jp": "S5. 巨大な箸ボス",
-    "en": "S5. Chopstick Boss"
+    "ko": "S6. 거대한 젓가락 보스",
+    "jp": "S6. 巨大な箸ボス",
+    "en": "S6. Chopstick Boss"
   },
   "help_s4_controls": {
     "ko": "← →  이동  |  Space  공격",
@@ -605,9 +605,9 @@
     "en": "S5. Haechi Guard"
   },
   "help_s5_title_s6": {
-    "ko": "S7. 해치상 경비대",
-    "jp": "S7. 獬豸像の警備隊",
-    "en": "S7. Haechi Guard"
+    "ko": "S8. 해치상 경비대",
+    "jp": "S8. 獬豸像の警備隊",
+    "en": "S8. Haechi Guard"
   },
   "help_s5_controls": {
     "ko": "Space 꾹 누르기 = 전진 | 떼기 = 멈춤",
@@ -705,9 +705,9 @@
     "en": "Died to pigeon in S1"
   },
   "e_cond_haechi": {
-    "ko": "S7에서 해치상에 사망",
-    "jp": "S7で獬豸[カイチ]像で死亡",
-    "en": "Died to Haechi in S7"
+    "ko": "S8에서 해치상에 사망",
+    "jp": "S8で獬豸[カイチ]像で死亡",
+    "en": "Died to Haechi in S8"
   },
   "e_cond_legend": {
     "ko": "전 스테이지 클리어",
@@ -800,14 +800,14 @@
     "en": "PPushyo lost the beat and crumbled to the rhythm..."
   },
   "e_cond_rhythm": {
-    "ko": "S6에서 리듬 미스로 사망",
-    "jp": "S6でリズムミスで死亡",
-    "en": "Died to rhythm misses in S6"
+    "ko": "S7에서 리듬 미스로 사망",
+    "jp": "S7でリズムミスで死亡",
+    "en": "Died to rhythm misses in S7"
   },
   "help_s6_title": {
-    "ko": "S6. 뿌셔뿌셔 리듬 카라테",
-    "jp": "S6. プシェプシェリズム空手",
-    "en": "S6. Rhythm Karate"
+    "ko": "S7. 뿌셔뿌셔 리듬 카라테",
+    "jp": "S7. プシェプシェリズム空手",
+    "en": "S7. Rhythm Karate"
   },
   "help_s6_controls": {
     "ko": "SPACE = 펀치!  꾹 누르고 떼기 = 어퍼컷!",
@@ -953,5 +953,85 @@
     "ko": "15초 생존하면 클리어!",
     "jp": "15秒生存でクリア！",
     "en": "Survive 15 seconds to clear!"
+  },
+  "s_jmp_name": {
+    "ko": "점프 점프",
+    "jp": "ジャンプジャンプ",
+    "en": "Jump Jump"
+  },
+  "s_jmp_sub": {
+    "ko": "정확하게 뛰어!",
+    "jp": "正確にジャンプ！",
+    "en": "Jump precisely!"
+  },
+  "e_jump_title": {
+    "ko": "추락 사고",
+    "jp": "落下事故",
+    "en": "Fall Accident"
+  },
+  "e_jump_desc": {
+    "ko": "발을 헛디딘 뿌셔뿌셔는 블록 사이에 빠져 부서졌습니다...",
+    "jp": "足を踏み外したプシェプシェはブロックの間に落ちて砕けました...",
+    "en": "PPushyo slipped and crumbled between the blocks..."
+  },
+  "e_cond_jump": {
+    "ko": "S5에서 점프 실패로 사망",
+    "jp": "S5でジャンプ失敗で死亡",
+    "en": "Died from failed jumps in S5"
+  },
+  "help_jmp_title": {
+    "ko": "S5. 점프 점프",
+    "jp": "S5. ジャンプジャンプ",
+    "en": "S5. Jump Jump"
+  },
+  "help_jmp_controls": {
+    "ko": "Space 꾹 = 차지 | 떼기 = 점프!",
+    "jp": "Space長押し = チャージ | 離す = ジャンプ！",
+    "en": "Hold Space = Charge | Release = Jump!"
+  },
+  "help_jmp_desc": {
+    "ko": "블록에서 블록으로 정확하게 점프하세요!",
+    "jp": "ブロックからブロックへ正確にジャンプ！",
+    "en": "Jump precisely from block to block!"
+  },
+  "help_jmp_charge": {
+    "ko": "차지 시스템",
+    "jp": "チャージシステム",
+    "en": "Charge System"
+  },
+  "help_jmp_charge1": {
+    "ko": "Space를 누르면 차지 시작 (최대 1.5초)",
+    "jp": "Spaceを押すとチャージ開始（最大1.5秒）",
+    "en": "Hold Space to charge (max 1.5s)"
+  },
+  "help_jmp_charge2": {
+    "ko": "길게 누를수록 더 멀리 점프!",
+    "jp": "長く押すほど遠くにジャンプ！",
+    "en": "Longer hold = farther jump!"
+  },
+  "help_jmp_land": {
+    "ko": "착지 판정",
+    "jp": "着地判定",
+    "en": "Landing"
+  },
+  "help_jmp_perfect": {
+    "ko": "PERFECT! (+50) — 블록 중앙 착지",
+    "jp": "PERFECT! (+50) — ブロック中央着地",
+    "en": "PERFECT! (+50) — center landing"
+  },
+  "help_jmp_normal": {
+    "ko": "착지 성공 (+10) — 블록 위 착지",
+    "jp": "着地成功 (+10) — ブロック上着地",
+    "en": "Landed (+10) — on the block"
+  },
+  "help_jmp_miss": {
+    "ko": "실패 — 블록을 벗어나면 피격!",
+    "jp": "失敗 — ブロックから外れるとダメージ！",
+    "en": "Miss — fall off for damage!"
+  },
+  "help_jmp_clear": {
+    "ko": "12번 점프 성공하면 클리어!",
+    "jp": "12回ジャンプ成功でクリア！",
+    "en": "Land 12 jumps to clear!"
   }
 }

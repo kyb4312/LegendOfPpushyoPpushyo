@@ -89,7 +89,7 @@ const STATE = {
   ENDINGS_VIEW: 'endings_view'
 };
 let helpPage = 0;
-const HELP_PAGES = 8;
+const HELP_PAGES = 9;
 
 let gameState = STATE.TITLE;
 let currentStage = 0;
@@ -152,6 +152,7 @@ const STAGES = [
   { nameKey: 's2_name', subKey: 's2_sub' },
   { nameKey: 's3_name', subKey: 's3_sub' },
   { nameKey: 's_bal_name', subKey: 's_bal_sub' },
+  { nameKey: 's_jmp_name', subKey: 's_jmp_sub' },
   { nameKey: 's4_name', subKey: 's4_sub' },
   { nameKey: 's6_name', subKey: 's6_sub' },
   { nameKey: 's5_name', subKey: 's5_sub' }
@@ -166,7 +167,8 @@ const ENDINGS = [
   { id: 'legend', titleKey: 'e_legend_title', descKey: 'e_legend_desc', emoji: '🏆' },
   { id: 'japan', titleKey: 'e_japan_title', descKey: 'e_japan_desc', emoji: '🇯🇵' },
   { id: 'rhythm', titleKey: 'e_rhythm_title', descKey: 'e_rhythm_desc', emoji: '🎵' },
-  { id: 'balance', titleKey: 'e_balance_title', descKey: 'e_balance_desc', emoji: '📦' }
+  { id: 'balance', titleKey: 'e_balance_title', descKey: 'e_balance_desc', emoji: '📦' },
+  { id: 'jump', titleKey: 'e_jump_title', descKey: 'e_jump_desc', emoji: '🕳️' }
 ];
 
 // --- INPUT ---
@@ -242,8 +244,8 @@ function handleClick(e) {
       gameState = STATE.ENDINGS_VIEW;
     }
     // Dev stage select buttons
-    for (let i = 0; i < 7; i++) {
-      const bx = 75 + i * 100, by = 580, bw = 90, bh = 18;
+    for (let i = 0; i < 8; i++) {
+      const bx = 55 + i * 92, by = 580, bw = 85, bh = 18;
       if (cx > bx && cx < bx + bw && cy > by && cy < by + bh) {
         startAtStage(i);
       }
@@ -482,27 +484,27 @@ function drawTitle() {
   ctx.strokeStyle = '#616161';
   ctx.lineWidth = 1;
   ctx.stroke();
-  drawText(`🏆 ${found} / 9 ${t('ending_collect')}`, W / 2, eby + ebh / 2, 14, eHover ? '#ffd54f' : '#9e9e9e');
+  drawText(`🏆 ${found} / ${ENDINGS.length} ${t('ending_collect')}`, W / 2, eby + ebh / 2, 14, eHover ? '#ffd54f' : '#9e9e9e');
 
   // Controls hint
   drawText(t('controls_hint'), W / 2, 572, 11, '#666');
 
   // Dev stage select buttons
   const devNamesMap = {
-    ko: ['러너', '양궁', '커피', '균형', '보스', '리듬', '해치'],
-    jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ボス', 'リズム', '獬豸'],
-    en: ['Run', 'Archer', 'Coffee', 'Bal', 'Boss', 'Beat', 'Haechi']
+    ko: ['러너', '양궁', '커피', '균형', '점프', '보스', '리듬', '해치'],
+    jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ジャンプ', 'ボス', 'リズム', '獬豸'],
+    en: ['Run', 'Archer', 'Coffee', 'Bal', 'Jump', 'Boss', 'Beat', 'Haechi']
   };
   const devNames = devNamesMap[lang] || devNamesMap.ko;
-  drawText(t('dev'), 55, 590, 10, '#555');
-  for (let i = 0; i < 7; i++) {
-    const dbx = 75 + i * 100, dby = 580, dbw = 90, dbh = 18;
+  drawText(t('dev'), 35, 590, 10, '#555');
+  for (let i = 0; i < 8; i++) {
+    const dbx = 55 + i * 92, dby = 580, dbw = 85, dbh = 18;
     const dHover = mouseX > dbx && mouseX < dbx + dbw && mouseY > dby && mouseY < dby + dbh;
     ctx.fillStyle = dHover ? '#5e35b1' : '#311b92';
     ctx.beginPath();
     ctx.roundRect(dbx, dby, dbw, dbh, 4);
     ctx.fill();
-    drawText(`${i+1}.${devNames[i]}`, dbx + dbw / 2, dby + dbh / 2, 10, '#ce93d8');
+    drawText(`${i+1}.${devNames[i]}`, dbx + dbw / 2, dby + dbh / 2, 9, '#ce93d8');
   }
 }
 
@@ -514,6 +516,7 @@ const STAGE_CONTROLS = [
   { icon: '🖱️', text: 'Mouse Drag (⚡Energy)' },
   { icon: '⌨️', text: 'A  S  D  F' },
   { icon: '⌨️', text: '← →  Balance' },
+  { icon: '⌨️', text: 'Hold Space = Charge / Release = Jump' },
   { icon: '⌨️', text: '← →  +  Space ×2~3' },
   { icon: '⌨️', text: 'Space (Timing)  /  Hold+Release' },
   { icon: '⌨️', text: 'Hold Space = Move  /  Release = Stop' },
@@ -591,7 +594,7 @@ function startAtStage(n) {
 
 function advanceStage() {
   currentStage++;
-  if (currentStage >= 7) {
+  if (currentStage >= 8) {
     // Victory!
     triggerEnding('victory');
     return;
@@ -617,9 +620,10 @@ function triggerEnding(type) {
     else if (deathStage === 1) endingIndex = 0; // archer
     else if (deathStage === 2) endingIndex = 2; // dessert (coffee stage)
     else if (deathStage === 3) endingIndex = 8; // balance
-    else if (deathStage === 4) endingIndex = 0; // default to archer for boss
-    else if (deathStage === 5) endingIndex = 7; // rhythm
-    else if (deathStage === 6) endingIndex = 4; // haechi
+    else if (deathStage === 4) endingIndex = 9; // jump
+    else if (deathStage === 5) endingIndex = 0; // default to archer for boss
+    else if (deathStage === 6) endingIndex = 7; // rhythm
+    else if (deathStage === 7) endingIndex = 4; // haechi
   } else if (type === 'victory') {
     if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
     else endingIndex = 5; // legend
@@ -911,7 +915,48 @@ function drawHelp() {
       ctx.fillRect(200, 510, 400, 8);
       break;
 
-    case 5: // S5
+    case 5: // S5 Jump Jump
+      drawText(t('help_jmp_title'), W / 2, 40, 28, '#2196f3');
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
+
+      drawText(t('help_jmp_controls'), W / 2, 100, 16, '#64b5f6');
+      drawText(t('help_jmp_desc'), W / 2, 130, 14, '#bdbdbd');
+
+      drawText(t('help_jmp_charge'), W / 2, 180, 16, '#ffeb3b');
+      drawText(t('help_jmp_charge1'), W / 2, 210, 14, '#bdbdbd');
+      drawText(t('help_jmp_charge2'), W / 2, 235, 14, '#bdbdbd');
+
+      // Charge bar illustration
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.beginPath(); ctx.roundRect(250, 260, 300, 20, 6); ctx.fill();
+      ctx.fillStyle = '#43a047';
+      ctx.beginPath(); ctx.roundRect(252, 262, 180, 16, 4); ctx.fill();
+      drawText('SPACE ■■■■■□□□', W / 2, 300, 14, '#81c784');
+
+      // Platform illustration
+      for (let i = 0; i < 4; i++) {
+        const px = 150 + i * 150;
+        const pw = 80 - i * 10;
+        const py = 370;
+        const colors = ['#e53935','#1e88e5','#43a047','#fb8c00'];
+        ctx.fillStyle = colors[i];
+        ctx.fillRect(px, py, pw, 20);
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillRect(px, py + 20, pw, 10);
+      }
+      if (frameCount % 60 < 30) drawPlayer(170, 350, 28);
+      else drawPlayer(320, 350, 28);
+
+      drawText(t('help_jmp_land'), W / 2, 420, 16, '#ffd54f');
+      drawText(t('help_jmp_perfect'), 160, 445, 14, '#ffeb3b', 'left');
+      drawText(t('help_jmp_normal'), 160, 468, 14, '#4caf50', 'left');
+      drawText(t('help_jmp_miss'), 160, 491, 14, '#f44336', 'left');
+
+      drawText(t('help_jmp_clear'), W / 2, 520, 16, '#2196f3');
+      break;
+
+    case 6: // S6 Boss
       drawText(t('help_s4_title'), W / 2, 40, 28, '#f44336');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -942,7 +987,7 @@ function drawHelp() {
       drawText(t('help_s4_win'), W / 2, 515, 16, '#4caf50');
       break;
 
-    case 6: // S6 Rhythm Karate
+    case 7: // S7 Rhythm Karate
       drawText(t('help_s6_title'), W / 2, 40, 28, '#ff9800');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -967,7 +1012,7 @@ function drawHelp() {
       drawText(t('help_s6_clear'), W / 2, 520, 16, '#ff9800');
       break;
 
-    case 7: // S7 Haechi
+    case 8: // S8 Haechi
       drawText(t('help_s5_title_s6'), W / 2, 40, 28, '#9c27b0');
       ctx.fillStyle = 'rgba(255,255,255,0.1)';
       ctx.beginPath(); ctx.roundRect(40, 70, W - 80, 460, 12); ctx.fill();
@@ -1030,10 +1075,10 @@ function drawEndingsView() {
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
   ctx.beginPath(); ctx.roundRect(40, 90, W - 80, 440, 12); ctx.fill();
 
-  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance'];
+  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance','e_cond_jump'];
 
   for (let i = 0; i < ENDINGS.length; i++) {
-    const ey = 115 + i * 47;
+    const ey = 110 + i * 42;
     const e = ENDINGS[i];
     const isFound = endingsFound[e.id];
 
@@ -2461,6 +2506,365 @@ function drawBalance() {
 }
 
 // ============================================================
+// JUMP JUMP STAGE
+// ============================================================
+let jmp = {};
+function initJump() {
+  jmp = {
+    platforms: [],
+    currentPlatIdx: 0,
+    playerX: 0,
+    playerY: 0,
+    playerVX: 0,
+    playerVY: 0,
+    jumping: false,
+    charging: false,
+    chargeTime: 0,
+    maxCharge: 90,
+    landed: true,
+    cameraX: 0,
+    jumpsCompleted: 0,
+    jumpsNeeded: 12,
+    invincible: 0,
+    won: false,
+    winTimer: 0,
+    chargeIndicator: 0,
+    perfectLand: false,
+    perfectTimer: 0,
+    squash: 0,
+    clouds: [],
+    shakeTimer: 0,
+    feedbacks: []
+  };
+  generatePlatforms();
+  // Generate clouds
+  for (let i = 0; i < 8; i++) {
+    jmp.clouds.push({
+      x: Math.random() * 1200,
+      y: 40 + Math.random() * 150,
+      w: 60 + Math.random() * 80,
+      speed: 0.2 + Math.random() * 0.3
+    });
+  }
+}
+
+function generatePlatforms() {
+  jmp.platforms = [];
+  let px = 200;
+  const py = H - 120;
+  for (let i = 0; i < 20; i++) {
+    const w = Math.max(40, 100 - i * 3);
+    const gap = 80 + Math.random() * 80 + i * 5;
+    jmp.platforms.push({
+      x: px,
+      y: py,
+      w: w,
+      h: 30,
+      color: ['#e53935','#1e88e5','#43a047','#fb8c00','#8e24aa','#00acc1'][i % 6]
+    });
+    px += w / 2 + gap;
+  }
+  const p0 = jmp.platforms[0];
+  jmp.playerX = p0.x + p0.w / 2;
+  jmp.playerY = p0.y;
+  jmp.cameraX = 0;
+}
+
+function darkenColor(hex, factor) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return `rgb(${Math.floor(r*factor)},${Math.floor(g*factor)},${Math.floor(b*factor)})`;
+}
+
+function updateJump() {
+  if (jmp.won) {
+    jmp.winTimer++;
+    if (jmp.winTimer > 90 && hp > 0) advanceStage();
+    return;
+  }
+  if (jmp.invincible > 0) jmp.invincible--;
+  if (jmp.shakeTimer > 0) jmp.shakeTimer--;
+  if (jmp.perfectTimer > 0) jmp.perfectTimer--;
+
+  // Update feedbacks
+  jmp.feedbacks = jmp.feedbacks.filter(f => { f.timer++; return f.timer < 40; });
+
+  // Camera smooth follow
+  const targetCamX = jmp.playerX - 300;
+  jmp.cameraX += (targetCamX - jmp.cameraX) * 0.1;
+
+  if (jmp.jumping) {
+    // Physics
+    jmp.playerX += jmp.playerVX;
+    jmp.playerVY += 0.5; // gravity
+    jmp.playerY += jmp.playerVY;
+
+    // Squash/stretch during jump
+    jmp.squash = jmp.playerVY < 0 ? -0.2 : 0.15;
+
+    // Landing detection - check next platform and current
+    const nextIdx = jmp.currentPlatIdx + 1;
+    let landedOn = -1;
+    for (let ci = jmp.currentPlatIdx; ci < Math.min(nextIdx + 2, jmp.platforms.length); ci++) {
+      const p = jmp.platforms[ci];
+      if (jmp.playerX >= p.x && jmp.playerX <= p.x + p.w &&
+          jmp.playerY >= p.y - 5 && jmp.playerY <= p.y + 15 &&
+          jmp.playerVY > 0) {
+        landedOn = ci;
+        break;
+      }
+    }
+
+    if (landedOn >= 0) {
+      const p = jmp.platforms[landedOn];
+      jmp.playerY = p.y;
+      jmp.playerVX = 0;
+      jmp.playerVY = 0;
+      jmp.jumping = false;
+      jmp.landed = true;
+      jmp.squash = 0.3; // landing squash
+
+      if (landedOn > jmp.currentPlatIdx) {
+        jmp.jumpsCompleted++;
+        jmp.currentPlatIdx = landedOn;
+
+        // Check center landing (perfect)
+        const center = p.x + p.w / 2;
+        const dist = Math.abs(jmp.playerX - center);
+        if (dist < p.w * 0.15) {
+          jmp.perfectLand = true;
+          jmp.perfectTimer = 40;
+          score += 50;
+          jmp.feedbacks.push({ text: 'PERFECT!', x: jmp.playerX, y: jmp.playerY - 50, timer: 0, color: '#ffeb3b' });
+        } else {
+          score += 10;
+          jmp.feedbacks.push({ text: '+10', x: jmp.playerX, y: jmp.playerY - 50, timer: 0, color: '#4caf50' });
+        }
+
+        // Win condition
+        if (jmp.jumpsCompleted >= jmp.jumpsNeeded) {
+          jmp.won = true;
+          jmp.winTimer = 0;
+          score += 500;
+        }
+      }
+    }
+
+    // Fall off screen
+    if (jmp.playerY > H + 50) {
+      if (jmp.invincible <= 0) {
+        takeDamage('jump');
+        jmp.invincible = 90;
+        jmp.shakeTimer = 15;
+      }
+      // Reset to current platform
+      const cp = jmp.platforms[jmp.currentPlatIdx];
+      jmp.playerX = cp.x + cp.w / 2;
+      jmp.playerY = cp.y;
+      jmp.playerVX = 0;
+      jmp.playerVY = 0;
+      jmp.jumping = false;
+      jmp.landed = true;
+      jmp.squash = 0;
+    }
+  } else {
+    // On platform - handle charging
+    if (keys['Space'] && jmp.landed) {
+      if (!jmp.charging) {
+        jmp.charging = true;
+        jmp.chargeTime = 0;
+      }
+      jmp.chargeTime = Math.min(jmp.chargeTime + 1, jmp.maxCharge);
+      jmp.chargeIndicator = jmp.chargeTime / jmp.maxCharge;
+      // Squash while charging
+      jmp.squash = 0.1 + (jmp.chargeTime / jmp.maxCharge) * 0.3;
+    }
+
+    if (!keys['Space'] && jmp.charging) {
+      // Release - execute jump
+      jmp.charging = false;
+      jmp.jumping = true;
+      jmp.landed = false;
+      const power = jmp.chargeTime / jmp.maxCharge;
+      jmp.playerVX = 3.5 + power * 5.5; // horizontal speed based on charge
+      jmp.playerVY = -10 - power * 4; // vertical launch
+      jmp.chargeTime = 0;
+      jmp.chargeIndicator = 0;
+      jmp.squash = -0.3; // stretch on launch
+    }
+
+    // Decay squash on ground
+    if (jmp.squash > 0) jmp.squash *= 0.85;
+  }
+
+  // Update clouds
+  jmp.clouds.forEach(c => {
+    c.x += c.speed;
+    if (c.x - jmp.cameraX > W + 100) c.x = jmp.cameraX - 100;
+    if (c.x - jmp.cameraX < -200) c.x = jmp.cameraX + W + 50;
+  });
+}
+
+function drawJumpPlatform(p, camX) {
+  const sx = p.x - camX;
+  const sy = p.y;
+  // Top face
+  ctx.fillStyle = p.color;
+  ctx.fillRect(sx, sy, p.w, p.h);
+  // Front face (darker)
+  ctx.fillStyle = darkenColor(p.color, 0.7);
+  ctx.fillRect(sx, sy + p.h, p.w, 15);
+  // Right face (medium)
+  ctx.fillStyle = darkenColor(p.color, 0.85);
+  ctx.beginPath();
+  ctx.moveTo(sx + p.w, sy);
+  ctx.lineTo(sx + p.w + 10, sy - 8);
+  ctx.lineTo(sx + p.w + 10, sy + p.h - 8 + 15);
+  ctx.lineTo(sx + p.w, sy + p.h + 15);
+  ctx.closePath();
+  ctx.fill();
+  // Top face highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillRect(sx + 2, sy + 2, p.w - 4, 4);
+}
+
+function drawJump() {
+  // Sky gradient background
+  const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+  skyGrad.addColorStop(0, '#87CEEB');
+  skyGrad.addColorStop(0.5, '#B0E0E6');
+  skyGrad.addColorStop(1, '#E0F7FA');
+  ctx.fillStyle = skyGrad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Screen shake
+  if (jmp.shakeTimer > 0) {
+    ctx.save();
+    ctx.translate(Math.random() * 6 - 3, Math.random() * 6 - 3);
+  }
+
+  // Clouds
+  jmp.clouds.forEach(c => {
+    const cx = c.x - jmp.cameraX;
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.beginPath();
+    ctx.ellipse(cx, c.y, c.w / 2, 15, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx - c.w * 0.25, c.y + 5, c.w * 0.3, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.ellipse(cx + c.w * 0.25, c.y + 3, c.w * 0.25, 10, 0, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // Ground (far below platforms)
+  ctx.fillStyle = '#8d6e63';
+  ctx.fillRect(0, H - 30, W, 30);
+  ctx.fillStyle = '#a1887f';
+  for (let x = -((jmp.cameraX * 0.3) % 40); x < W; x += 40) {
+    ctx.fillRect(x, H - 30, 20, 3);
+  }
+
+  // Platforms
+  jmp.platforms.forEach((p, i) => {
+    const sx = p.x - jmp.cameraX;
+    if (sx > -120 && sx < W + 50) {
+      drawJumpPlatform(p, jmp.cameraX);
+      // Platform number on top (subtle)
+      if (i > 0 && i <= jmp.jumpsNeeded) {
+        ctx.fillStyle = 'rgba(255,255,255,0.4)';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(String(i), sx + p.w / 2, p.y + p.h / 2);
+      }
+    }
+  });
+
+  // Player
+  const px = jmp.playerX - jmp.cameraX;
+  const py = jmp.playerY;
+  const blink = jmp.invincible > 0 && Math.floor(jmp.invincible / 4) % 2;
+  if (!blink) {
+    ctx.save();
+    ctx.translate(px, py);
+    // Squash/stretch transform
+    const scaleX = 1 - jmp.squash * 0.5;
+    const scaleY = 1 + jmp.squash * 0.5;
+    ctx.scale(scaleX, scaleY);
+    drawPlayer(0, -10, 36);
+    ctx.restore();
+  }
+
+  // Charge indicator (circular meter near player)
+  if (jmp.charging) {
+    const ci = jmp.chargeIndicator;
+    // Background circle
+    ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(px, py - 50, 18, 0, Math.PI * 2);
+    ctx.stroke();
+    // Charge arc
+    const chargeColor = ci < 0.5 ? '#43a047' : ci < 0.8 ? '#ff9800' : '#f44336';
+    ctx.strokeStyle = chargeColor;
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.arc(px, py - 50, 18, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * ci);
+    ctx.stroke();
+    // Power text
+    drawText(`${Math.floor(ci * 100)}%`, px, py - 50, 12, '#fff');
+  }
+
+  // Perfect landing effect
+  if (jmp.perfectTimer > 0) {
+    const alpha = jmp.perfectTimer / 40;
+    const radius = 20 + (40 - jmp.perfectTimer) * 1.5;
+    ctx.strokeStyle = `rgba(255,235,59,${alpha})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(px, py, radius, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  // Feedbacks
+  jmp.feedbacks.forEach(f => {
+    const alpha = 1 - f.timer / 40;
+    const fx = f.x - jmp.cameraX;
+    const fy = f.y - f.timer * 1.5;
+    ctx.globalAlpha = alpha;
+    drawText(f.text, fx, fy, 20, f.color);
+    ctx.globalAlpha = 1;
+  });
+
+  if (jmp.shakeTimer > 0) ctx.restore();
+
+  // Jump counter (top right area)
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath();
+  ctx.roundRect(W - 140, 60, 120, 35, 8);
+  ctx.fill();
+  drawText(`🏃 ${jmp.jumpsCompleted} / ${jmp.jumpsNeeded}`, W - 80, 77, 16, '#fff');
+
+  // Progress bar
+  const prog = jmp.jumpsCompleted / jmp.jumpsNeeded;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(50, H - 20, W - 100, 10);
+  ctx.fillStyle = '#2196f3';
+  ctx.fillRect(50, H - 20, (W - 100) * Math.min(1, prog), 10);
+
+  // Win message
+  if (jmp.won) {
+    const alpha = Math.min(1, jmp.winTimer / 60);
+    ctx.fillStyle = `rgba(0,0,0,${alpha * 0.4})`;
+    ctx.fillRect(0, 0, W, H);
+    drawText(t('clear'), W / 2, H / 2, 48, `rgba(255,213,79,${alpha})`);
+  }
+}
+
+// ============================================================
 // STAGE INIT ROUTER
 // ============================================================
 function initStage(n) {
@@ -2469,9 +2873,10 @@ function initStage(n) {
     case 1: initStage2(); break;
     case 2: initStage4(); break;
     case 3: initBalance(); break;
-    case 4: initStage5(); break;
-    case 5: initBonusGame(); break;
-    case 6: initStage3(); break;
+    case 4: initJump(); break;
+    case 5: initStage5(); break;
+    case 6: initBonusGame(); break;
+    case 7: initStage3(); break;
   }
 }
 
@@ -3051,9 +3456,10 @@ function update() {
         case 1: updateStage2(); break;
         case 2: updateStage4(); break;
         case 3: updateBalance(); break;
-        case 4: updateStage5(); break;
-        case 5: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 6: updateStage3(); break;
+        case 4: updateJump(); break;
+        case 5: updateStage5(); break;
+        case 6: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 7: updateStage3(); break;
       }
       break;
     case STATE.BONUS_INTRO:
@@ -3081,9 +3487,10 @@ function draw() {
         case 1: drawStage2(); break;
         case 2: drawStage4(); break;
         case 3: drawBalance(); break;
-        case 4: drawStage5(); break;
-        case 5: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 6: drawStage3(); break;
+        case 4: drawJump(); break;
+        case 5: drawStage5(); break;
+        case 6: break; // rhythm stage uses BONUS_INTRO/BONUS states
+        case 7: drawStage3(); break;
       }
       drawHUD();
       break;
