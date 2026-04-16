@@ -3744,9 +3744,9 @@ function drawBonus() {
     ctx.fillRect(0, 0, W, H);
   }
 
-  // Slight dim for object visibility
-  ctx.fillStyle = 'rgba(0,0,0,0.25)';
-  ctx.fillRect(0, 0, W, H);
+  // Dark floor strip at bottom
+  ctx.fillStyle = 'rgba(0,0,0,0.75)';
+  ctx.fillRect(0, H - 30, W, 30);
 
   // Beat line at player position
   ctx.strokeStyle = `rgba(255,255,255,${0.1 + bonus.bgPulse * 0.15})`;
@@ -3846,9 +3846,9 @@ function drawBonus() {
   // Beat progress bar
   const prog = bonus.elapsed / 42;
   ctx.fillStyle = 'rgba(255,255,255,0.15)';
-  ctx.fillRect(50, H - 15, W - 100, 8);
+  ctx.fillRect(50, H - 18, W - 100, 8);
   ctx.fillStyle = '#ff9800';
-  ctx.fillRect(50, H - 15, (W - 100) * Math.min(1, prog), 8);
+  ctx.fillRect(50, H - 18, (W - 100) * Math.min(1, prog), 8);
 }
 
 function drawBonusResult() {
