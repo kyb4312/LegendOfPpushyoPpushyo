@@ -1233,26 +1233,43 @@ function drawStage2() {
 // ============================================================
 let s3 = {};
 function initStage3() {
+  const rowLen = W - 160; // 640px per row
   s3 = {
-    playerX: 50,
-    targetX: W - 80,
-    speed: 0,
+    distance: 0,
+    rowLen: rowLen,
+    totalDist: rowLen * 3, // 3 rows = 1920px
+    rows: [
+      { y: 290, dir: 1 },   // left to right
+      { y: 380, dir: -1 },  // right to left
+      { y: 470, dir: 1 },   // left to right
+    ],
+    pathStartX: 80,
+    pathEndX: W - 80,
     looking: false,
     lookTimer: 0,
     lookDuration: 120,
-    greenDuration: 200,
+    greenDuration: 180,
     phase: 'green', // green, transition, or red
     phaseTimer: 0,
     haechiAngle: 0,
     moving: false,
-    caught: false,
-    caughtAnim: 0,
     invincible: 0,
     won: false,
     chant: '무궁화꽃이피었습니다',
     litChars: 0,
-    transitionDuration: 90
+    transitionDuration: 240
   };
+}
+
+function getS3Pos(dist) {
+  const d = Math.max(0, Math.min(dist, s3.totalDist));
+  const row = Math.min(2, Math.floor(d / s3.rowLen));
+  const rowDist = d - row * s3.rowLen;
+  const rowData = s3.rows[row];
+  const x = rowData.dir === 1
+    ? s3.pathStartX + rowDist
+    : s3.pathEndX - rowDist;
+  return { x, y: rowData.y, row };
 }
 
 function updateStage3() {
@@ -1264,6 +1281,9 @@ function updateStage3() {
   }
   if (s3.invincible > 0) s3.invincible--;
 
+  // Progress: 0 (start) to 1 (end)
+  const progress = Math.min(1, s3.distance / s3.totalDist);
+
   // Phase cycling
   s3.phaseTimer++;
   if (s3.phase === 'green') {
@@ -1272,13 +1292,12 @@ function updateStage3() {
     if (s3.phaseTimer >= s3.greenDuration) {
       s3.phase = 'transition';
       s3.phaseTimer = 0;
-      // Dynamic transition duration based on progress
-      const progress = Math.min(1, s3.playerX / s3.targetX);
+      // Transition = "무궁화꽃이피었습니다" 점등: 1~4초 (60~240 frames)
       if (Math.random() < 0.15 * progress) {
-        // Fake-out: very fast transition (catch players off guard)
-        s3.transitionDuration = 30 + Math.random() * 20;
+        // Fake-out: fast transition
+        s3.transitionDuration = 60 + Math.random() * 20;
       } else {
-        s3.transitionDuration = Math.max(40, (90 - progress * 40) + Math.random() * 40);
+        s3.transitionDuration = Math.max(60, 240 - progress * 180 + Math.random() * 30);
       }
     }
   } else if (s3.phase === 'transition') {
@@ -1287,10 +1306,9 @@ function updateStage3() {
     if (s3.phaseTimer >= s3.transitionDuration) {
       s3.phase = 'red';
       s3.phaseTimer = 0;
-      const progress = Math.min(1, s3.playerX / s3.targetX);
-      s3.lookDuration = 40 + Math.random() * 80 + progress * 40;
-      // Green duration: starts long, gets shorter with progress
-      s3.greenDuration = Math.max(60, (200 - progress * 150) + Math.random() * (80 - progress * 60));
+      s3.lookDuration = 60 + Math.random() * 90 + progress * 30;
+      // Green duration: starts generous, gets shorter
+      s3.greenDuration = Math.max(60, (180 - progress * 120) + Math.random() * (60 - progress * 40));
       s3.litChars = s3.chant.length;
     }
   } else {
@@ -1312,18 +1330,18 @@ function updateStage3() {
   // Player movement (hold space)
   s3.moving = keys['Space'];
   if (s3.moving) {
-    s3.playerX += 2.5;
+    s3.distance += 3;
   }
 
-  // Caught detection
+  // Caught detection — knocked back by distance
   if (s3.looking && s3.moving && s3.invincible <= 0) {
     takeDamage('haechi');
     s3.invincible = 90;
-    s3.playerX = Math.max(50, s3.playerX - 100); // knocked back
+    s3.distance = Math.max(0, s3.distance - 150);
   }
 
   // Win condition
-  if (s3.playerX >= s3.targetX) {
+  if (s3.distance >= s3.totalDist) {
     s3.won = true;
     s3.winTimer = 0;
     score += 500;
@@ -1339,47 +1357,35 @@ function drawStage3() {
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // Path
-  ctx.fillStyle = '#a1887f';
-  ctx.fillRect(0, H / 2 - 40, W, 80);
-  ctx.fillStyle = '#8d6e63';
-  for (let x = 0; x < W; x += 40) {
-    ctx.fillRect(x, H / 2 - 40, 2, 80);
-  }
-
-  // Palace walls
-  drawPalaceRoof(W / 2, 40, 400);
+  // Palace decoration at top
+  drawPalaceRoof(W / 2, 30, 400);
   ctx.fillStyle = '#795548';
-  ctx.fillRect(50, 80, W - 100, 120);
+  ctx.fillRect(50, 65, W - 100, 80);
   ctx.fillStyle = '#5d4037';
   for (let x = 80; x < W - 80; x += 80) {
-    ctx.fillRect(x, 100, 40, 60);
+    ctx.fillRect(x, 75, 40, 45);
     ctx.fillStyle = '#4e342e';
-    ctx.fillRect(x + 5, 110, 30, 40);
+    ctx.fillRect(x + 5, 80, 30, 30);
     ctx.fillStyle = '#5d4037';
   }
 
   // 무궁화꽃이피었습니다 chant display
-  const chantY = 230;
+  const chantY = 170;
   const chant = s3.chant;
-  const totalW = chant.length * 28;
-  const startX = (W - totalW) / 2;
-
-  // Background bar
+  const totalCW = chant.length * 28;
+  const chantStartX = (W - totalCW) / 2;
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.beginPath();
-  ctx.roundRect(startX - 10, chantY - 18, totalW + 20, 40, 8);
+  ctx.roundRect(chantStartX - 10, chantY - 18, totalCW + 20, 40, 8);
   ctx.fill();
-
   for (let i = 0; i < chant.length; i++) {
-    const cx = startX + i * 28 + 14;
+    const cx = chantStartX + i * 28 + 14;
     const lit = i < s3.litChars;
     ctx.font = `bold 20px 'Noto Sans KR', sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     if (lit) {
       ctx.fillStyle = '#ff5252';
-      // Glow effect on lit characters
       ctx.shadowColor = '#ff5252';
       ctx.shadowBlur = 10;
     } else {
@@ -1390,28 +1396,60 @@ function drawStage3() {
   }
   ctx.shadowBlur = 0;
 
-  // Haechi statue at the end
-  ctx.save();
-  ctx.translate(s3.targetX + 20, H / 2);
-  ctx.scale(s3.looking ? -1 : 1, 1);
-  drawEmoji('🦁', 0, 0, 50);
-  ctx.restore();
-
   // Status text
   if (s3.phase === 'green') {
-    drawText(t('move'), W / 2, H / 2 - 80, 24, '#4caf50');
+    drawText(t('move'), W / 2, 215, 22, '#4caf50');
   } else if (s3.phase === 'transition') {
-    drawText(t('ready'), W / 2, H / 2 - 80, 24, '#ff9800');
+    drawText(t('ready'), W / 2, 215, 22, '#ff9800');
   } else if (s3.looking) {
-    drawText(t('stop_cmd'), W / 2, H / 2 - 80, 24, '#f44336');
+    drawText(t('stop_cmd'), W / 2, 215, 22, '#f44336');
   }
 
-  // Player
-  const blink = s3.invincible > 0 && Math.floor(s3.invincible / 4) % 2;
-  if (!blink) drawPlayer(s3.playerX, H / 2, 36);
+  // Draw 3-row winding path
+  const sx = s3.pathStartX, ex = s3.pathEndX;
+  const pathH = 40;
+  for (let r = 0; r < 3; r++) {
+    const ry = s3.rows[r].y;
+    // Path strip
+    ctx.fillStyle = '#a1887f';
+    ctx.fillRect(sx, ry - pathH / 2, ex - sx, pathH);
+    // Tile lines
+    ctx.fillStyle = '#8d6e63';
+    for (let x = sx; x < ex; x += 40) {
+      ctx.fillRect(x, ry - pathH / 2, 2, pathH);
+    }
+    // Direction arrows
+    ctx.fillStyle = 'rgba(0,0,0,0.15)';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const arrow = s3.rows[r].dir === 1 ? '→' : '←';
+    for (let ax = sx + 40; ax < ex - 20; ax += 80) {
+      ctx.fillText(arrow, ax, ry);
+    }
+  }
+  // Vertical connectors between rows
+  ctx.fillStyle = '#a1887f';
+  // Row 1→2 connector (right side)
+  ctx.fillRect(ex - pathH, s3.rows[0].y - pathH / 2, pathH, s3.rows[1].y - s3.rows[0].y + pathH);
+  // Row 2→3 connector (left side)
+  ctx.fillRect(sx, s3.rows[1].y - pathH / 2, pathH, s3.rows[2].y - s3.rows[1].y + pathH);
 
-  // Progress indicator
-  const prog = (s3.playerX - 50) / (s3.targetX - 50);
+  // Haechi statue at the end of row 3
+  const haechiPos = getS3Pos(s3.totalDist);
+  ctx.save();
+  ctx.translate(haechiPos.x + 25, haechiPos.y);
+  ctx.scale(s3.looking ? -1 : 1, 1);
+  drawEmoji('🦁', 0, 0, 40);
+  ctx.restore();
+
+  // Player
+  const pos = getS3Pos(s3.distance);
+  const blink = s3.invincible > 0 && Math.floor(s3.invincible / 4) % 2;
+  if (!blink) drawPlayer(pos.x, pos.y, 32);
+
+  // Progress bar
+  const prog = s3.distance / s3.totalDist;
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
   ctx.fillRect(50, H - 20, W - 100, 10);
   ctx.fillStyle = '#9c27b0';
@@ -1419,11 +1457,13 @@ function drawStage3() {
 
   // Hint
   if (frameCount % 120 < 60) {
-    drawText(t('space_to_move'), W / 2, H - 50, 14, 'rgba(0,0,0,0.5)');
+    drawText(t('space_to_move'), W / 2, H - 40, 13, 'rgba(0,0,0,0.5)');
   }
 
   // Win message
   if (s3.won) {
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fillRect(0, 0, W, H);
     drawText(t('clear'), W / 2, H / 2, 48, '#ffd54f');
   }
 }
