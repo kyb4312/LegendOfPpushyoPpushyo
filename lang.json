@@ -1,7 +1,7 @@
 {
   "title": {
     "ko": "뿌셔뿌셔 서바이벌",
-    "jp": "プシェプシェサバイバル",
+    "jp": "プショプショサバイバル",
     "en": "PPushyo Survival"
   },
   "subtitle": {
@@ -41,7 +41,7 @@
   },
   "restart": {
     "ko": "다시 시작",
-    "jp": "もう一度",
+    "jp": "リトライ",
     "en": "RESTART"
   },
   "ending_collect": {
@@ -76,7 +76,7 @@
   },
   "move": {
     "ko": "움직여!",
-    "jp": "動け！",
+    "jp": "進め！",
     "en": "MOVE!"
   },
   "stop_cmd": {
@@ -86,17 +86,17 @@
   },
   "ready": {
     "ko": "준비...",
-    "jp": "準備...",
+    "jp": "レディー...",
     "en": "READY..."
   },
   "victory": {
     "ko": "승리!",
-    "jp": "勝利！",
+    "jp": "VICTORY!",
     "en": "VICTORY!"
   },
   "clear": {
     "ko": "통과!",
-    "jp": "通過！",
+    "jp": "クリア！",
     "en": "CLEAR!"
   },
   "became_legend": {
@@ -116,7 +116,7 @@
   },
   "space_to_move": {
     "ko": "스페이스바를 눌러 이동",
-    "jp": "スペースキーで移動",
+    "jp": "SPACEで移動",
     "en": "Hold SPACE to move"
   },
   "slice_arrows": {
@@ -126,12 +126,12 @@
   },
   "seongsu": {
     "ko": "聖水 SEONGSU",
-    "jp": "聖水 SEONGSU",
+    "jp": "聖水[ソンス]",
     "en": "SEONGSU"
   },
   "s1_name": {
     "ko": "경복궁 러너",
-    "jp": "景福宮ランナー",
+    "jp": "景福宮[キョンボックン]ランナー",
     "en": "Palace Runner"
   },
   "s1_sub": {
@@ -151,7 +151,7 @@
   },
   "s3_name": {
     "ko": "성수 커피 디펜스",
-    "jp": "聖水コーヒーディフェンス",
+    "jp": "聖水[ソンス]コーヒーディフェンス",
     "en": "Coffee Defense"
   },
   "s3_sub": {
@@ -161,7 +161,7 @@
   },
   "s4_name": {
     "ko": "거대한 젓가락 보스",
-    "jp": "巨大な箸ボス",
+    "jp": "巨大な箸のボス",
     "en": "Chopstick Boss"
   },
   "s4_sub": {
