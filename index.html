@@ -1060,7 +1060,9 @@ function initStage2() {
     combo: 0,
     comboTimer: 0,
     comboText: '',
-    invincible: 0
+    invincible: 0,
+    energy: 100,
+    maxEnergy: 100
   };
 }
 
@@ -1110,8 +1112,15 @@ function updateStage2() {
     return a.x > -50 && a.x < W + 50 && a.y < H + 50;
   });
 
-  // Slice detection
-  if (mouseDown && mousePath.length > 2) {
+  // Energy system: drain while slicing, recharge while idle
+  if (mouseDown && s2.energy > 0) {
+    s2.energy = Math.max(0, s2.energy - 1.2);
+  } else if (!mouseDown) {
+    s2.energy = Math.min(s2.maxEnergy, s2.energy + 0.6);
+  }
+
+  // Slice detection (only when energy > 0)
+  if (mouseDown && mousePath.length > 2 && s2.energy > 0) {
     const now = Date.now();
     const recentPath = mousePath.filter(p => now - p.t < 100);
     if (recentPath.length >= 2) {
@@ -1151,7 +1160,7 @@ function updateStage2() {
   }
 
   // Slice trail fade
-  s2.sliceTrail = mousePath.filter(p => Date.now() - p.t < 100);
+  s2.sliceTrail = s2.energy > 0 ? mousePath.filter(p => Date.now() - p.t < 100) : [];
 
   if (s2.timer >= s2.duration && hp > 0) advanceStage();
 }
@@ -1228,6 +1237,18 @@ function drawStage2() {
     drawText(t('slice_arrows'), W / 2, H / 2, 18, 'rgba(255,255,255,0.7)');
   }
 
+  // Energy bar (right side)
+  const ePct = s2.energy / s2.maxEnergy;
+  const eBarX = W - 40, eBarY = 100, eBarH = 300;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(eBarX - 8, eBarY, 16, eBarH);
+  ctx.fillStyle = ePct > 0.3 ? '#42a5f5' : ePct > 0.1 ? '#ff9800' : '#f44336';
+  ctx.fillRect(eBarX - 6, eBarY + eBarH * (1 - ePct), 12, eBarH * ePct);
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(eBarX - 8, eBarY, 16, eBarH);
+  drawText('⚡', eBarX, eBarY - 15, 14, ePct > 0.1 ? '#42a5f5' : '#f44336');
+
   // Progress bar
   const prog = s2.timer / s2.duration;
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -1255,9 +1276,8 @@ function initStage3() {
     pathEndX: W - 80,
     looking: false,
     lookTimer: 0,
-    lookDuration: 120,
-    greenDuration: 180,
-    phase: 'green', // green, transition, or red
+    lookDuration: 80,
+    phase: 'transition', // transition (move + letters) or red (stop)
     phaseTimer: 0,
     haechiAngle: 0,
     moving: false,
@@ -1265,7 +1285,7 @@ function initStage3() {
     won: false,
     chant: '무궁화꽃이피었습니다',
     litChars: 0,
-    transitionDuration: 240
+    transitionDuration: 120
   };
 }
 
@@ -1292,46 +1312,37 @@ function updateStage3() {
   // Progress: 0 (start) to 1 (end)
   const progress = Math.min(1, s3.distance / s3.totalDist);
 
-  // Phase cycling
+  // Phase cycling: transition (움직여! + 글자 점등) ↔ red (멈춰!)
   s3.phaseTimer++;
-  if (s3.phase === 'green') {
-    s3.looking = false;
-    s3.litChars = 0;
-    if (s3.phaseTimer >= s3.greenDuration) {
-      s3.phase = 'transition';
-      s3.phaseTimer = 0;
-      // Transition = "무궁화꽃이피었습니다" 점등: 1~4초 (60~240 frames)
-      if (Math.random() < 0.15 * progress) {
-        // Fake-out: fast transition
-        s3.transitionDuration = 60 + Math.random() * 20;
-      } else {
-        s3.transitionDuration = Math.max(60, 240 - progress * 180 + Math.random() * 30);
-      }
-    }
-  } else if (s3.phase === 'transition') {
+  if (s3.phase === 'transition') {
+    // Can move, letters lighting up
     s3.looking = false;
     s3.litChars = Math.min(s3.chant.length, Math.floor((s3.phaseTimer / s3.transitionDuration) * s3.chant.length));
     if (s3.phaseTimer >= s3.transitionDuration) {
       s3.phase = 'red';
       s3.phaseTimer = 0;
-      s3.lookDuration = 60 + Math.random() * 90 + progress * 30;
-      // Green duration: starts generous, gets shorter
-      s3.greenDuration = Math.max(60, (180 - progress * 120) + Math.random() * (60 - progress * 40));
+      s3.lookDuration = 30 + Math.random() * 50 + progress * 20;
       s3.litChars = s3.chant.length;
     }
   } else {
-    // Red phase - turning animation
-    if (s3.phaseTimer < 20) {
-      s3.haechiAngle = lerp(0, Math.PI, s3.phaseTimer / 20);
+    // Red phase - must stop
+    if (s3.phaseTimer < 15) {
+      s3.haechiAngle = lerp(0, Math.PI, s3.phaseTimer / 15);
     } else {
       s3.looking = true;
     }
     if (s3.phaseTimer >= s3.lookDuration) {
-      s3.phase = 'green';
+      s3.phase = 'transition';
       s3.phaseTimer = 0;
       s3.haechiAngle = 0;
       s3.looking = false;
       s3.litChars = 0;
+      // Next transition: 1~2초 (60~120 frames), gets faster with progress
+      if (Math.random() < 0.2 * progress) {
+        s3.transitionDuration = 50 + Math.random() * 15; // fast fake-out
+      } else {
+        s3.transitionDuration = Math.max(60, 120 - progress * 50 + Math.random() * 20);
+      }
     }
   }
 
@@ -1405,10 +1416,8 @@ function drawStage3() {
   ctx.shadowBlur = 0;
 
   // Status text
-  if (s3.phase === 'green') {
+  if (s3.phase === 'transition') {
     drawText(t('move'), W / 2, 215, 22, '#4caf50');
-  } else if (s3.phase === 'transition') {
-    drawText(t('ready'), W / 2, 215, 22, '#ff9800');
   } else if (s3.looking) {
     drawText(t('stop_cmd'), W / 2, 215, 22, '#f44336');
   }
