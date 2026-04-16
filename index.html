@@ -1182,7 +1182,7 @@ function updateStage2() {
 
   // Energy system: drain while slicing, recharge while idle
   if (mouseDown && s2.energy > 0) {
-    s2.energy = Math.max(0, s2.energy - 1.2);
+    s2.energy = Math.max(0, s2.energy - 0.7);
   } else if (!mouseDown) {
     s2.energy = Math.min(s2.maxEnergy, s2.energy + 0.6);
   }
@@ -1271,10 +1271,22 @@ function drawStage2() {
     if (a.sliced) {
       ctx.globalAlpha = 1 - a.sliceAnim / 30;
       ctx.rotate(a.sliceAnim * 0.1);
-      drawEmoji(a.bomb ? '💥' : '💥', 0, 0, 30);
+      drawEmoji('💥', 0, 0, 30);
+    } else if (a.bomb) {
+      drawEmoji('💣', 0, 0, 32);
     } else {
-      ctx.rotate(a.bomb ? 0 : a.angle);
-      drawEmoji(a.bomb ? '💣' : '🏹', 0, 0, 32);
+      // Draw arrow only (no bow)
+      ctx.rotate(a.angle);
+      ctx.strokeStyle = '#8d6e63';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.stroke();
+      // Arrowhead
+      ctx.fillStyle = '#e53935';
+      ctx.beginPath(); ctx.moveTo(16, 0); ctx.lineTo(10, -5); ctx.lineTo(10, 5); ctx.closePath(); ctx.fill();
+      // Fletching
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(-12, -4); ctx.lineTo(-12, 0); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(-12, 4); ctx.lineTo(-12, 0); ctx.closePath(); ctx.fill();
     }
     ctx.restore();
   });
