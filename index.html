@@ -1513,7 +1513,7 @@ function initStage3() {
     moving: false,
     invincible: 0,
     won: false,
-    timeLimit: 1200, // 20 seconds
+    timeLimit: 1260, // 21 seconds
     elapsed: 0,
     chant: '무궁화꽃이피었습니다',
     litChars: 0,
@@ -2221,7 +2221,9 @@ function initBalance() {
     windTimer: 0,
     windInterval: 180 + Math.random() * 120,  // first wind at 3~5 seconds
     windLabel: '',
-    windLabelTimer: 0
+    windLabelTimer: 0,
+    windWarningTimer: 0,
+    windWarned: false
   };
 }
 
@@ -2230,37 +2232,46 @@ function updateBalance() {
   if (bal.invincible > 0) bal.invincible--;
   if (bal.shakeTimer > 0) bal.shakeTimer--;
 
-  // Controls (reduced sensitivity)
+  // Controls (gentle sensitivity)
   if (keys['ArrowLeft'] || keys['KeyA']) {
-    bal.tiltSpeed -= 0.02;
+    bal.tiltSpeed -= 0.012;
   }
   if (keys['ArrowRight'] || keys['KeyD']) {
-    bal.tiltSpeed += 0.02;
+    bal.tiltSpeed += 0.012;
   }
 
   // Wind / disturbance events
   bal.windTimer++;
   if (bal.windLabelTimer > 0) bal.windLabelTimer--;
+  if (bal.windWarningTimer > 0) bal.windWarningTimer--;
   bal.windForce *= 0.96; // wind dies down
+
+  // Warning phase: show ⚠️ before event hits
+  if (bal.windTimer >= bal.windInterval - 60 && !bal.windWarned) {
+    bal.windWarned = true;
+    bal.windWarningTimer = 60;
+  }
+
   if (bal.windTimer >= bal.windInterval) {
     bal.windTimer = 0;
-    bal.windInterval = 120 + Math.random() * 150; // next event in 2~4.5s
+    bal.windWarned = false;
+    bal.windInterval = 150 + Math.random() * 180; // next event in 2.5~5.5s
     const roll = Math.random();
     const dir = Math.random() > 0.5 ? 1 : -1;
     if (roll < 0.4) {
-      // Wind gust
-      bal.windForce = dir * (0.015 + Math.random() * 0.015);
+      // Wind gust (reduced)
+      bal.windForce = dir * (0.008 + Math.random() * 0.008);
       bal.windLabel = '💨';
       bal.windLabelTimer = 60;
     } else if (roll < 0.7) {
-      // Truck passes - big shake
-      bal.windForce = dir * (0.025 + Math.random() * 0.02);
+      // Truck passes (reduced)
+      bal.windForce = dir * (0.013 + Math.random() * 0.01);
       bal.windLabel = '🚛';
       bal.windLabelTimer = 60;
-      bal.shakeTimer = 15;
+      bal.shakeTimer = 10;
     } else {
-      // Bird bump
-      bal.windForce = dir * (0.01 + Math.random() * 0.01);
+      // Bird bump (reduced)
+      bal.windForce = dir * (0.005 + Math.random() * 0.005);
       bal.windLabel = '🕊️';
       bal.windLabelTimer = 40;
     }
@@ -2483,6 +2494,12 @@ function drawBalance() {
   ctx.strokeStyle = '#000';
   ctx.lineWidth = 1.5;
   ctx.stroke();
+
+  // Wind warning
+  if (bal.windWarningTimer > 0) {
+    const wa = Math.sin(frameCount * 0.15) * 0.3 + 0.7;
+    drawText('⚠️', W / 2, 100, 30, `rgba(255,235,59,${wa})`);
+  }
 
   // Wind/disturbance label
   if (bal.windLabelTimer > 0) {
