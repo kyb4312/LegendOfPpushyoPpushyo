@@ -250,26 +250,26 @@ function handleClick(e) {
       }
     }
     // Start button
-    if (cx > 300 && cx < 500 && cy > 350 && cy < 400) {
+    if (cx > 300 && cx < 500 && cy > 340 && cy < 390) {
       startGame();
     }
-    // Stage select buttons
-    if (maxStageReached > 0) {
-      for (let i = 0; i < 8; i++) {
-        const sbx = 72 + i * 84, sby = 424, sbw = 76, sbh = 24;
-        if (i <= maxStageReached && cx > sbx && cx < sbx + sbw && cy > sby && cy < sby + sbh) {
-          startAtStage(i);
-        }
-      }
-    }
     // Help button
-    if (cx > 300 && cx < 500 && cy > 460 && cy < 500) {
+    if (cx > 300 && cx < 500 && cy > 400 && cy < 435) {
       helpPage = 0;
       gameState = STATE.HELP;
     }
     // Ending collection button
-    if (cx > 280 && cx < 520 && cy > 515 && cy < 545) {
+    if (cx > 280 && cx < 520 && cy > 448 && cy < 476) {
       gameState = STATE.ENDINGS_VIEW;
+    }
+    // Stage select buttons
+    if (maxStageReached > 0) {
+      for (let i = 0; i < 8; i++) {
+        const sbx = 72 + i * 84, sby = 504, sbw = 76, sbh = 22;
+        if (i <= maxStageReached && cx > sbx && cx < sbx + sbw && cy > sby && cy < sby + sbh) {
+          startAtStage(i);
+        }
+      }
     }
     // Dev stage select buttons (only when devMode active)
     if (devMode) for (let i = 0; i < 8; i++) {
@@ -513,7 +513,7 @@ function drawTitle() {
   drawPlayer(W / 2, 300, 40);
 
   // Start button
-  const bx = 300, by = 350, bw = 200, bh = 50;
+  const bx = 300, by = 340, bw = 200, bh = 50;
   const hover = mouseX > bx && mouseX < bx + bw && mouseY > by && mouseY < by + bh;
   ctx.fillStyle = hover ? '#e74c3c' : '#c0392b';
   ctx.beginPath();
@@ -522,11 +522,36 @@ function drawTitle() {
   ctx.strokeStyle = '#ff6b6b';
   ctx.lineWidth = 2;
   ctx.stroke();
-  drawText(t('start'), W / 2, 375, 20, '#fff');
+  drawText(t('start'), W / 2, 365, 20, '#fff');
 
-  // Stage select buttons (unlocked stages)
+  // Help button
+  const hbx = 300, hby = 400, hbw = 200, hbh = 35;
+  const hHover = mouseX > hbx && mouseX < hbx + hbw && mouseY > hby && mouseY < hby + hbh;
+  ctx.fillStyle = hHover ? '#1565c0' : '#0d47a1';
+  ctx.beginPath();
+  ctx.roundRect(hbx, hby, hbw, hbh, 10);
+  ctx.fill();
+  ctx.strokeStyle = '#42a5f5';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  drawText(t('help'), W / 2, 418, 14, '#fff');
+
+  // Ending collection button
+  const found = Object.keys(endingsFound).length;
+  const ebx = 280, eby = 448, ebw = 240, ebh = 28;
+  const eHover = mouseX > ebx && mouseX < ebx + ebw && mouseY > eby && mouseY < eby + ebh;
+  ctx.fillStyle = eHover ? '#424242' : '#2a2a2a';
+  ctx.beginPath();
+  ctx.roundRect(ebx, eby, ebw, ebh, 8);
+  ctx.fill();
+  ctx.strokeStyle = '#616161';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  drawText(`🏆 ${found} / ${ENDINGS.length} ${t('ending_collect')}`, W / 2, eby + ebh / 2, 13, eHover ? '#ffd54f' : '#9e9e9e');
+
+  // Stage select buttons (below ending collection)
   if (maxStageReached > 0) {
-    drawText('STAGE SELECT', W / 2, 412, 12, '#9e9e9e');
+    drawText('STAGE SELECT', W / 2, 492, 11, '#9e9e9e');
     const stageShortNames = {
       ko: ['러너','양궁','커피','균형','점프','보스','리듬','해치'],
       jp: ['ラン','弓','珈琲','バラ','跳','ボス','リズ','獬豸'],
@@ -534,7 +559,7 @@ function drawTitle() {
     };
     const sNames = stageShortNames[lang] || stageShortNames.ko;
     for (let i = 0; i < 8; i++) {
-      const sbx = 72 + i * 84, sby = 424, sbw = 76, sbh = 24;
+      const sbx = 72 + i * 84, sby = 504, sbw = 76, sbh = 22;
       const unlocked = i <= maxStageReached;
       const sHover = unlocked && mouseX > sbx && mouseX < sbx + sbw && mouseY > sby && mouseY < sby + sbh;
       ctx.fillStyle = sHover ? '#4a148c' : unlocked ? '#311b92' : '#1a1a1a';
@@ -550,33 +575,8 @@ function drawTitle() {
     }
   }
 
-  // Help button
-  const hbx = 300, hby = 460, hbw = 200, hbh = 40;
-  const hHover = mouseX > hbx && mouseX < hbx + hbw && mouseY > hby && mouseY < hby + hbh;
-  ctx.fillStyle = hHover ? '#1565c0' : '#0d47a1';
-  ctx.beginPath();
-  ctx.roundRect(hbx, hby, hbw, hbh, 10);
-  ctx.fill();
-  ctx.strokeStyle = '#42a5f5';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  drawText(t('help'), W / 2, 480, 16, '#fff');
-
-  // Ending collection button
-  const found = Object.keys(endingsFound).length;
-  const ebx = 280, eby = 515, ebw = 240, ebh = 30;
-  const eHover = mouseX > ebx && mouseX < ebx + ebw && mouseY > eby && mouseY < eby + ebh;
-  ctx.fillStyle = eHover ? '#424242' : '#2a2a2a';
-  ctx.beginPath();
-  ctx.roundRect(ebx, eby, ebw, ebh, 8);
-  ctx.fill();
-  ctx.strokeStyle = '#616161';
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  drawText(`🏆 ${found} / ${ENDINGS.length} ${t('ending_collect')}`, W / 2, eby + ebh / 2, 14, eHover ? '#ffd54f' : '#9e9e9e');
-
   // Controls hint
-  drawText(t('controls_hint'), W / 2, 560, 10, '#666');
+  drawText(t('controls_hint'), W / 2, 545, 10, '#666');
 
   // Dev stage select buttons (Ctrl+Shift+D to toggle)
   if (devMode) {
