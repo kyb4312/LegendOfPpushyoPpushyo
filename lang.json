@@ -130,9 +130,9 @@
     "en": "SEONGSU"
   },
   "s1_name": {
-    "ko": "경복궁 러너",
-    "jp": "景福宮[キョンボックン]ランナー",
-    "en": "Palace Runner"
+    "ko": "광화문에서 살아남기",
+    "jp": "光化門で生き残れ",
+    "en": "Survive Gwanghwamun"
   },
   "s1_sub": {
     "ko": "관광객을 피해 달려라!",
@@ -140,9 +140,9 @@
     "en": "Dodge the tourists!"
   },
   "s2_name": {
-    "ko": "양궁장 베기",
-    "jp": "矢斬り",
-    "en": "Archery Slicer"
+    "ko": "활터에서 살아남기",
+    "jp": "弓場で生き残れ",
+    "en": "Survive the Archery Range"
   },
   "s2_sub": {
     "ko": "날아오는 화살을 베어라!",
@@ -150,9 +150,9 @@
     "en": "Slice the arrows!"
   },
   "s3_name": {
-    "ko": "성수 커피 디펜스",
-    "jp": "聖水[ソンス]コーヒーディフェンス",
-    "en": "Coffee Defense"
+    "ko": "다방에서 살아남기",
+    "jp": "茶房で生き残れ",
+    "en": "Survive the Teahouse"
   },
   "s3_sub": {
     "ko": "커피를 막아라!",
@@ -160,9 +160,9 @@
     "en": "Block the coffee!"
   },
   "s4_name": {
-    "ko": "거대한 젓가락 보스",
-    "jp": "巨大な箸のボス",
-    "en": "Chopstick Boss"
+    "ko": "수라간에서 살아남기",
+    "jp": "水刺間で生き残れ",
+    "en": "Survive the Royal Kitchen"
   },
   "s4_sub": {
     "ko": "최종 보스를 물리쳐라!",
@@ -170,9 +170,9 @@
     "en": "Defeat the boss!"
   },
   "s5_name": {
-    "ko": "해치상 경비대",
-    "jp": "カイチ像の警備隊",
-    "en": "Haechi Guard"
+    "ko": "해치에게서 살아남기",
+    "jp": "獬豸から生き残れ",
+    "en": "Survive the Haechi"
   },
   "s5_sub": {
     "ko": "무궁화 꽃이 피었습니다!",
@@ -186,7 +186,7 @@
   },
   "e_archer_desc": {
     "ko": "화살에 맞은 뿌셔뿌셔는 양궁 국가대표의 새 파트너가 되었습니다!",
-    "jp": "矢に当たったプショプショはアーチェリー代表の新たなパートナーとなった！",
+    "jp": "矢に当たったプショプショはアーチェリー代表の新パートナーになりました！",
     "en": "Hit by an arrow, PPushyo became the archery team's new partner!"
   },
   "e_insta_title": {
@@ -206,7 +206,7 @@
   },
   "e_dessert_desc": {
     "ko": "라떼에 빠진 뿌셔뿌셔는 성수 시그니처 메뉴가 되었습니다!",
-    "jp": "ラテに落ちたプショプショは聖水[ソンス]の代表的なメニューになった！",
+    "jp": "ラテに落ちたプショプショは聖水[ソンス]の代表的なメニューになりました！",
     "en": "PPushyo fell into a latte and became Seongsu's signature menu!"
   },
   "e_pigeon_title": {
@@ -216,17 +216,17 @@
   },
   "e_pigeon_desc": {
     "ko": "비둘기 둥지에서 새끼들의 점심이 되었습니다.",
-    "jp": "ハトの巣で子バトのランチになった",
+    "jp": "ハトの巣で子バトのランチになりました。",
     "en": "Became lunch for baby pigeons in their nest."
   },
   "e_haechi_title": {
     "ko": "해치상의 심판",
-    "jp": "カイチ像の審判",
+    "jp": "獬豸[カイチ]像の審判",
     "en": "Haechi's Judgment"
   },
   "e_haechi_desc": {
     "ko": "해치상에게 밟힌 뿌셔뿌셔는 경복궁의 전설이 되었습니다.",
-    "jp": "カイチ像に踏まれたプショプショは景福宮[キョンボックン]の伝説となった。",
+    "jp": "獬豸像[カイチ]に踏まれたプショプショは景福宮[キョンボックン]の伝説になりました。",
     "en": "Crushed by Haechi, PPushyo became a palace legend."
   },
   "e_legend_title": {
@@ -236,7 +236,7 @@
   },
   "e_legend_desc": {
     "ko": "뿌쇼뿌쇼 팀의 마스코트가 된 뿌셔뿌셔! 경복궁, 양궁장, 미션파이브 성수를 함께 여행하며 전설이 되었습니다!",
-    "jp": "プショプショチームのマスコットになったプショプショ！景福宮[キョンボックン]、アーチェリー場、Mission5聖水を一緒に旅して伝説となった！",
+    "jp": "プショプショチームのマスコットになったプショプショ！景福宮[キョンボックン]、アーチェリー場、ミッションファイブ聖水[ソンス]を一緒に旅して伝説になりました！",
     "en": "PPushyo became the team mascot, traveling through palace, range, and Seongsu to become a legend!"
   },
   "e_japan_title": {
@@ -246,7 +246,7 @@
   },
   "e_japan_desc": {
     "ko": "국제적 감각의 뿌셔뿌셔는 돈키호테에 수출되었습니다!",
-    "jp": "国際的センスのプショプショはドン・キホーテに輸出された！",
+    "jp": "国際的センスのプショプショはドン・キホーテに輸出されました！",
     "en": "The internationally-minded PPushyo was exported to Don Quijote!"
   },
   "help_title": {
@@ -276,12 +276,12 @@
   },
   "help_hp2": {
     "ko": "피격 후 잠시 무적 (캐릭터가 깜빡임)",
-    "jp": "被弾後しばらくは無敵（キャラが点滅）",
+    "jp": "被弾後しばらく無敵（キャラが点滅）",
     "en": "Brief invincibility after hit (character blinks)"
   },
   "help_hp3": {
     "ko": "HP가 0이 되면 게임 오버 → 엔딩",
-    "jp": "HPが0になるとゲームオーバー→エンディング",
+    "jp": "HPが0でゲームオーバー→エンディング",
     "en": "HP 0 = Game Over, leads to ending"
   },
   "help_spice": {
@@ -331,7 +331,7 @@
   },
   "help_s1_desc": {
     "ko": "4방향으로 이동하며 장애물을 피하세요!",
-    "jp": "上下左右に移動して障害物を避けよう！",
+    "jp": "4方向に移動して障害物を避けよう！",
     "en": "Move in 4 directions to dodge obstacles!"
   },
   "help_s1_obs": {
@@ -341,7 +341,7 @@
   },
   "help_s1_tourist": {
     "ko": "👣  관광객 발자국 — 밟으면 피격",
-    "jp": "👣  観光客の足跡 — 踏まれるとダメージ",
+    "jp": "👣  観光客の足跡 — 踏むとダメージ",
     "en": "👣  Tourist footprints — damage on contact"
   },
   "help_s1_pigeon": {
@@ -391,7 +391,7 @@
   },
   "help_s2_title": {
     "ko": "S2. 양궁장 베기",
-    "jp": "S2. 矢斬り",
+    "jp": "S2. アーチェリー場斬り",
     "en": "S2. Archery Slicer"
   },
   "help_s2_controls": {
@@ -601,12 +601,12 @@
   },
   "help_s5_title": {
     "ko": "S5. 해치상 경비대",
-    "jp": "S5. カイチ像の警備隊",
+    "jp": "S5. 獬豸[カイチ]像の警備隊",
     "en": "S5. Haechi Guard"
   },
   "help_s5_title_s6": {
     "ko": "S9. 해치상 경비대",
-    "jp": "S9. カイチ像の警備隊",
+    "jp": "S9. 獬豸像の警備隊",
     "en": "S9. Haechi Guard"
   },
   "help_s5_controls": {
@@ -616,7 +616,7 @@
   },
   "help_s5_haechi": {
     "ko": "🦁 해치상",
-    "jp": "🦁 カイチ像",
+    "jp": "🦁 獬豸[カイチ]像",
     "en": "🦁 Haechi Statue"
   },
   "help_s5_desc": {
@@ -676,7 +676,7 @@
   },
   "help_endlist_desc": {
     "ko": "사망 원인에 따라 다른 엔딩!",
-    "jp": "死因によって異なるエンディング！",
+    "jp": "死亡原因によって異なるエンディング！",
     "en": "Different endings based on death cause!"
   },
   "help_endlist_collect": {
@@ -706,7 +706,7 @@
   },
   "e_cond_haechi": {
     "ko": "S9에서 해치상에 사망",
-    "jp": "S9でカイチ像で死亡",
+    "jp": "S9で獬豸[カイチ]像で死亡",
     "en": "Died to Haechi in S9"
   },
   "e_cond_legend": {
@@ -780,9 +780,9 @@
     "en": "Press SPACE to start!"
   },
   "s6_name": {
-    "ko": "뿌셔뿌셔 리듬 카라테",
-    "jp": "プショプショリズム空手",
-    "en": "PPushyo Rhythm Karate"
+    "ko": "훈련장에서 살아남기",
+    "jp": "訓練場で生き残れ",
+    "en": "Survive the Training Ground"
   },
   "s6_sub": {
     "ko": "리듬에 맞춰 펀치!",
@@ -796,7 +796,7 @@
   },
   "e_rhythm_desc": {
     "ko": "리듬을 놓친 뿌셔뿌셔는 박자에 맞춰 부서졌습니다...",
-    "jp": "リズムを逃したプショプショはビートと共に砕けた...",
+    "jp": "リズムを逃したプシェプシェはビートに合わせて砕けました...",
     "en": "PPushyo lost the beat and crumbled to the rhythm..."
   },
   "e_cond_rhythm": {
@@ -806,7 +806,7 @@
   },
   "help_s6_title": {
     "ko": "S8. 뿌셔뿌셔 리듬 카라테",
-    "jp": "S8. プショプショリズム空手",
+    "jp": "S8. プシェプシェリズム空手",
     "en": "S8. Rhythm Karate"
   },
   "help_s6_controls": {
@@ -856,7 +856,7 @@
   },
   "help_s6_perfect": {
     "ko": "PERFECT! (+100) — 매우 정확한 타이밍",
-    "jp": "PERFECT! (+100) — 完璧なタイミング",
+    "jp": "PERFECT! (+100) — 非常に正確なタイミング",
     "en": "PERFECT! (+100) — very precise timing"
   },
   "help_s6_ok": {
@@ -871,7 +871,7 @@
   },
   "help_s6_penalty": {
     "ko": "잘못된 타이밍에 누르면 -50점, 연속 3번 스팸 시 HP -1!",
-    "jp": "間違ったタイミングで押すと-50点、連続3回空打ちでHP-1！",
+    "jp": "間違ったタイミングで押すと-50点、連続3回スパムでHP-1！",
     "en": "Wrong timing = -50 pts, 3 rapid misses = -1 HP!"
   },
   "help_s6_clear": {
@@ -880,9 +880,9 @@
     "en": "Clear when beat map ends!"
   },
   "s_bal_name": {
-    "ko": "균형 잡기",
-    "jp": "バランスゲーム",
-    "en": "Balance Game"
+    "ko": "시장통에서 살아남기",
+    "jp": "市場で生き残れ",
+    "en": "Survive the Market"
   },
   "s_bal_sub": {
     "ko": "떨어뜨리지 마!",
@@ -896,7 +896,7 @@
   },
   "e_balance_desc": {
     "ko": "물건을 떨어뜨린 뿌셔뿌셔는 택배 기사의 꿈을 접었습니다...",
-    "jp": "荷物を落としたプショプショは配達員の夢を諦めた...",
+    "jp": "荷物を落としたプシェプシェは配達員の夢を諦めました...",
     "en": "PPushyo dropped everything and gave up on being a delivery driver..."
   },
   "e_cond_balance": {
@@ -955,9 +955,9 @@
     "en": "Survive 15 seconds to clear!"
   },
   "s_jmp_name": {
-    "ko": "점프 점프",
-    "jp": "ジャンプジャンプ",
-    "en": "Jump Jump"
+    "ko": "담벼락에서 살아남기",
+    "jp": "塀で生き残れ",
+    "en": "Survive the Wall"
   },
   "s_jmp_sub": {
     "ko": "정확하게 뛰어!",
@@ -971,7 +971,7 @@
   },
   "e_jump_desc": {
     "ko": "발을 헛디딘 뿌셔뿌셔는 블록 사이에 빠져 부서졌습니다...",
-    "jp": "足を踏み外したプショプショはブロックの間に落ちて砕けてしまった...",
+    "jp": "足を踏み外したプシェプシェはブロックの間に落ちて砕けました...",
     "en": "PPushyo slipped and crumbled between the blocks..."
   },
   "e_cond_jump": {
@@ -1051,7 +1051,7 @@
   },
   "e_whack_desc": {
     "ko": "양념 봉지를 때려버린 뿌셔뿌셔는 자신의 양념이 되었습니다...",
-    "jp": "調味料パックを叩いてしまったプショプショは自分の調味料になりました...",
+    "jp": "調味料パックを叩いてしまったプシェプシェは自分の調味料になりました...",
     "en": "PPushyo hit the spice packet and became seasoning itself..."
   },
   "e_cond_whack": {
@@ -1066,7 +1066,7 @@
   },
   "e_chop_desc": {
     "ko": "거대한 젓가락에 집힌 뿌셔뿌셔는 누군가의 야식이 되었습니다...",
-    "jp": "巨大な箸に掴まれたプショプショは誰かの夜食になった...",
+    "jp": "巨大な箸に掴まれたプシェプシェは誰かの夜食になりました...",
     "en": "Grabbed by giant chopsticks, PPushyo became someone's midnight snack..."
   },
   "e_cond_chop": {

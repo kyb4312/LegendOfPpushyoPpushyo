@@ -152,14 +152,14 @@ let maxStageReached = parseInt(localStorage.getItem('ppushyo_unlocked') || '0');
 
 // --- STAGE DATA ---
 const STAGES = [
-  { nameKey: 's1_name', subKey: 's1_sub' },
-  { nameKey: 's2_name', subKey: 's2_sub' },
-  { nameKey: 's3_name', subKey: 's3_sub' },
-  { nameKey: 's_bal_name', subKey: 's_bal_sub' },
-  { nameKey: 's_jmp_name', subKey: 's_jmp_sub' },
-  { nameKey: 's4_name', subKey: 's4_sub' },
-  { nameKey: 's6_name', subKey: 's6_sub' },
-  { nameKey: 's5_name', subKey: 's5_sub' }
+  { nameKey: 's1_name', subKey: 's1_sub' },     // 0: 광화문 (러너)
+  { nameKey: 's4_name', subKey: 's4_sub' },     // 1: 수라간 (젓가락보스)
+  { nameKey: 's_jmp_name', subKey: 's_jmp_sub' }, // 2: 담벼락 (점프)
+  { nameKey: 's6_name', subKey: 's6_sub' },     // 3: 훈련장 (리듬가라테)
+  { nameKey: 's3_name', subKey: 's3_sub' },     // 4: 다방 (커피)
+  { nameKey: 's_bal_name', subKey: 's_bal_sub' }, // 5: 시장통 (균형)
+  { nameKey: 's5_name', subKey: 's5_sub' },     // 6: 해치 (무궁화)
+  { nameKey: 's2_name', subKey: 's2_sub' }      // 7: 활터 (양궁)
 ];
 
 const ENDINGS = [
@@ -398,6 +398,8 @@ const playerImg = new Image();
 playerImg.src = 'ppushyo.PNG';
 let playerImgLoaded = false;
 playerImg.onload = () => { playerImgLoaded = true; };
+const titleLogoImg = new Image();
+titleLogoImg.src = 'game_logo.png';
 
 function drawPlayer(x, y, size) {
   const s = size || 40;
@@ -497,20 +499,26 @@ function drawTitle() {
     drawText(labels[i], lbx + lbw / 2, lby + lbh / 2, 11, selected ? '#fff' : '#bbb');
   }
 
-  titlePulse = Math.sin(frameCount * 0.05) * 0.1 + 1;
+  titlePulse = Math.sin(frameCount * 0.05) * 0.05 + 1;
 
-  // Title
-  ctx.save();
-  ctx.translate(W / 2, 210);
-  ctx.scale(titlePulse, titlePulse);
-  drawText(t('title'), 0, 0, 42, '#ff6b6b');
-  ctx.restore();
-
-  // Subtitle
-  drawText(t('subtitle'), W / 2, 260, 16, '#b39ddb');
-
-  // Player character preview
-  drawPlayer(W / 2, 300, 40);
+  // Title logo image with pulse animation
+  if (titleLogoImg.complete && titleLogoImg.naturalWidth > 0) {
+    ctx.save();
+    const ratio = titleLogoImg.naturalWidth / titleLogoImg.naturalHeight;
+    const imgH = 260, imgW = imgH * ratio;
+    ctx.translate(W / 2, 190);
+    ctx.scale(titlePulse, titlePulse);
+    ctx.drawImage(titleLogoImg, -imgW / 2, -imgH / 2, imgW, imgH);
+    ctx.restore();
+  } else {
+    // Fallback text
+    ctx.save();
+    ctx.translate(W / 2, 210);
+    ctx.scale(titlePulse, titlePulse);
+    drawText(t('title'), 0, 0, 42, '#ff6b6b');
+    ctx.restore();
+    drawText(t('subtitle'), W / 2, 260, 16, '#b39ddb');
+  }
 
   // Start button
   const bx = 300, by = 340, bw = 200, bh = 50;
@@ -553,9 +561,9 @@ function drawTitle() {
   if (maxStageReached > 0) {
     drawText('STAGE SELECT', W / 2, 492, 11, '#9e9e9e');
     const stageShortNames = {
-      ko: ['러너','양궁','커피','균형','점프','보스','리듬','해치'],
-      jp: ['ラン','弓','珈琲','バラ','跳','ボス','リズ','獬豸'],
-      en: ['Run','Arch','Cof','Bal','Jmp','Boss','Rhy','Hae']
+      ko: ['광화문','수라간','담벼락','훈련장','다방','시장','해치','활터'],
+      jp: ['光化門','水刺間','塀','訓練場','茶房','市場','獬豸','弓場'],
+      en: ['Gate','Kitchen','Wall','Train','Cafe','Market','Haechi','Range']
     };
     const sNames = stageShortNames[lang] || stageShortNames.ko;
     for (let i = 0; i < 8; i++) {
@@ -581,9 +589,9 @@ function drawTitle() {
   // Dev stage select buttons (Ctrl+Shift+D to toggle)
   if (devMode) {
     const devNamesMap = {
-      ko: ['러너', '양궁', '커피', '균형', '점프', '보스', '리듬', '해치'],
-      jp: ['ランナー', '弓道', 'コーヒー', 'バランス', 'ジャンプ', 'ボス', 'リズム', '獬豸'],
-      en: ['Run', 'Archer', 'Coffee', 'Bal', 'Jump', 'Boss', 'Beat', 'Haechi']
+      ko: ['광화문', '수라간', '담벼락', '훈련장', '다방', '시장', '해치', '활터'],
+      jp: ['光化門', '水刺間', '塀', '訓練場', '茶房', '市場', '獬豸', '弓場'],
+      en: ['Gate', 'Kitchen', 'Wall', 'Train', 'Cafe', 'Market', 'Haechi', 'Range']
     };
     const devNames = devNamesMap[lang] || devNamesMap.ko;
     drawText('🔧 DEV', 25, 590, 10, '#ff5722');
@@ -603,14 +611,14 @@ function drawTitle() {
 // STAGE INTRO
 // ============================================================
 const STAGE_CONTROLS = [
-  { icon: '⌨️', text: '← → ↑ ↓ / WASD' },
-  { icon: '🖱️', text: 'Mouse Drag (⚡Energy)' },
-  { icon: '⌨️', text: 'A  S  D  F' },
-  { icon: '⌨️', text: '← →  Balance' },
-  { icon: '⌨️', text: 'Hold Space = Charge / Release = Jump' },
-  { icon: '⌨️', text: '← →  +  Space ×2~3' },
-  { icon: '⌨️', text: 'Space (Timing)  /  Hold+Release' },
-  { icon: '⌨️', text: 'Hold Space = Move  /  Release = Stop' },
+  { icon: '⌨️', text: '← → ↑ ↓ / WASD' },              // 0: 광화문 러너
+  { icon: '⌨️', text: '← →  +  Space ×2~3' },           // 1: 수라간 젓가락
+  { icon: '⌨️', text: 'Hold Space = Charge / Release = Jump' }, // 2: 담벼락 점프
+  { icon: '⌨️', text: 'Space (Timing)  /  Hold+Release' }, // 3: 훈련장 리듬
+  { icon: '⌨️', text: 'A  S  D  F' },                    // 4: 다방 커피
+  { icon: '⌨️', text: '← →  Balance' },                  // 5: 시장통 균형
+  { icon: '⌨️', text: 'Hold Space = Move  /  Release = Stop' }, // 6: 해치 무궁화
+  { icon: '🖱️', text: 'Mouse Drag (⚡Energy)' },          // 7: 활터 양궁
 ];
 
 function drawStageIntro() {
@@ -714,15 +722,15 @@ function takeDamage(cause) {
 function triggerEnding(type) {
   let endingIndex = 5; // default: legend
   if (type === 'death') {
-    if (deathStage === 0 && (deathCause === 'tourist' || deathCause === 'camera')) endingIndex = 1; // insta
-    else if (deathStage === 0 && deathCause === 'pigeon') endingIndex = 3; // pigeon
-    else if (deathStage === 1) endingIndex = 0; // archer
-    else if (deathStage === 2) endingIndex = 2; // dessert (coffee stage)
-    else if (deathStage === 3) endingIndex = 8; // balance
-    else if (deathStage === 4) endingIndex = 9; // jump
-    else if (deathStage === 5) endingIndex = 11; // chopstick boss
-    else if (deathStage === 6) endingIndex = 7; // rhythm
-    else if (deathStage === 7) endingIndex = 4; // haechi
+    if (deathStage === 0 && (deathCause === 'tourist' || deathCause === 'camera')) endingIndex = 1; // 광화문 insta
+    else if (deathStage === 0 && deathCause === 'pigeon') endingIndex = 3; // 광화문 pigeon
+    else if (deathStage === 1) endingIndex = 11; // 수라간 chopstick
+    else if (deathStage === 2) endingIndex = 9; // 담벼락 jump
+    else if (deathStage === 3) endingIndex = 7; // 훈련장 rhythm
+    else if (deathStage === 4) endingIndex = 2; // 다방 dessert
+    else if (deathStage === 5) endingIndex = 8; // 시장통 balance
+    else if (deathStage === 6) endingIndex = 4; // 해치 haechi
+    else if (deathStage === 7) endingIndex = 0; // 활터 archer
   } else if (type === 'victory') {
     if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
     else endingIndex = 5; // legend
@@ -3317,14 +3325,14 @@ function drawWhack() {
 // ============================================================
 function initStage(n) {
   switch (n) {
-    case 0: initStage1(); break;
-    case 1: initStage2(); break;
-    case 2: initStage4(); break;
-    case 3: initBalance(); break;
-    case 4: initJump(); break;
-    case 5: initStage5(); break;
-    case 6: initBonusGame(); break;
-    case 7: initStage3(); break;
+    case 0: initStage1(); break;      // 광화문 (러너)
+    case 1: initStage5(); break;      // 수라간 (젓가락보스)
+    case 2: initJump(); break;        // 담벼락 (점프)
+    case 3: initBonusGame(); break;   // 훈련장 (리듬가라테)
+    case 4: initStage4(); break;      // 다방 (커피)
+    case 5: initBalance(); break;     // 시장통 (균형)
+    case 6: initStage3(); break;      // 해치 (무궁화)
+    case 7: initStage2(); break;      // 활터 (양궁)
   }
 }
 
@@ -3904,14 +3912,14 @@ function update() {
   switch (gameState) {
     case STATE.PLAYING:
       switch (currentStage) {
-        case 0: updateStage1(); break;
-        case 1: updateStage2(); break;
-        case 2: updateStage4(); break;
-        case 3: updateBalance(); break;
-        case 4: updateJump(); break;
-        case 5: updateStage5(); break;
-        case 6: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 7: updateStage3(); break;
+        case 0: updateStage1(); break;      // 광화문
+        case 1: updateStage5(); break;      // 수라간
+        case 2: updateJump(); break;        // 담벼락
+        case 3: break;                      // 훈련장 (rhythm uses BONUS states)
+        case 4: updateStage4(); break;      // 다방
+        case 5: updateBalance(); break;     // 시장통
+        case 6: updateStage3(); break;      // 해치
+        case 7: updateStage2(); break;      // 활터
       }
       break;
     case STATE.BONUS_INTRO:
@@ -3935,14 +3943,14 @@ function draw() {
       break;
     case STATE.PLAYING:
       switch (currentStage) {
-        case 0: drawStage1(); break;
-        case 1: drawStage2(); break;
-        case 2: drawStage4(); break;
-        case 3: drawBalance(); break;
-        case 4: drawJump(); break;
-        case 5: drawStage5(); break;
-        case 6: break; // rhythm stage uses BONUS_INTRO/BONUS states
-        case 7: drawStage3(); break;
+        case 0: drawStage1(); break;      // 광화문
+        case 1: drawStage5(); break;      // 수라간
+        case 2: drawJump(); break;        // 담벼락
+        case 3: break;                    // 훈련장 (rhythm uses BONUS states)
+        case 4: drawStage4(); break;      // 다방
+        case 5: drawBalance(); break;     // 시장통
+        case 6: drawStage3(); break;      // 해치
+        case 7: drawStage2(); break;      // 활터
       }
       drawHUD();
       break;
