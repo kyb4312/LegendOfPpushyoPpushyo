@@ -1354,7 +1354,8 @@ function updateStage3() {
     if (s3.phaseTimer >= s3.transitionDuration) {
       s3.phase = 'red';
       s3.phaseTimer = 0;
-      s3.lookDuration = 30 + Math.random() * 50 + progress * 20;
+      // 빨간불도 랜덤: 0.3~2초
+      s3.lookDuration = 20 + Math.random() * 100;
       s3.litChars = s3.chant.length;
     }
   } else {
@@ -1370,11 +1371,14 @@ function updateStage3() {
       s3.haechiAngle = 0;
       s3.looking = false;
       s3.litChars = 0;
-      // Next transition: 1~2초 (60~120 frames), gets faster with progress
-      if (Math.random() < 0.2 * progress) {
-        s3.transitionDuration = 50 + Math.random() * 15; // fast fake-out
+      // Highly random transition: 0.5~3초, 예측 불가
+      const roll = Math.random();
+      if (roll < 0.25) {
+        s3.transitionDuration = 30 + Math.random() * 25;   // 급속 (0.5~0.9초)
+      } else if (roll < 0.45) {
+        s3.transitionDuration = 130 + Math.random() * 50;  // 느림 (2.2~3초)
       } else {
-        s3.transitionDuration = Math.max(60, 120 - progress * 50 + Math.random() * 20);
+        s3.transitionDuration = 55 + Math.random() * 75;   // 중간 (0.9~2.2초)
       }
     }
   }
