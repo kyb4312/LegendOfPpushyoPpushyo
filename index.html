@@ -70,13 +70,17 @@ const HELP_PAGES = 8;
 let gameState = STATE.TITLE;
 let currentStage = 0;
 let score = 0;
-let highScores = JSON.parse(localStorage.getItem('ppushyo_highscores') || '[]');
+let highScores = JSON.parse(localStorage.getItem('ppushyo_highscores2') || '[]');
 
 function saveHighScore(s) {
-  highScores.push(s);
-  highScores.sort((a, b) => b - a);
-  highScores = highScores.slice(0, 3);
-  localStorage.setItem('ppushyo_highscores', JSON.stringify(highScores));
+  const qualifies = highScores.length < 3 || s > highScores[highScores.length - 1].score;
+  if (qualifies && s > 0) {
+    const name = (prompt('HIGH SCORE! Enter your name:', 'AAA') || 'AAA').substring(0, 6).toUpperCase();
+    highScores.push({ name, score: s });
+    highScores.sort((a, b) => b.score - a.score);
+    highScores = highScores.slice(0, 3);
+    localStorage.setItem('ppushyo_highscores2', JSON.stringify(highScores));
+  }
 }
 let hp = 3;
 let stageTimer = 0;
@@ -457,6 +461,15 @@ function drawTitle() {
 // ============================================================
 // STAGE INTRO
 // ============================================================
+const STAGE_CONTROLS = [
+  { icon: '⌨️', text: '← → ↑ ↓ / WASD' },
+  { icon: '🖱️', text: 'Mouse Drag (⚡Energy)' },
+  { icon: '⌨️', text: 'A  S  D  F' },
+  { icon: '⌨️', text: '← →  +  Space ×2~3' },
+  { icon: '⌨️', text: 'Space (Timing)  /  Hold+Release' },
+  { icon: '⌨️', text: 'Hold Space = Move  /  Release = Stop' },
+];
+
 function drawStageIntro() {
   ctx.fillStyle = '#1a0a2e';
   ctx.fillRect(0, 0, W, H);
@@ -465,16 +478,38 @@ function drawStageIntro() {
   const progress = Math.min(introTimer / 30, 1);
 
   // Stage number
-  drawText(`${t('stage')} ${currentStage + 1}`, W / 2, 200, 30, `rgba(255,107,107,${progress})`);
+  drawText(`${t('stage')} ${currentStage + 1}`, W / 2, 150, 30, `rgba(255,107,107,${progress})`);
 
   // Stage name
-  drawText(t(st.nameKey), W / 2, 280, 48, `rgba(255,255,255,${progress})`);
+  drawText(t(st.nameKey), W / 2, 220, 48, `rgba(255,255,255,${progress})`);
 
-  // Subtitle
-  drawText(t(st.subKey), W / 2, 360, 20, `rgba(189,189,189,${progress})`);
+  // Subtitle (mission)
+  drawText(t(st.subKey), W / 2, 290, 20, `rgba(189,189,189,${progress})`);
+
+  // Controls box
+  if (introTimer > 30) {
+    const ctrl = STAGE_CONTROLS[currentStage] || STAGE_CONTROLS[0];
+    const boxAlpha = Math.min(1, (introTimer - 30) / 30);
+    ctx.fillStyle = `rgba(255,255,255,${boxAlpha * 0.08})`;
+    ctx.beginPath();
+    ctx.roundRect(150, 340, 500, 80, 12);
+    ctx.fill();
+    ctx.strokeStyle = `rgba(255,255,255,${boxAlpha * 0.2})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    drawText(ctrl.icon, W / 2, 365, 20, `rgba(255,255,255,${boxAlpha * 0.9})`);
+    drawText(ctrl.text, W / 2, 395, 18, `rgba(255,235,59,${boxAlpha})`);
+  }
+
+  // "Press SPACE to start" (blink)
+  if (introTimer > 60) {
+    const blink = Math.sin(frameCount * 0.08) * 0.3 + 0.7;
+    drawText('press SPACE to start', W / 2, 480, 18, `rgba(255,255,255,${blink})`);
+  }
 
   introTimer++;
-  if (introTimer > 120) {
+  // Wait for Space press (after initial animation)
+  if (introTimer > 60 && keysJustPressed['Space']) {
     gameState = STATE.PLAYING;
     initStage(currentStage);
   }
@@ -590,9 +625,9 @@ function drawEnding() {
   const medals = ['🥇', '🥈', '🥉'];
   for (let i = 0; i < 3; i++) {
     const hs = highScores[i];
-    const isNew = hs === score && i === highScores.indexOf(score);
+    const isNew = hs && hs.score === score;
     const color = isNew ? '#ffd54f' : '#bdbdbd';
-    const label = hs !== undefined ? `${medals[i]} ${hs}` : `${medals[i]} ---`;
+    const label = hs ? `${medals[i]} ${hs.name} — ${hs.score}` : `${medals[i]} ---`;
     drawText(label, W / 2, 442 + i * 20, 14, color);
   }
 
@@ -1134,8 +1169,8 @@ function updateStage2() {
     }
     a.x += a.vx;
     a.y += a.vy;
-    // Check if arrow hit player area (center zone)
-    if (a.x > 300 && a.x < 500 && a.y > 450 && a.alive) {
+    // Check if arrow hit player area (bombs pass through)
+    if (!a.bomb && a.x > 340 && a.x < 460 && a.y > 470 && a.alive) {
       if (s2.invincible <= 0) {
         takeDamage('arrow');
         s2.invincible = 60;
