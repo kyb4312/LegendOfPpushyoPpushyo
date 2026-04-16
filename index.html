@@ -337,6 +337,34 @@ function drawPalaceRoof(x, y, w) {
   }
 }
 
+// --- BACKGROUND IMAGES ---
+const bgImages = {};
+const bgImagePaths = {
+  title: 'bg_image/title.png',
+  stage1: 'bg_image/stage1_street.png',
+  stage2: 'bg_image/stage2_arrow.png',
+  stage3: 'bg_image/stage3_cafe.png',
+  stage4: 'bg_image/stage4_market.png',
+  stage5: 'bg_image/stage_6_jump.png',
+  stage6: 'bg_image/stage7_chopsticks.png',
+  stage7: 'bg_image/stage5_karate.png',
+  stage8: 'bg_image/stage_fin_haechi.png'
+};
+Object.entries(bgImagePaths).forEach(([key, path]) => {
+  const img = new Image();
+  img.src = path;
+  bgImages[key] = img;
+});
+
+function drawBgImage(key) {
+  const img = bgImages[key];
+  if (img && img.complete && img.naturalWidth > 0) {
+    ctx.drawImage(img, 0, 0, W, H);
+    return true;
+  }
+  return false;
+}
+
 // --- PLAYER ---
 let player = { x: 380, y: 500, w: 40, h: 40, vx: 0, vy: 0 };
 const playerImg = new Image();
@@ -404,13 +432,25 @@ function drawHUD() {
 // ============================================================
 let titlePulse = 0;
 function drawTitle() {
-  // Background gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#1a0a2e');
-  grad.addColorStop(0.5, '#2d1b69');
-  grad.addColorStop(1, '#1a0a2e');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  // Background image, with gradient fallback
+  if (!drawBgImage('title')) {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#1a0a2e');
+    grad.addColorStop(0.5, '#2d1b69');
+    grad.addColorStop(1, '#1a0a2e');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Palace roof decoration (fallback only)
+    drawPalaceRoof(W / 2, 60, 300);
+
+    // Floating noodles (fallback only)
+    for (let i = 0; i < 8; i++) {
+      const nx = 100 + i * 90;
+      const ny = 120 + Math.sin(frameCount * 0.02 + i) * 20;
+      drawEmoji('🍜', nx, ny, 30);
+    }
+  }
 
   // Language buttons (top-right)
   const langs = ['ko', 'jp', 'en'];
@@ -424,16 +464,6 @@ function drawTitle() {
     ctx.roundRect(lbx, lby, lbw, lbh, 5);
     ctx.fill();
     drawText(labels[i], lbx + lbw / 2, lby + lbh / 2, 11, selected ? '#fff' : '#bbb');
-  }
-
-  // Palace roof decoration
-  drawPalaceRoof(W / 2, 60, 300);
-
-  // Floating noodles
-  for (let i = 0; i < 8; i++) {
-    const nx = 100 + i * 90;
-    const ny = 120 + Math.sin(frameCount * 0.02 + i) * 20;
-    drawEmoji('🍜', nx, ny, 30);
   }
 
   titlePulse = Math.sin(frameCount * 0.05) * 0.1 + 1;
@@ -1201,31 +1231,33 @@ function updateStage1() {
 }
 
 function drawStage1() {
-  // Background: palace ground
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#1a472a');
-  grad.addColorStop(0.3, '#2d6a4f');
-  grad.addColorStop(1, '#52796f');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  // Background image, with gradient fallback
+  if (!drawBgImage('stage1')) {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#1a472a');
+    grad.addColorStop(0.3, '#2d6a4f');
+    grad.addColorStop(1, '#52796f');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
 
-  // Ground path
-  ctx.fillStyle = '#d4a76a';
-  ctx.fillRect(100, 0, W - 200, H);
-  ctx.fillStyle = '#c49a5e';
-  for (let y = -s1.scrollY % 60; y < H; y += 60) {
-    ctx.fillRect(100, y, W - 200, 2);
+    // Palace background elements (fallback only)
+    drawPalaceRoof(200, 20 + (s1.scrollY * 0.1) % 40, 120);
+    drawPalaceRoof(600, 30 + (s1.scrollY * 0.1) % 50, 100);
+    drawPalaceRoof(400, 10 + (s1.scrollY * 0.05) % 30, 180);
+
+    // Trees on sides (fallback only)
+    for (let y = -s1.scrollY % 120; y < H; y += 120) {
+      drawEmoji('🌳', 60, y, 30);
+      drawEmoji('🌳', W - 60, y, 30);
+    }
   }
 
-  // Palace background elements
-  drawPalaceRoof(200, 20 + (s1.scrollY * 0.1) % 40, 120);
-  drawPalaceRoof(600, 30 + (s1.scrollY * 0.1) % 50, 100);
-  drawPalaceRoof(400, 10 + (s1.scrollY * 0.05) % 30, 180);
-
-  // Trees on sides
-  for (let y = -s1.scrollY % 120; y < H; y += 120) {
-    drawEmoji('🌳', 60, y, 30);
-    drawEmoji('🌳', W - 60, y, 30);
+  // Scrolling ground path tiles (always on top of background)
+  ctx.fillStyle = 'rgba(212,167,106,0.45)';
+  ctx.fillRect(100, 0, W - 200, H);
+  ctx.fillStyle = 'rgba(196,154,94,0.5)';
+  for (let y = -s1.scrollY % 60; y < H; y += 60) {
+    ctx.fillRect(100, y, W - 200, 2);
   }
 
   // Obstacles
@@ -1396,24 +1428,26 @@ function pointToSegmentDist(px, py, ax, ay, bx, by) {
 }
 
 function drawStage2() {
-  // Background: archery range
-  ctx.fillStyle = '#1b5e20';
-  ctx.fillRect(0, 0, W, H);
-  ctx.fillStyle = '#2e7d32';
-  ctx.fillRect(0, H * 0.7, W, H * 0.3);
+  // Background image, with gradient fallback
+  if (!drawBgImage('stage2')) {
+    ctx.fillStyle = '#1b5e20';
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#2e7d32';
+    ctx.fillRect(0, H * 0.7, W, H * 0.3);
 
-  // Targets in background
-  for (let i = 0; i < 3; i++) {
-    const tx = 150 + i * 250;
-    drawEmoji('🎯', tx, 80, 40);
-  }
+    // Targets in background (fallback only)
+    for (let i = 0; i < 3; i++) {
+      const tx = 150 + i * 250;
+      drawEmoji('🎯', tx, 80, 40);
+    }
 
-  // Fence
-  ctx.fillStyle = '#5d4037';
-  for (let x = 0; x < W; x += 60) {
-    ctx.fillRect(x, H * 0.65, 8, 50);
+    // Fence (fallback only)
+    ctx.fillStyle = '#5d4037';
+    for (let x = 0; x < W; x += 60) {
+      ctx.fillRect(x, H * 0.65, 8, 50);
+    }
+    ctx.fillRect(0, H * 0.65, W, 5);
   }
-  ctx.fillRect(0, H * 0.65, W, 5);
 
   // Player at bottom center
   drawPlayer(W / 2, H - 60, 40);
@@ -1639,24 +1673,26 @@ function updateStage3() {
 }
 
 function drawStage3() {
-  // Background: palace courtyard
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#ff8a65');
-  grad.addColorStop(0.3, '#ffccbc');
-  grad.addColorStop(1, '#d7ccc8');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  // Background image, with gradient fallback
+  if (!drawBgImage('stage8')) {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#ff8a65');
+    grad.addColorStop(0.3, '#ffccbc');
+    grad.addColorStop(1, '#d7ccc8');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
 
-  // Palace decoration at top
-  drawPalaceRoof(W / 2, 30, 400);
-  ctx.fillStyle = '#795548';
-  ctx.fillRect(50, 65, W - 100, 80);
-  ctx.fillStyle = '#5d4037';
-  for (let x = 80; x < W - 80; x += 80) {
-    ctx.fillRect(x, 75, 40, 45);
-    ctx.fillStyle = '#4e342e';
-    ctx.fillRect(x + 5, 80, 30, 30);
+    // Palace decoration at top (fallback only)
+    drawPalaceRoof(W / 2, 30, 400);
+    ctx.fillStyle = '#795548';
+    ctx.fillRect(50, 65, W - 100, 80);
     ctx.fillStyle = '#5d4037';
+    for (let x = 80; x < W - 80; x += 80) {
+      ctx.fillRect(x, 75, 40, 45);
+      ctx.fillStyle = '#4e342e';
+      ctx.fillRect(x + 5, 80, 30, 30);
+      ctx.fillStyle = '#5d4037';
+    }
   }
 
   // 무궁화꽃이피었습니다 chant display
@@ -1870,26 +1906,28 @@ function updateStage4() {
 }
 
 function drawStage4() {
-  // Background: cafe
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#3e2723');
-  grad.addColorStop(0.5, '#4e342e');
-  grad.addColorStop(1, '#5d4037');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  // Background image, with gradient fallback
+  if (!drawBgImage('stage3')) {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#3e2723');
+    grad.addColorStop(0.5, '#4e342e');
+    grad.addColorStop(1, '#5d4037');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
 
-  // Cafe lights
-  for (let i = 0; i < 5; i++) {
-    const lx = 100 + i * 160;
-    ctx.fillStyle = `rgba(255,183,77,${0.3 + Math.sin(frameCount * 0.03 + i) * 0.1})`;
-    ctx.beginPath();
-    ctx.arc(lx, 30, 40, 0, Math.PI * 2);
-    ctx.fill();
-    drawEmoji('💡', lx, 30, 20);
+    // Cafe lights (fallback only)
+    for (let i = 0; i < 5; i++) {
+      const lx = 100 + i * 160;
+      ctx.fillStyle = `rgba(255,183,77,${0.3 + Math.sin(frameCount * 0.03 + i) * 0.1})`;
+      ctx.beginPath();
+      ctx.arc(lx, 30, 40, 0, Math.PI * 2);
+      ctx.fill();
+      drawEmoji('💡', lx, 30, 20);
+    }
+
+    // Seongsu text (fallback only)
+    drawText(t('seongsu'), W / 2, 70, 14, 'rgba(255,183,77,0.5)');
   }
-
-  // Seongsu text
-  drawText(t('seongsu'), W / 2, 70, 14, 'rgba(255,183,77,0.5)');
 
   // Lane lines
   s4.lanes.forEach((lane, li) => {
@@ -2087,26 +2125,20 @@ function updateStage5() {
 }
 
 function drawStage5() {
-  // Background: dark arena
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#0d0d0d');
-  grad.addColorStop(0.5, '#1a1a2e');
-  grad.addColorStop(1, '#16213e');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  // Background image, with gradient fallback
+  if (!drawBgImage('stage6')) {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#0d0d0d');
+    grad.addColorStop(0.5, '#1a1a2e');
+    grad.addColorStop(1, '#16213e');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
 
   // Screen shake
   if (s5.shakeTimer > 0) {
     ctx.save();
     ctx.translate(Math.random() * 6 - 3, Math.random() * 6 - 3);
-  }
-
-  // Arena floor
-  ctx.fillStyle = '#1a1a1a';
-  ctx.fillRect(0, H - 40, W, 40);
-  ctx.fillStyle = '#333';
-  for (let x = 0; x < W; x += 50) {
-    ctx.fillRect(x, H - 40, 25, 3);
   }
 
   // Spotlight
@@ -2371,40 +2403,42 @@ function updateBalance() {
 }
 
 function drawBalance() {
-  // Background: circus/carnival gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#4a148c');
-  grad.addColorStop(0.4, '#7b1fa2');
-  grad.addColorStop(0.7, '#ce93d8');
-  grad.addColorStop(1, '#f3e5f5');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  // Background image, with gradient fallback
+  if (!drawBgImage('stage4')) {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#4a148c');
+    grad.addColorStop(0.4, '#7b1fa2');
+    grad.addColorStop(0.7, '#ce93d8');
+    grad.addColorStop(1, '#f3e5f5');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
 
-  // Decorative bunting at top
-  for (let i = 0; i < 10; i++) {
-    const bx = i * 90 + 40;
-    const by = 70 + Math.sin(i * 0.8 + frameCount * 0.02) * 5;
-    const colors = ['#f44336', '#ffeb3b', '#4caf50', '#2196f3', '#ff9800'];
-    ctx.fillStyle = colors[i % colors.length];
+    // Decorative bunting at top (fallback only)
+    for (let i = 0; i < 10; i++) {
+      const bx = i * 90 + 40;
+      const by = 70 + Math.sin(i * 0.8 + frameCount * 0.02) * 5;
+      const colors = ['#f44336', '#ffeb3b', '#4caf50', '#2196f3', '#ff9800'];
+      ctx.fillStyle = colors[i % colors.length];
+      ctx.beginPath();
+      ctx.moveTo(bx - 15, by - 10);
+      ctx.lineTo(bx + 15, by - 10);
+      ctx.lineTo(bx, by + 15);
+      ctx.closePath();
+      ctx.fill();
+    }
+    // Bunting string (fallback only)
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(bx - 15, by - 10);
-    ctx.lineTo(bx + 15, by - 10);
-    ctx.lineTo(bx, by + 15);
-    ctx.closePath();
-    ctx.fill();
+    ctx.moveTo(0, 60);
+    for (let i = 0; i < 10; i++) {
+      const bx = i * 90 + 40;
+      const by = 60 + Math.sin(i * 0.8 + frameCount * 0.02) * 5;
+      ctx.lineTo(bx, by);
+    }
+    ctx.lineTo(W, 60);
+    ctx.stroke();
   }
-  // Bunting string
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, 60);
-  for (let i = 0; i < 10; i++) {
-    const bx = i * 90 + 40;
-    const by = 60 + Math.sin(i * 0.8 + frameCount * 0.02) * 5;
-    ctx.lineTo(bx, by);
-  }
-  ctx.lineTo(W, 60);
-  ctx.stroke();
 
   // Screen shake
   if (bal.shakeTimer > 0) {
@@ -2750,13 +2784,15 @@ function drawJumpPlatform(p, camX) {
 }
 
 function drawJump() {
-  // Sky gradient background
-  const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
-  skyGrad.addColorStop(0, '#87CEEB');
-  skyGrad.addColorStop(0.5, '#B0E0E6');
-  skyGrad.addColorStop(1, '#E0F7FA');
-  ctx.fillStyle = skyGrad;
-  ctx.fillRect(0, 0, W, H);
+  // Background image, with sky gradient fallback
+  if (!drawBgImage('stage5')) {
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+    skyGrad.addColorStop(0, '#87CEEB');
+    skyGrad.addColorStop(0.5, '#B0E0E6');
+    skyGrad.addColorStop(1, '#E0F7FA');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, W, H);
+  }
 
   // Screen shake
   if (jmp.shakeTimer > 0) {
@@ -3427,11 +3463,13 @@ function updateBonusIntro() {
 }
 
 function drawBonusIntro() {
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, '#1a0a2e');
-  grad.addColorStop(1, '#2d1b69');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, H);
+  if (!drawBgImage('stage7')) {
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, '#1a0a2e');
+    grad.addColorStop(1, '#2d1b69');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
 
   const progress = Math.min(bonus.introTimer / 30, 1);
   drawText(t('bonus_title'), W / 2, 180, 36, `rgba(255,152,0,${progress})`);
@@ -3604,10 +3642,12 @@ function updateBonus() {
 }
 
 function drawBonus() {
-  // Background with pulse
-  const baseBright = 25 + bonus.bgPulse * 15;
-  ctx.fillStyle = `rgb(${baseBright}, ${baseBright * 0.5}, ${baseBright * 1.5})`;
-  ctx.fillRect(0, 0, W, H);
+  // Background image, with pulsing fallback
+  if (!drawBgImage('stage7')) {
+    const baseBright = 25 + bonus.bgPulse * 15;
+    ctx.fillStyle = `rgb(${baseBright}, ${baseBright * 0.5}, ${baseBright * 1.5})`;
+    ctx.fillRect(0, 0, W, H);
+  }
 
   // Flash overlay
   if (bonus.flashTimer > 0) {
