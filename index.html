@@ -1071,10 +1071,11 @@ function updateStage2() {
 
   // Spawn arrows
   s2.spawnTimer++;
-  const spawnRate = Math.max(12, 35 - Math.floor(s2.timer / 120) * 2);
+  const spawnRate = Math.max(6, 22 - Math.floor(s2.timer / 120) * 2);
   if (s2.spawnTimer >= spawnRate) {
     s2.spawnTimer = 0;
     const fromLeft = Math.random() > 0.5;
+    const isBomb = Math.random() < 0.15;
     s2.arrows.push({
       x: fromLeft ? -20 : W + 20,
       y: 100 + Math.random() * 350,
@@ -1083,7 +1084,8 @@ function updateStage2() {
       alive: true,
       sliced: false,
       sliceAnim: 0,
-      angle: fromLeft ? 0 : Math.PI
+      angle: fromLeft ? 0 : Math.PI,
+      bomb: isBomb
     });
   }
 
@@ -1111,7 +1113,7 @@ function updateStage2() {
   // Slice detection
   if (mouseDown && mousePath.length > 2) {
     const now = Date.now();
-    const recentPath = mousePath.filter(p => now - p.t < 200);
+    const recentPath = mousePath.filter(p => now - p.t < 100);
     if (recentPath.length >= 2) {
       let slicedThisFrame = 0;
       s2.arrows.forEach(a => {
@@ -1123,8 +1125,14 @@ function updateStage2() {
           if (dist < 30) {
             a.sliced = true;
             a.sliceAnim = 0;
-            slicedThisFrame++;
-            score += 50;
+            if (a.bomb) {
+              score -= 200;
+              takeDamage('arrow');
+              s2.invincible = 60;
+            } else {
+              slicedThisFrame++;
+              score += 50;
+            }
             break;
           }
         }
@@ -1143,7 +1151,7 @@ function updateStage2() {
   }
 
   // Slice trail fade
-  s2.sliceTrail = mousePath.filter(p => Date.now() - p.t < 300);
+  s2.sliceTrail = mousePath.filter(p => Date.now() - p.t < 100);
 
   if (s2.timer >= s2.duration && hp > 0) advanceStage();
 }
@@ -1186,10 +1194,10 @@ function drawStage2() {
     if (a.sliced) {
       ctx.globalAlpha = 1 - a.sliceAnim / 30;
       ctx.rotate(a.sliceAnim * 0.1);
-      drawEmoji('💥', 0, 0, 30);
+      drawEmoji(a.bomb ? '💥' : '💥', 0, 0, 30);
     } else {
-      ctx.rotate(a.angle);
-      drawEmoji('🏹', 0, 0, 32);
+      ctx.rotate(a.bomb ? 0 : a.angle);
+      drawEmoji(a.bomb ? '💣' : '🏹', 0, 0, 32);
     }
     ctx.restore();
   });
@@ -1662,20 +1670,26 @@ function initStage5() {
   s5 = {
     playerX: W / 2,
     playerY: H - 80,
-    bossHP: 3,
-    bossMaxHP: 3,
+    bossHP: 5,
+    bossMaxHP: 5,
     chopsticks: [],
     attackTimer: 0,
     phase: 'idle', // idle, telegraph, strike, stuck
     stuckTimer: 0,
     stuckX: 0,
     shadowX: 0,
+    shadowX2: 0,        // second chopstick (rage mode)
     shadowAlpha: 0,
     invincible: 0,
     hits: 0,
     shakeTimer: 0,
     won: false,
-    winTimer: 0
+    winTimer: 0,
+    rage: false,          // rage mode after 2 hits
+    kickCount: 0,         // kicks landed on stuck chopstick
+    kicksNeeded: 2,       // need multiple kicks
+    stuckX2: 0,           // second stuck chopstick
+    doubleAttack: false    // whether current attack is double
   };
 }
 
@@ -1694,20 +1708,33 @@ function updateStage5() {
   s5.playerX = Math.max(40, Math.min(W - 40, s5.playerX));
 
   s5.attackTimer++;
+  // Rage mode after 2 hits: faster attacks, double chopstick
+  if (s5.hits >= 2 && !s5.rage) {
+    s5.rage = true;
+    s5.kicksNeeded = 3;
+  }
+  const idleTime = s5.rage ? 35 : 60;
+  const telegraphTime = s5.rage ? 25 : 40;
+  const stuckTime = s5.rage ? 45 : 60;
 
   switch (s5.phase) {
     case 'idle':
-      if (s5.attackTimer > 60) {
+      if (s5.attackTimer > idleTime) {
         s5.phase = 'telegraph';
         s5.attackTimer = 0;
-        s5.shadowX = s5.playerX + (Math.random() - 0.5) * 100; // predict near player
+        s5.shadowX = s5.playerX + (Math.random() - 0.5) * 100;
+        s5.doubleAttack = s5.rage && Math.random() < 0.5;
+        if (s5.doubleAttack) {
+          s5.shadowX2 = s5.playerX + (Math.random() > 0.5 ? 1 : -1) * (150 + Math.random() * 100);
+          s5.shadowX2 = Math.max(60, Math.min(W - 60, s5.shadowX2));
+        }
         s5.shadowAlpha = 0;
       }
       break;
 
     case 'telegraph':
-      s5.shadowAlpha = Math.min(0.8, s5.shadowAlpha + 0.03);
-      if (s5.attackTimer > 40) {
+      s5.shadowAlpha = Math.min(0.8, s5.shadowAlpha + (s5.rage ? 0.05 : 0.03));
+      if (s5.attackTimer > telegraphTime) {
         s5.phase = 'strike';
         s5.attackTimer = 0;
       }
@@ -1715,7 +1742,6 @@ function updateStage5() {
 
     case 'strike':
       if (s5.attackTimer >= 10) {
-        // Check if player is hit
         const pRect = { x: s5.playerX - 18, y: s5.playerY - 18, w: 36, h: 36 };
         const sRect = { x: s5.shadowX - 25, y: H - 120, w: 50, h: 80 };
         if (rectCollision(pRect, sRect) && s5.invincible <= 0) {
@@ -1723,30 +1749,45 @@ function updateStage5() {
           s5.invincible = 60;
           s5.shakeTimer = 15;
         }
+        if (s5.doubleAttack) {
+          const sRect2 = { x: s5.shadowX2 - 25, y: H - 120, w: 50, h: 80 };
+          if (rectCollision(pRect, sRect2) && s5.invincible <= 0) {
+            takeDamage('chopstick');
+            s5.invincible = 60;
+            s5.shakeTimer = 15;
+          }
+        }
         s5.phase = 'stuck';
         s5.stuckX = s5.shadowX;
+        s5.stuckX2 = s5.doubleAttack ? s5.shadowX2 : 0;
         s5.stuckTimer = 0;
+        s5.kickCount = 0;
         s5.attackTimer = 0;
       }
       break;
 
     case 'stuck':
       s5.stuckTimer++;
-      // Player can kick
+      // Player kicks — need multiple kicks
       if (keysJustPressed['Space'] && Math.abs(s5.playerX - s5.stuckX) < 60) {
-        s5.bossHP--;
-        s5.hits++;
-        score += 200;
-        s5.shakeTimer = 20;
-        if (s5.bossHP <= 0) {
-          s5.won = true;
-          s5.winTimer = 0;
-          score += 1000;
+        s5.kickCount++;
+        s5.shakeTimer = 8;
+        score += 50;
+        if (s5.kickCount >= s5.kicksNeeded) {
+          s5.bossHP--;
+          s5.hits++;
+          score += 200;
+          s5.shakeTimer = 20;
+          if (s5.bossHP <= 0) {
+            s5.won = true;
+            s5.winTimer = 0;
+            score += 1000;
+          }
+          s5.phase = 'idle';
+          s5.attackTimer = 0;
         }
-        s5.phase = 'idle';
-        s5.attackTimer = 0;
       }
-      if (s5.stuckTimer > 60) {
+      if (s5.stuckTimer > stuckTime) {
         s5.phase = 'idle';
         s5.attackTimer = 0;
       }
@@ -1801,14 +1842,26 @@ function drawStage5() {
   drawEmoji('🥢', W / 2 - 30, 30, 40);
   drawEmoji('🥢', W / 2 + 30, 30, 40);
 
+  // Rage mode indicator
+  if (s5.rage) {
+    drawText('🔥 RAGE', W / 2, 95, 12, '#ff5722');
+  }
+
   // Shadow / telegraph
   if (s5.phase === 'telegraph') {
     ctx.fillStyle = `rgba(255,0,0,${s5.shadowAlpha * 0.3})`;
     ctx.beginPath();
     ctx.ellipse(s5.shadowX, H - 50, 30, 10, 0, 0, Math.PI * 2);
     ctx.fill();
-    // Warning markers
     drawText('⚠️', s5.shadowX, H - 80, 24, `rgba(255,0,0,${s5.shadowAlpha})`);
+    // Double attack telegraph
+    if (s5.doubleAttack) {
+      ctx.fillStyle = `rgba(255,0,0,${s5.shadowAlpha * 0.3})`;
+      ctx.beginPath();
+      ctx.ellipse(s5.shadowX2, H - 50, 30, 10, 0, 0, Math.PI * 2);
+      ctx.fill();
+      drawText('⚠️', s5.shadowX2, H - 80, 24, `rgba(255,0,0,${s5.shadowAlpha})`);
+    }
   }
 
   // Chopstick strike animation
@@ -1817,19 +1870,28 @@ function drawStage5() {
     const chopY = lerp(-50, H - 80, progress);
     drawEmoji('🥢', s5.shadowX - 10, chopY, 50);
     drawEmoji('🥢', s5.shadowX + 10, chopY, 50);
+    if (s5.doubleAttack) {
+      drawEmoji('🥢', s5.shadowX2 - 10, chopY, 50);
+      drawEmoji('🥢', s5.shadowX2 + 10, chopY, 50);
+    }
   }
 
   // Stuck chopsticks
   if (s5.phase === 'stuck') {
     drawEmoji('🥢', s5.stuckX - 10, H - 80, 50);
     drawEmoji('🥢', s5.stuckX + 10, H - 80, 50);
-    // "Kick me" hint
+    if (s5.doubleAttack) {
+      drawEmoji('🥢', s5.stuckX2 - 10, H - 80, 50);
+      drawEmoji('🥢', s5.stuckX2 + 10, H - 80, 50);
+    }
+    // Kick hint with counter
     if (Math.abs(s5.playerX - s5.stuckX) < 60) {
       const alpha = Math.sin(frameCount * 0.1) * 0.3 + 0.7;
-      drawText(t('space_attack'), s5.stuckX, H - 130, 16, `rgba(255,235,59,${alpha})`);
+      drawText(`SPACE x${s5.kicksNeeded - s5.kickCount}`, s5.stuckX, H - 130, 16, `rgba(255,235,59,${alpha})`);
     }
     // Stuck timer bar
-    const stPct = 1 - s5.stuckTimer / 60;
+    const stuckTime = s5.rage ? 45 : 60;
+    const stPct = 1 - s5.stuckTimer / stuckTime;
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.fillRect(s5.stuckX - 30, H - 60, 60, 5);
     ctx.fillStyle = '#ffeb3b';
@@ -2134,6 +2196,8 @@ function updateBonus() {
       bonus.playerAnimTimer = 20;
       bonus.flashTimer = 10;
       bonus.flashColor = 'rgba(255,0,0,0.2)';
+      takeDamage('rhythm');
+      if (hp <= 0) return;
     }
   });
 
