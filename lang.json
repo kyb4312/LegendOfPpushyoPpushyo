@@ -1,0 +1,777 @@
+{
+  "title": {
+    "ko": "뿌셔뿌셔 서바이벌",
+    "jp": "プシェプシェサバイバル",
+    "en": "PPushyo Survival"
+  },
+  "subtitle": {
+    "ko": "뿌쇼뿌쇼 팀 프레젠트",
+    "jp": "プショプショチーム プレゼンツ",
+    "en": "Team PPushyo Presents"
+  },
+  "start": {
+    "ko": "START",
+    "jp": "スタート",
+    "en": "START"
+  },
+  "help": {
+    "ko": "게임 설명",
+    "jp": "ゲーム説明",
+    "en": "HOW TO PLAY"
+  },
+  "bonus": {
+    "ko": "보너스 게임",
+    "jp": "ボーナスゲーム",
+    "en": "BONUS GAME"
+  },
+  "back": {
+    "ko": "돌아가기",
+    "jp": "戻る",
+    "en": "BACK"
+  },
+  "prev": {
+    "ko": "◀ 이전",
+    "jp": "◀ 前",
+    "en": "◀ PREV"
+  },
+  "next": {
+    "ko": "다음 ▶",
+    "jp": "次 ▶",
+    "en": "NEXT ▶"
+  },
+  "restart": {
+    "ko": "다시 시작",
+    "jp": "もう一度",
+    "en": "RESTART"
+  },
+  "ending_collect": {
+    "ko": "엔딩 수집",
+    "jp": "エンディング収集",
+    "en": "Endings"
+  },
+  "controls_hint": {
+    "ko": "← → : 이동   SPACE : 액션",
+    "jp": "← → : 移動   SPACE : アクション",
+    "en": "← → : MOVE   SPACE : ACTION"
+  },
+  "dev": {
+    "ko": "DEV",
+    "jp": "DEV",
+    "en": "DEV"
+  },
+  "score": {
+    "ko": "SCORE",
+    "jp": "SCORE",
+    "en": "SCORE"
+  },
+  "ending_label": {
+    "ko": "ENDING",
+    "jp": "ENDING",
+    "en": "ENDING"
+  },
+  "stage": {
+    "ko": "STAGE",
+    "jp": "STAGE",
+    "en": "STAGE"
+  },
+  "move": {
+    "ko": "움직여!",
+    "jp": "動け！",
+    "en": "MOVE!"
+  },
+  "stop_cmd": {
+    "ko": "멈춰!",
+    "jp": "止まれ！",
+    "en": "STOP!"
+  },
+  "ready": {
+    "ko": "준비...",
+    "jp": "準備...",
+    "en": "READY..."
+  },
+  "victory": {
+    "ko": "승리!",
+    "jp": "勝利！",
+    "en": "VICTORY!"
+  },
+  "clear": {
+    "ko": "통과!",
+    "jp": "通過！",
+    "en": "CLEAR!"
+  },
+  "became_legend": {
+    "ko": "전설의 과자가 되었다!",
+    "jp": "伝説のお菓子になった！",
+    "en": "Became a legendary snack!"
+  },
+  "boss_label": {
+    "ko": "BOSS 🥢",
+    "jp": "BOSS 🥢",
+    "en": "BOSS 🥢"
+  },
+  "space_attack": {
+    "ko": "SPACE로 공격!",
+    "jp": "SPACEで攻撃！",
+    "en": "Press SPACE to attack!"
+  },
+  "space_to_move": {
+    "ko": "스페이스바를 눌러 이동",
+    "jp": "スペースキーで移動",
+    "en": "Hold SPACE to move"
+  },
+  "slice_arrows": {
+    "ko": "마우스로 화살을 베세요!",
+    "jp": "マウスで矢を斬れ！",
+    "en": "Swipe arrows with mouse!"
+  },
+  "seongsu": {
+    "ko": "聖水 SEONGSU",
+    "jp": "聖水 SEONGSU",
+    "en": "SEONGSU"
+  },
+  "s1_name": {
+    "ko": "경복궁 러너",
+    "jp": "景福宮ランナー",
+    "en": "Palace Runner"
+  },
+  "s1_sub": {
+    "ko": "관광객을 피해 달려라!",
+    "jp": "観光客を避けて走れ！",
+    "en": "Dodge the tourists!"
+  },
+  "s2_name": {
+    "ko": "양궁장 베기",
+    "jp": "アーチェリー場斬り",
+    "en": "Archery Slicer"
+  },
+  "s2_sub": {
+    "ko": "날아오는 화살을 베어라!",
+    "jp": "飛んでくる矢を斬れ！",
+    "en": "Slice the arrows!"
+  },
+  "s3_name": {
+    "ko": "성수 커피 디펜스",
+    "jp": "聖水コーヒーディフェンス",
+    "en": "Coffee Defense"
+  },
+  "s3_sub": {
+    "ko": "커피를 막아라!",
+    "jp": "コーヒーを防げ！",
+    "en": "Block the coffee!"
+  },
+  "s4_name": {
+    "ko": "거대한 젓가락 보스",
+    "jp": "巨大な箸ボス",
+    "en": "Chopstick Boss"
+  },
+  "s4_sub": {
+    "ko": "최종 보스를 물리쳐라!",
+    "jp": "最終ボスを倒せ！",
+    "en": "Defeat the boss!"
+  },
+  "s5_name": {
+    "ko": "해치상 경비대",
+    "jp": "獬豸像の警備隊",
+    "en": "Haechi Guard"
+  },
+  "s5_sub": {
+    "ko": "무궁화 꽃이 피었습니다!",
+    "jp": "だるまさんがころんだ！",
+    "en": "Red Light, Green Light!"
+  },
+  "e_archer_title": {
+    "ko": "국가대표의 탄생",
+    "jp": "国家代表の誕生",
+    "en": "Birth of a Champion"
+  },
+  "e_archer_desc": {
+    "ko": "화살에 맞은 뿌셔뿌셔는 양궁 국가대표의 새 파트너가 되었습니다!",
+    "jp": "矢に当たったプシェプシェはアーチェリー代表の新パートナーになりました！",
+    "en": "Hit by an arrow, PPushyo became the archery team's new partner!"
+  },
+  "e_insta_title": {
+    "ko": "인스타 스타",
+    "jp": "インスタスター",
+    "en": "Insta Star"
+  },
+  "e_insta_desc": {
+    "ko": "밟힌 뿌셔뿌셔의 사진이 #감성 태그로 10만 좋아요를 받았습니다!",
+    "jp": "踏まれたプシェプシェの写真が#エモいタグで10万いいねを獲得！",
+    "en": "A photo of crushed PPushyo got 100K likes with #aesthetic!"
+  },
+  "e_dessert_title": {
+    "ko": "성수 디저트",
+    "jp": "聖水デザート",
+    "en": "Seongsu Dessert"
+  },
+  "e_dessert_desc": {
+    "ko": "라떼에 빠진 뿌셔뿌셔는 성수 시그니처 메뉴가 되었습니다!",
+    "jp": "ラテに落ちたプシェプシェは聖水シグネチャーメニューになりました！",
+    "en": "PPushyo fell into a latte and became Seongsu's signature menu!"
+  },
+  "e_pigeon_title": {
+    "ko": "비둘기 납치",
+    "jp": "ハトに誘拐",
+    "en": "Pigeon Kidnap"
+  },
+  "e_pigeon_desc": {
+    "ko": "비둘기 둥지에서 새끼들의 점심이 되었습니다.",
+    "jp": "ハトの巣で子バトのランチになりました。",
+    "en": "Became lunch for baby pigeons in their nest."
+  },
+  "e_haechi_title": {
+    "ko": "해치상의 심판",
+    "jp": "獬豸像の審判",
+    "en": "Haechi's Judgment"
+  },
+  "e_haechi_desc": {
+    "ko": "해치상에게 밟힌 뿌셔뿌셔는 경복궁의 전설이 되었습니다.",
+    "jp": "獬豸像に踏まれたプシェプシェは景福宮の伝説になりました。",
+    "en": "Crushed by Haechi, PPushyo became a palace legend."
+  },
+  "e_legend_title": {
+    "ko": "전설의 과자",
+    "jp": "伝説のお菓子",
+    "en": "Legendary Snack"
+  },
+  "e_legend_desc": {
+    "ko": "뿌쇼뿌쇼 팀의 마스코트가 된 뿌셔뿌셔! 경복궁, 양궁장, 미션파이브 성수를 함께 여행하며 전설이 되었습니다!",
+    "jp": "プショプショチームのマスコットになったプシェプシェ！景福宮、アーチェリー場、ミッションファイブ聖水を一緒に旅して伝説になりました！",
+    "en": "PPushyo became the team mascot, traveling through palace, range, and Seongsu to become a legend!"
+  },
+  "e_japan_title": {
+    "ko": "일본 진출",
+    "jp": "日本進出",
+    "en": "Japan Export"
+  },
+  "e_japan_desc": {
+    "ko": "국제적 감각의 뿌셔뿌셔는 돈키호테에 수출되었습니다!",
+    "jp": "国際的センスのプシェプシェはドンキホーテに輸出されました！",
+    "en": "The internationally-minded PPushyo was exported to Don Quijote!"
+  },
+  "help_title": {
+    "ko": "🎮 게임 설명",
+    "jp": "🎮 ゲーム説明",
+    "en": "🎮 HOW TO PLAY"
+  },
+  "help_what_is": {
+    "ko": "뿌셔뿌셔 서바이벌이란?",
+    "jp": "プシェプシェサバイバルとは？",
+    "en": "What is PPushyo Survival?"
+  },
+  "help_what_desc": {
+    "ko": "플레이어가 뿌셔뿌셔(과자)의 입장이 되어, 부서지거나 먹히지 않도록 5개 스테이지를 생존하는 미니게임 모음입니다.",
+    "jp": "プレイヤーがプシェプシェ(お菓子)の立場になり、壊されたり食べられたりしないよう5つのステージを生き残るミニゲーム集です。",
+    "en": "You play as PPushyo (a snack), surviving 5 stages without getting crushed or eaten. A mini-game collection!"
+  },
+  "help_hp": {
+    "ko": "❤️ 체력 시스템",
+    "jp": "❤️ 体力システム",
+    "en": "❤️ HP System"
+  },
+  "help_hp1": {
+    "ko": "HP 3칸으로 시작, 피격 시 1칸 감소",
+    "jp": "HP3で開始、被弾で1減少",
+    "en": "Start with 3 HP, lose 1 when hit"
+  },
+  "help_hp2": {
+    "ko": "피격 후 잠시 무적 (캐릭터가 깜빡임)",
+    "jp": "被弾後しばらく無敵（キャラが点滅）",
+    "en": "Brief invincibility after hit (character blinks)"
+  },
+  "help_hp3": {
+    "ko": "HP가 0이 되면 게임 오버 → 엔딩",
+    "jp": "HPが0でゲームオーバー→エンディング",
+    "en": "HP 0 = Game Over, leads to ending"
+  },
+  "help_spice": {
+    "ko": "🌶️ 양념 봉지",
+    "jp": "🌶️ 調味料パック",
+    "en": "🌶️ Spice Pack"
+  },
+  "help_spice1": {
+    "ko": "S1에서 수집 가능, 개당 +100점",
+    "jp": "S1で収集可能、1個+100点",
+    "en": "Collectible in S1, +100 per pack"
+  },
+  "help_spice2": {
+    "ko": "5개 이상 모으고 클리어하면 히든 엔딩!",
+    "jp": "5個以上集めてクリアすると隠しエンディング！",
+    "en": "Collect 5+ and clear for hidden ending!"
+  },
+  "help_endings": {
+    "ko": "🏆 엔딩",
+    "jp": "🏆 エンディング",
+    "en": "🏆 Endings"
+  },
+  "help_endings1": {
+    "ko": "총 7개의 엔딩 (배드 5 + 굿 1 + 히든 1)",
+    "jp": "全7エンディング（バッド5+グッド1+隠し1）",
+    "en": "7 total endings (5 bad + 1 good + 1 hidden)"
+  },
+  "help_endings2": {
+    "ko": "사망 원인에 따라 다른 엔딩이 표시됩니다",
+    "jp": "死亡原因によって異なるエンディングが表示されます",
+    "en": "Different endings based on cause of death"
+  },
+  "help_endings3": {
+    "ko": "타이틀에서 수집 현황 확인 가능",
+    "jp": "タイトルで収集状況を確認可能",
+    "en": "Check collection status on title screen"
+  },
+  "help_s1_title": {
+    "ko": "S1. 경복궁 러너",
+    "jp": "S1. 景福宮ランナー",
+    "en": "S1. Palace Runner"
+  },
+  "help_s1_controls": {
+    "ko": "← → ↑ ↓ 또는 WASD",
+    "jp": "← → ↑ ↓ またはWASD",
+    "en": "← → ↑ ↓ or WASD"
+  },
+  "help_s1_desc": {
+    "ko": "4방향으로 이동하며 장애물을 피하세요!",
+    "jp": "4方向に移動して障害物を避けよう！",
+    "en": "Move in 4 directions to dodge obstacles!"
+  },
+  "help_s1_obs": {
+    "ko": "장애물 (위에서 떨어짐)",
+    "jp": "障害物（上から落下）",
+    "en": "Obstacles (fall from above)"
+  },
+  "help_s1_tourist": {
+    "ko": "👣  관광객 발자국 — 밟으면 피격",
+    "jp": "👣  観光客の足跡 — 踏むとダメージ",
+    "en": "👣  Tourist footprints — damage on contact"
+  },
+  "help_s1_pigeon": {
+    "ko": "🕊️  비둘기 — 부딪히면 피격",
+    "jp": "🕊️  ハト — 衝突でダメージ",
+    "en": "🕊️  Pigeon — damage on contact"
+  },
+  "help_s1_camera": {
+    "ko": "📷  카메라 — 부딪히면 피격",
+    "jp": "📷  カメラ — 衝突でダメージ",
+    "en": "📷  Camera — damage on contact"
+  },
+  "help_s1_speed": {
+    "ko": "속도가 2~5 사이로 랜덤 (빠른 것 주의!)",
+    "jp": "速度2~5ランダム（速いものに注意！）",
+    "en": "Random speed 2-5 (watch for fast ones!)"
+  },
+  "help_s1_collect": {
+    "ko": "수집 아이템",
+    "jp": "収集アイテム",
+    "en": "Collectibles"
+  },
+  "help_s1_spice_item": {
+    "ko": "🌶️  양념 봉지 — 주황 빛 효과, +100점",
+    "jp": "🌶️  調味料パック — 橙色の光、+100点",
+    "en": "🌶️  Spice pack — orange glow, +100 pts"
+  },
+  "help_s1_spice_rate": {
+    "ko": "25% 확률로 드물게 등장",
+    "jp": "25%の確率でまれに出現",
+    "en": "Rare 25% spawn chance"
+  },
+  "help_s1_spice_hidden": {
+    "ko": "5개 이상 모으면 히든 엔딩 조건 달성!",
+    "jp": "5個以上で隠しエンディング条件達成！",
+    "en": "5+ unlocks hidden ending condition!"
+  },
+  "help_s1_clear": {
+    "ko": "30초 생존하면 클리어",
+    "jp": "30秒生存でクリア",
+    "en": "Survive 30 seconds to clear"
+  },
+  "help_progress": {
+    "ko": "← 진행 바",
+    "jp": "← 進行バー",
+    "en": "← Progress bar"
+  },
+  "help_s2_title": {
+    "ko": "S2. 양궁장 베기",
+    "jp": "S2. アーチェリー場斬り",
+    "en": "S2. Archery Slicer"
+  },
+  "help_s2_controls": {
+    "ko": "마우스 드래그로 화살을 베세요!",
+    "jp": "マウスドラッグで矢を斬れ！",
+    "en": "Drag mouse to slice arrows!"
+  },
+  "help_s2_arrow": {
+    "ko": "화살 🏹",
+    "jp": "矢 🏹",
+    "en": "Arrows 🏹"
+  },
+  "help_s2_arrow1": {
+    "ko": "좌우에서 날아옴, 속도 3~6",
+    "jp": "左右から飛来、速度3~6",
+    "en": "Fly from both sides, speed 3-6"
+  },
+  "help_s2_arrow2": {
+    "ko": "시간이 지날수록 등장 빈도 증가",
+    "jp": "時間経過で出現頻度増加",
+    "en": "Spawn rate increases over time"
+  },
+  "help_s2_slice": {
+    "ko": "베기 방법",
+    "jp": "斬り方",
+    "en": "How to Slice"
+  },
+  "help_s2_slice1": {
+    "ko": "마우스를 누른 채로 화살 위를 드래그",
+    "jp": "マウスを押したまま矢の上をドラッグ",
+    "en": "Click and drag over arrows"
+  },
+  "help_s2_slice2": {
+    "ko": "노란 빛나는 궤적이 표시됨",
+    "jp": "黄色く光る軌跡が表示",
+    "en": "Yellow glowing trail appears"
+  },
+  "help_s2_combo": {
+    "ko": "콤보 시스템",
+    "jp": "コンボシステム",
+    "en": "Combo System"
+  },
+  "help_s2_combo1": {
+    "ko": "한 번 드래그로 여러 화살을 베면 COMBO!",
+    "jp": "一回のドラッグで複数の矢を斬ればCOMBO！",
+    "en": "Slice multiple arrows in one drag for COMBO!"
+  },
+  "help_s2_combo2": {
+    "ko": "추가 보너스 점수 (화살 수 x 30)",
+    "jp": "追加ボーナス点数（矢の数x30）",
+    "en": "Bonus score (arrows x 30)"
+  },
+  "help_s2_miss": {
+    "ko": "화살이 화면 하단에 도달하면 자동 피격",
+    "jp": "矢が画面下部に到達すると自動ダメージ",
+    "en": "Arrows reaching bottom deal damage"
+  },
+  "help_s2_clear": {
+    "ko": "30초 생존하면 클리어",
+    "jp": "30秒生存でクリア",
+    "en": "Survive 30 seconds to clear"
+  },
+  "help_s3_title": {
+    "ko": "S3. 성수 커피 디펜스",
+    "jp": "S3. 聖水コーヒーディフェンス",
+    "en": "S3. Coffee Defense"
+  },
+  "help_s3_controls": {
+    "ko": "A / S / D / F 키로 커피를 막으세요!",
+    "jp": "A / S / D / F キーでコーヒーを防げ！",
+    "en": "Press A / S / D / F to block coffee!"
+  },
+  "help_s3_lanes": {
+    "ko": "4개 레인",
+    "jp": "4レーン",
+    "en": "4 Lanes"
+  },
+  "help_s3_types": {
+    "ko": "커피 종류 (속도)",
+    "jp": "コーヒー種類（速度）",
+    "en": "Coffee Types (Speed)"
+  },
+  "help_s3_latte": {
+    "ko": "🧋  라떼 — 느림 (여유로움)",
+    "jp": "🧋  ラテ — 遅い（余裕あり）",
+    "en": "🧋  Latte — Slow (easy)"
+  },
+  "help_s3_americano": {
+    "ko": "☕  아메리카노 — 보통",
+    "jp": "☕  アメリカーノ — 普通",
+    "en": "☕  Americano — Normal"
+  },
+  "help_s3_iced": {
+    "ko": "🧊  아이스 — 빠름 (주의!)",
+    "jp": "🧊  アイス — 速い（注意！）",
+    "en": "🧊  Iced — Fast (watch out!)"
+  },
+  "help_s3_judge": {
+    "ko": "판정",
+    "jp": "判定",
+    "en": "Timing"
+  },
+  "help_s3_perfect": {
+    "ko": "PERFECT! (+100) — 히트존 20px 이내",
+    "jp": "PERFECT! (+100) — ヒットゾーン20px以内",
+    "en": "PERFECT! (+100) — within 20px"
+  },
+  "help_s3_great": {
+    "ko": "GREAT! (+50) — 히트존 40px 이내",
+    "jp": "GREAT! (+50) — ヒットゾーン40px以内",
+    "en": "GREAT! (+50) — within 40px"
+  },
+  "help_s3_ok": {
+    "ko": "OK (+25) — 히트존 60px 이내",
+    "jp": "OK (+25) — ヒットゾーン60px以内",
+    "en": "OK (+25) — within 60px"
+  },
+  "help_s3_miss": {
+    "ko": "놓치면 피격!",
+    "jp": "逃すとダメージ！",
+    "en": "Miss = damage!"
+  },
+  "help_s3_clear": {
+    "ko": "30초 생존하면 클리어",
+    "jp": "30秒生存でクリア",
+    "en": "Survive 30 seconds to clear"
+  },
+  "help_s4_title": {
+    "ko": "S4. 거대한 젓가락 보스",
+    "jp": "S4. 巨大な箸ボス",
+    "en": "S4. Chopstick Boss"
+  },
+  "help_s4_controls": {
+    "ko": "← →  이동  |  Space  공격",
+    "jp": "← →  移動  |  Space  攻撃",
+    "en": "← →  Move  |  Space  Attack"
+  },
+  "help_s4_boss_hp": {
+    "ko": "🥢 보스 HP 3칸",
+    "jp": "🥢 ボスHP3",
+    "en": "🥢 Boss has 3 HP"
+  },
+  "help_s4_pattern": {
+    "ko": "보스 공격 패턴 (4단계 반복)",
+    "jp": "ボス攻撃パターン（4段階繰り返し）",
+    "en": "Boss Attack Pattern (4-phase loop)"
+  },
+  "help_s4_p1": {
+    "ko": "1. 대기 (1.5초)",
+    "jp": "1. 待機（1.5秒）",
+    "en": "1. Idle (1.5s)"
+  },
+  "help_s4_p1d": {
+    "ko": "— 아무 일도 없음, 이동 준비",
+    "jp": "— 何もなし、移動準備",
+    "en": "— Nothing happens, prepare to move"
+  },
+  "help_s4_p2": {
+    "ko": "2. 경고 (1초)",
+    "jp": "2. 警告（1秒）",
+    "en": "2. Warning (1s)"
+  },
+  "help_s4_p2d": {
+    "ko": "— 바닥에 빨간 그림자 + ⚠️ 표시",
+    "jp": "— 床に赤い影 + ⚠️ 表示",
+    "en": "— Red shadow + ⚠️ on ground"
+  },
+  "help_s4_p2d2": {
+    "ko": "— 이 위치에 젓가락이 내려옴!",
+    "jp": "— この位置に箸が降ってくる！",
+    "en": "— Chopsticks will strike here!"
+  },
+  "help_s4_p3": {
+    "ko": "3. 내려찍기 (즉시)",
+    "jp": "3. 振り下ろし（即座）",
+    "en": "3. Strike (instant)"
+  },
+  "help_s4_p3d": {
+    "ko": "— 🥢 젓가락이 위에서 내려꽂힘",
+    "jp": "— 🥢 箸が上から刺さる",
+    "en": "— 🥢 Chopsticks slam down"
+  },
+  "help_s4_p3d2": {
+    "ko": "— 그 자리에 있으면 피격 + 화면 흔들림",
+    "jp": "— その場にいるとダメージ+画面揺れ",
+    "en": "— Being there = damage + screen shake"
+  },
+  "help_s4_p4": {
+    "ko": "4. 박힘 (1.5초) ← 공격 찬스!",
+    "jp": "4. 刺さり（1.5秒） ← 攻撃チャンス！",
+    "en": "4. Stuck (1.5s) -- Attack chance!"
+  },
+  "help_s4_p4d": {
+    "ko": "— 가까이 가서 Space → 킥! 보스 HP -1",
+    "jp": "— 近づいてSpace → キック！ボスHP-1",
+    "en": "— Approach + Space = Kick! Boss HP -1"
+  },
+  "help_s4_p4d2": {
+    "ko": "— 노란 타이머가 줄어듦, 놓치면 빠져나감",
+    "jp": "— 黄色タイマーが減る、逃すと抜ける",
+    "en": "— Yellow timer counts down, miss = it escapes"
+  },
+  "help_s4_win": {
+    "ko": "3번 킥 성공 → 승리! +1000점",
+    "jp": "3回キック成功 → 勝利！+1000点",
+    "en": "3 kicks = Victory! +1000 pts"
+  },
+  "help_s5_title": {
+    "ko": "S5. 해치상 경비대",
+    "jp": "S5. 獬豸像の警備隊",
+    "en": "S5. Haechi Guard"
+  },
+  "help_s5_controls": {
+    "ko": "Space 꾹 누르기 = 전진 | 떼기 = 멈춤",
+    "jp": "Space長押し = 前進 | 離す = 停止",
+    "en": "Hold Space = Move | Release = Stop"
+  },
+  "help_s5_haechi": {
+    "ko": "🦁 해치상",
+    "jp": "🦁 獬豸像",
+    "en": "🦁 Haechi Statue"
+  },
+  "help_s5_desc": {
+    "ko": "오른쪽 끝에서 감시, 돌아보면 위험!",
+    "jp": "右端から監視、振り向くと危険！",
+    "en": "Watches from right, turns around = danger!"
+  },
+  "help_s5_system": {
+    "ko": "\"무궁화꽃이피었습니다\" 시스템",
+    "jp": "\"だるまさんがころんだ\" システム",
+    "en": "\"Red Light, Green Light\" System"
+  },
+  "help_s5_chars": {
+    "ko": "글자가 하나씩 빨갛게 점등됩니다",
+    "jp": "文字が一つずつ赤く点灯します",
+    "en": "Characters light up red one by one"
+  },
+  "help_s5_full": {
+    "ko": "다 차면 빨간불! 반드시 멈춰야 합니다",
+    "jp": "全部点灯で赤信号！必ず止まること",
+    "en": "All lit = Red light! You MUST stop"
+  },
+  "help_s5_cycle": {
+    "ko": "3단계 사이클",
+    "jp": "3段階サイクル",
+    "en": "3-Phase Cycle"
+  },
+  "help_s5_green": {
+    "ko": "🟢 초록: \"움직여!\" — 자유롭게 전진",
+    "jp": "🟢 緑: \"動け！\" — 自由に前進",
+    "en": "🟢 Green: \"MOVE!\" — freely advance"
+  },
+  "help_s5_yellow": {
+    "ko": "🟡 전환: \"준비...\" — 글자 점등 중, 아직 이동 가능",
+    "jp": "🟡 切替: \"準備...\" — 文字点灯中、まだ移動可能",
+    "en": "🟡 Transition: \"READY...\" — still can move"
+  },
+  "help_s5_red": {
+    "ko": "🔴 빨강: \"멈춰!\" — 움직이면 피격 + 100px 후퇴",
+    "jp": "🔴 赤: \"止まれ！\" — 動くとダメージ+100px後退",
+    "en": "🔴 Red: \"STOP!\" — move = damage + 100px pushback"
+  },
+  "help_s5_clear": {
+    "ko": "오른쪽 끝까지 도달하면 클리어!",
+    "jp": "右端まで到達でクリア！",
+    "en": "Reach the right side to clear!"
+  },
+  "help_s5_progress": {
+    "ko": "← 위치 기준 진행 바",
+    "jp": "← 位置基準進行バー",
+    "en": "← Position-based progress bar"
+  },
+  "help_endlist_title": {
+    "ko": "🏆 엔딩 목록",
+    "jp": "🏆 エンディング一覧",
+    "en": "🏆 Ending List"
+  },
+  "help_endlist_desc": {
+    "ko": "사망 원인에 따라 다른 엔딩!",
+    "jp": "死亡原因によって異なるエンディング！",
+    "en": "Different endings based on death cause!"
+  },
+  "help_endlist_collect": {
+    "ko": "모든 엔딩을 수집해보세요!",
+    "jp": "全エンディングを収集しよう！",
+    "en": "Try to collect all endings!"
+  },
+  "e_cond_archer": {
+    "ko": "S2에서 화살에 사망",
+    "jp": "S2で矢に死亡",
+    "en": "Died to arrows in S2"
+  },
+  "e_cond_insta": {
+    "ko": "S1에서 관광객/카메라에 사망",
+    "jp": "S1で観光客/カメラに死亡",
+    "en": "Died to tourist/camera in S1"
+  },
+  "e_cond_dessert": {
+    "ko": "S3에서 커피에 사망",
+    "jp": "S3でコーヒーに死亡",
+    "en": "Died to coffee in S3"
+  },
+  "e_cond_pigeon": {
+    "ko": "S1에서 비둘기에 사망",
+    "jp": "S1でハトに死亡",
+    "en": "Died to pigeon in S1"
+  },
+  "e_cond_haechi": {
+    "ko": "S5에서 해치상에 사망",
+    "jp": "S5で獬豸像に死亡",
+    "en": "Died to Haechi in S5"
+  },
+  "e_cond_legend": {
+    "ko": "전 스테이지 클리어",
+    "jp": "全ステージクリア",
+    "en": "Clear all stages"
+  },
+  "e_cond_japan": {
+    "ko": "양념 5개 + 클리어",
+    "jp": "調味料5個+クリア",
+    "en": "5 spices + clear"
+  },
+  "bonus_title": {
+    "ko": "뿌셔뿌셔 리듬 카라테",
+    "jp": "プシェプシェリズム空手",
+    "en": "PPushyo Rhythm Karate"
+  },
+  "bonus_subtitle": {
+    "ko": "리듬에 맞춰 펀치!",
+    "jp": "リズムに合わせてパンチ！",
+    "en": "Punch to the Beat!"
+  },
+  "bonus_space_punch": {
+    "ko": "SPACE = 펀치!",
+    "jp": "SPACE = パンチ！",
+    "en": "SPACE = Punch!"
+  },
+  "bonus_hold_release": {
+    "ko": "💡가 오면 꾹 눌렀다 떼기!",
+    "jp": "💡が来たら長押しして離す！",
+    "en": "Hold on 💡, release for uppercut!"
+  },
+  "bonus_result": {
+    "ko": "결과",
+    "jp": "結果",
+    "en": "RESULT"
+  },
+  "bonus_accuracy": {
+    "ko": "정확도",
+    "jp": "正確率",
+    "en": "Accuracy"
+  },
+  "bonus_perfect": {
+    "ko": "PERFECT",
+    "jp": "PERFECT",
+    "en": "PERFECT"
+  },
+  "bonus_ok": {
+    "ko": "OK",
+    "jp": "OK",
+    "en": "OK"
+  },
+  "bonus_miss": {
+    "ko": "MISS",
+    "jp": "MISS",
+    "en": "MISS"
+  },
+  "bonus_streak": {
+    "ko": "최고 연속",
+    "jp": "最高連続",
+    "en": "Best Streak"
+  },
+  "bonus_back_title": {
+    "ko": "타이틀로",
+    "jp": "タイトルへ",
+    "en": "To Title"
+  },
+  "bonus_start_prompt": {
+    "ko": "SPACE로 시작!",
+    "jp": "SPACEでスタート！",
+    "en": "Press SPACE to start!"
+  }
+}
