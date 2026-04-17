@@ -305,9 +305,9 @@
     "en": "🏆 Endings"
   },
   "help_endings1": {
-    "ko": "총 12개의 엔딩 (배드 10 + 굿 1 + 히든 1)",
-    "jp": "全12エンディング（バッド10+グッド1+隠し1）",
-    "en": "12 total endings (10 bad + 1 good + 1 hidden)"
+    "ko": "총 12개의 엔딩 (배드 9 + 굿 1 + 히든 2)",
+    "jp": "全12エンディング（バッド9+グッド1+隠し2）",
+    "en": "12 total endings (9 bad + 1 good + 2 hidden)"
   },
   "help_endings2": {
     "ko": "사망 원인에 따라 다른 엔딩이 표시됩니다",
@@ -1044,20 +1044,20 @@
     "jp": "素早く叩け！",
     "en": "Whack them fast!"
   },
-  "e_whack_title": {
-    "ko": "잘못된 타격",
-    "jp": "誤った一撃",
-    "en": "Wrong Hit"
+  "e_champion_title": {
+    "ko": "과자계의 전설",
+    "jp": "お菓子界の伝説",
+    "en": "Legend of Snacks"
   },
-  "e_whack_desc": {
-    "ko": "양념 봉지를 때려버린 뿌셔뿌셔는 자신의 양념이 되었습니다...",
-    "jp": "調味料パックを叩いてしまったプショプショは自分の調味料になりました...",
-    "en": "PPushyo hit the spice packet and became seasoning itself..."
+  "e_champion_desc": {
+    "ko": "11,000점을 넘긴 뿌셔뿌셔는 과자계의 신으로 추앙받아 영원히 부서지지 않는 존재가 되었습니다...",
+    "jp": "11,000点を超えたプショプショはお菓子界の神として崇められ、永遠に壊れない存在になりました...",
+    "en": "Surpassing 11,000 points, PPushyo was worshipped as the God of Snacks and became an eternal, unbreakable being..."
   },
-  "e_cond_whack": {
-    "ko": "S6에서 잘못된 타격으로 사망",
-    "jp": "S6で誤った一撃で死亡",
-    "en": "Died from wrong hits in S6"
+  "e_cond_champion": {
+    "ko": "11,000점 이상 + 올클리어 (히든)",
+    "jp": "11,000点以上+全クリア（隠し）",
+    "en": "11,000+ score + clear all (hidden)"
   },
   "e_chop_title": {
     "ko": "젓가락의 먹잇감",

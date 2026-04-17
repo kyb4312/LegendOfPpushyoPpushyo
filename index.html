@@ -173,7 +173,7 @@ const ENDINGS = [
   { id: 'rhythm', titleKey: 'e_rhythm_title', descKey: 'e_rhythm_desc', emoji: '🎵' },
   { id: 'balance', titleKey: 'e_balance_title', descKey: 'e_balance_desc', emoji: '📦' },
   { id: 'jump', titleKey: 'e_jump_title', descKey: 'e_jump_desc', emoji: '🕳️' },
-  { id: 'whack', titleKey: 'e_whack_title', descKey: 'e_whack_desc', emoji: '🔨' },
+  { id: 'champion', titleKey: 'e_champion_title', descKey: 'e_champion_desc', emoji: '👑' },
   { id: 'chopstick', titleKey: 'e_chop_title', descKey: 'e_chop_desc', emoji: '🥢' }
 ];
 
@@ -732,7 +732,9 @@ function triggerEnding(type) {
     else if (deathStage === 6) endingIndex = 4; // 해치 haechi
     else if (deathStage === 7) endingIndex = 0; // 활터 archer
   } else if (type === 'victory') {
-    if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
+    if (score >= 11000 && spiceCollected >= 5) endingIndex = 10; // hidden champion (hardest)
+    else if (score >= 11000) endingIndex = 10; // hidden champion
+    else if (spiceCollected >= 5) endingIndex = 6; // hidden japan ending
     else endingIndex = 5; // legend
   }
   currentEnding = ENDINGS[endingIndex];
@@ -1184,7 +1186,7 @@ function drawEndingsView() {
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
   ctx.beginPath(); ctx.roundRect(40, listTop, W - 80, listH, 12); ctx.fill();
 
-  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance','e_cond_jump','e_cond_whack','e_cond_chop'];
+  const condKeys = ['e_cond_archer','e_cond_insta','e_cond_dessert','e_cond_pigeon','e_cond_haechi','e_cond_legend','e_cond_japan','e_cond_rhythm','e_cond_balance','e_cond_jump','e_cond_champion','e_cond_chop'];
 
   // Clip to list area
   ctx.save();
